@@ -107,5 +107,7 @@ public interface DomainService extends Serializable {
 	 * @return 'true' if the user can revoke the privileges of an administrator.
 	 */
 	boolean userCanDeleteAdmin(User user, User admin);
+	
+	//String getChaine();
 
 }

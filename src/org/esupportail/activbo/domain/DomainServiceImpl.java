@@ -71,7 +71,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				"property displayNameLdapAttribute of class " + this.getClass().getName() 
 				+ " can not be null");
 	}
-
+	
+	
+	
+	//public String getChaine(){
+		//return "c'est bon, le webservice, ca marche";
+	//}
+	
 	//////////////////////////////////////////////////////////////
 	// User
 	//////////////////////////////////////////////////////////////
