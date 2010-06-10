@@ -74,9 +74,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	
 	
-	//public String getChaine(){
-		//return "c'est bon, le webservice, ca marche";
-	//}
+	public String getChaine(){
+		return "c'est bon, le webservice, ca marche";
+	}
 	
 	//////////////////////////////////////////////////////////////
 	// User

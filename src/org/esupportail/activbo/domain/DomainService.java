@@ -108,6 +108,6 @@ public interface DomainService extends Serializable {
 	 */
 	boolean userCanDeleteAdmin(User user, User admin);
 	
-	//String getChaine();
+	String getChaine();
 
 }
