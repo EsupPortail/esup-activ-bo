@@ -30,6 +30,7 @@
  	<import resource="domain/domain.xml" />
  	<import resource="deepLinking/deepLinking.xml" />
 	<import resource="exceptionHandling/exceptionHandling.xml" />
+	<import resource="export/export.xml" />
 	<import resource="i18n/i18n.xml" />
 	<import resource="ldap/ldap.xml" />
 	<import resource="misc/abstractBeans.xml" />
