@@ -48,7 +48,7 @@ public class VersionningServiceImpl extends AbstractDomainAwareBean implements V
 	/**
 	 * @see org.esupportail.activbo.web.controllers.AbstractDomainAwareBean#afterPropertiesSetInternal()
 	 */
-	@Override
+	
 	public void afterPropertiesSetInternal() {
 		Assert.notNull(this.firstAdministratorId, 
 				"property firstAdministratorId of class " + this.getClass().getName() 
