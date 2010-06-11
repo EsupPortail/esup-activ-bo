@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
+import org.esupportail.commons.services.application.VersionningUtils;
 import org.esupportail.commons.web.beans.Paginator;
 
 public class EmptyDaoService implements DaoService {
 
 	private static final long serialVersionUID = 3323875756876395115L;
 
-	
+	private static VersionManager versionManager;
 	
 	public void addUser(User user) {
 		// TODO Auto-generated method stub
@@ -59,7 +60,11 @@ public class EmptyDaoService implements DaoService {
 
 	public VersionManager getVersionManager() {
 		// TODO Auto-generated method stub
-		return null;
+		if(versionManager==null)		{
+			versionManager = new VersionManager();
+			versionManager.setVersion(VersionningUtils.VERSION_0);
+		}
+		return versionManager;		
 	}
 
 }
