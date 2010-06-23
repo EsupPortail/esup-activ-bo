@@ -183,14 +183,9 @@ public class Account implements AccountInt,InitializingBean {
 		this.mail = mail;
 	}
 
-	@Override
+
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 	}
-
-	/*public void setDomainService(DomainService domainService) {
-		this.domainService = domainService;
-	}*/
-
 
 }
