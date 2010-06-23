@@ -3,6 +3,7 @@
 <beans 
 	xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
 	>
 
@@ -13,9 +14,7 @@
 	-->
 
 	<bean id="ldapUserService"
-		class="org.esupportail.commons.services.ldap.SearchableLdapUserServiceImpl"
-		lazy-init="true"
-		>
+		class="org.esupportail.commons.services.ldap.SearchableLdapUserServiceImpl" >
 		<description>
 			This bean provides LDAP facilities to all the other beans.
 			It must implement interface
@@ -33,33 +32,50 @@
 				The i18nService, used for statistics.
 			</description>
 		</property>
-		<property name="ldapTemplate" ref="ldapTemplate">
+		<property name="ldapTemplate" ref="readOnlyLdapTemplate">
 			<description>
 				The LDAP template used to access the LDAP directory.
 			</description>
 		</property>
-		<property name="dnSubPath" value="${ldap.dnSubPath}">
+		<property name="dnSubPath" value="ou=people">
 			<description>The DN sub path.</description>
 		</property>
-		<property name="idAttribute" value="${ldap.uidAttribute}">
+		<property name="idAttribute" value="uid">
 			<description>
 				The LDAP attribute that stores the unique identifier of
 				users in the LDAP directory (optional, "uid" by
 				default).
 			</description>
 		</property>
-		<property name="attributesAsString" value="${ldap.attributes}">
+		<property name="attributes">
 			<description>
-				The comma-separated list of the LDAP attributes to retrieve.
+				The LDAP attributes to retrieve.
 			</description>
+			<list>
+				<value>${ldap.attribute.displayName}</value>
+				<value>${ldap.attribute.employeeId}</value>
+				<value>${ldap.attribute.birthdate}</value>
+				<value>${ldap.attribute.birthname}</value>
+				<value>${ldap.attribute.mail}</value>
+				<value>${ldap.attribute.shadowLastChange}</value>
+			</list>
 		</property>
-		<property name="searchAttribute" value="${ldap.searchAttribute}">
+		<property name="searchAttribute" value="cn">
 			<description>The LDAP attribute to search for.</description>
 		</property>
-		<property name="searchDisplayedAttributesAsString" value="${ldap.searchDisplayedAttributes}" >
+		<property name="searchDisplayedAttributes">
 			<description>
-				The comma-separated list of the LDAP attributes to display when searching for users.
+				The LDAP attributes to display when searching for users.
 			</description>
+			<list>
+				<value>cn</value>
+				<value>${ldap.attribute.displayName}</value>
+				<value>${ldap.attribute.employeeId}</value>
+				<value>${ldap.attribute.birthdate}</value>
+				<value>${ldap.attribute.birthname}</value>
+				<value>${ldap.attribute.mail}</value>
+				<value>${ldap.attribute.shadowLastChange}</value>
+			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
 			<description>The cache manager, required.</description>
@@ -67,7 +83,7 @@
 		<property name="cacheName" value="">
 			<description>The name of the cache, optional.</description>
 		</property>
-		<property name="testFilter" value="${ldap.testFilter}" >
+		<property name="testFilter" value="cn=*smith*" >
 			<description>
 				The LDAP filter that will be taken into account when using 
 				ant target test-ldap.
@@ -75,26 +91,20 @@
 		</property>
 	</bean>
 
-	<bean 
-		id="ldapTemplate" 
-		class="org.springframework.ldap.LdapTemplate"
-		lazy-init="true"
-		>
+	<bean id="readOnlyLdapTemplate" class="org.springframework.ldap.LdapTemplate">
 		<description>
 			The LDAP template used to acces the LDAP directory. See
 			http://ldaptemplate.sourceforge.net.
 		</description>
-		<property name="contextSource" ref="contextSource">
+		<property name="contextSource" ref="readOnlyContextSource">
 			<description>
 				The data source used by the LDAP template.
 			</description>
 		</property>
 	</bean>
 
-	<bean id="contextSource"
-		class="org.esupportail.commons.services.ldap.MultiUrlLdapContextSource"
-		lazy-init="true"
-		>
+	<bean id="readOnlyContextSource"
+		class="org.springframework.ldap.support.LdapContextSource">
 		<description>
 			This bean describes the physical acces to the LDAP
 			directory. In the example below, anonymous and unsecured
@@ -103,8 +113,11 @@
 			base ou=people,dc=esup-portail,dc=edu, with scope "sub". See
 			http://ldaptemplate.sourceforge.net.
 		</description>
-		<property name="url" value="${ldap.url}"/>
-		<property name="userName" value="${ldap.userName}">
+		<property name="url"
+			value="ldap://ldap-test.univ-paris1.fr:389">
+			<description>The LDAP URL of the directory.</description>
+		</property>
+		<property name="userName" value="${ldap.username}">
 			<description>
 				The dn used to bind to the LDAP directory.
 			</description>
@@ -114,7 +127,10 @@
 				The password used to bind to the LDAP directory.
 			</description>
 		</property>
-		<property name="base" value="${ldap.base}"/>
+		<property name="base"
+			value="${ldap.dn.base}">
+			<description>The search base (mandatory).</description>
+		</property>
 		<property name="baseEnvironmentProperties">
 			<description>
 				The environment properties, for instance to set the
@@ -122,9 +138,133 @@
 			</description>
 			<map>
 				<entry key="com.sun.jndi.ldap.connect.timeout"
-					value="${ldap.connectTimeout}" />
+					value="5000" />
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="writeableLdapUserService"
+		class="org.esupportail.activbo.services.ldap.WriteableLdapUserServiceImpl" >
+		<description>
+			This bean provides LDAP write facilities to all the other beans.
+			It must implement interface
+			org.esupportail.commons.services.ldap.WriteableLdapUserService. 
+			This service is used to write in LDAP people branch dn. 
+		</description>
+		<property name="ldapTemplate" ref="writeableLdapTemplate" >
+			<description>
+				The LDAP template used to access the LDAP directory.
+				May not be set if you want to bind LDAP directory with user account.
+			</description>
+		</property>
+		<property name="contextSource" ref="writeableContextSource">
+			<description>
+				The data source used by the LDAP template. Must be set if ldapTemplate
+				is empty
+			</description>
+		</property>
+		<property name="dnAuth" value="${ldap.dn.auth}">
+			<description>The DN path to use to connect user</description>
+		</property>
+		<property name="idAuth" value="${ldap.attribute.uid}">
+			<description>The LDAP attribute that stores the unique identifier of
+				users binding to the LDAP directory</description>
+		</property>
+		<property name="dnSubPath" value="${ldap.dn.people}">
+			<description>The DN sub path. Used to create or delete entries</description>
+		</property>
+		<property name="idAttribute" value="${ldap.attribute.uid}">
+			<description>
+				The LDAP attribute that stores the unique identifier of
+				users in the LDAP directory (optional, "uid" by
+				default).
+			</description>
+		</property>
+		<property name="attributes">
+			<description>
+				The LDAP attributes to update.
+			</description>
+			<list>
+				<value>cn</value>
+				<value>${ldap.attribute.password}</value>
+				<value>${ldap.attribute.shadowLastChange}</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="writeableLdapTemplate" class="org.springframework.ldap.LdapTemplate" >
+		<description>
+			The LDAP template used to acces the LDAP directory. See
+			http://ldaptemplate.sourceforge.net.
+		</description>
+		<property name="contextSource" ref="writeableContextSource">
+			<description>
+				The data source used by the LDAP template.
+			</description>
+		</property>
+	</bean>
+	
+	<bean id="writeableContextSource"
+		class="org.springframework.ldap.support.LdapContextSource" scope="session">
+		<description>
+			This bean describes the physical acces to the LDAP
+			directory. In the example below, anonymous and unsecured
+			connections will be done to the LDAP directory running on
+			server ldap.esup-portail.org on port 389, using the search
+			base ou=people,dc=esup-portail,dc=edu, with scope "sub". See
+			http://ldaptemplate.sourceforge.net.
+		</description>
+		<property name="url"
+			value="ldap://ldap-test.univ-paris1.fr:389">
+			<description>The LDAP URL of the directory.</description>
+		</property>
+		<property name="userName" value="">
+			<description>
+				The dn used to bind to the LDAP directory.
+			</description>
+		</property>
+		<property name="password" value="">
+			<description>
+				The password used to bind to the LDAP directory.
+			</description>
+		</property>
+		<property name="base"
+			value="${ldap.dn.base}">
+			<description>The search base (mandatory).</description>
+		</property>
+		<!-- Pooled connections are initialized at the first LDAP r/w operation
+		     and works despite credentials change  -->
+		<property name="pooled" value="false" />
+		<property name="baseEnvironmentProperties">
+			<description>
+				The environment properties, for instance to set the
+				timeout.
+			</description>
+			<map>
+				<entry key="com.sun.jndi.ldap.connect.timeout"
+					value="5000" />
+				<entry key="com.sun.jndi.ldap.connect.pool.debug" value="fine"/>
+			</map>
+		</property>
+		<aop:scoped-proxy/>
+	</bean>
+	
+	
+
+	
+	<bean id="ldapSchema"
+		class="org.esupportail.activbo.services.ldap.LdapSchema" >
+			<property name="displayName"><value>${ldap.attribute.displayName}</value></property>
+		    <property name="birthdate"><value>${ldap.attribute.birthdate}</value></property>
+		    <property name="birthdateFormat"><value>${ldap.attribute.birthdate.format}</value></property>
+			<property name="uid"><value>${ldap.attribute.uid}</value></property>
+			<property name="employeeId"><value>${ldap.attribute.employeeId}</value></property>
+			<property name="cn"><value>${ldap.attribute.cn}</value></property>
+			<property name="birthName"><value>${ldap.attribute.birthname}</value></property>
+			<property name="password"><value>${ldap.attribute.password}</value></property>
+			<property name="mail"><value>${ldap.attribute.mail}</value></property>
+			<property name="shadowLastChange"><value>${ldap.attribute.shadowLastChange}</value></property>
+	</bean>
+	
 
 </beans>

@@ -31,6 +31,18 @@
 		id="information" 
 		class="org.esupportail.activbo.services.remote.InformationImpl">
 			<property name="domainService" ref="domainService" />
+	</bean>
+	
+	<bean id="accountXFire"
+		parent="abstractXFire" >
+		<property name="serviceBean" ref="account" />
+		<property name="serviceClass" value="org.esupportail.activbo.services.remote.AccountInt" />
+	</bean>
+	
+	<bean 
+		id="account" 
+		class="org.esupportail.activbo.services.remote.Account">
+			<property name="domainService" ref="domainService" />
 	</bean> 
 
 	
