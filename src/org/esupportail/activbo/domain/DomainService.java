@@ -5,12 +5,15 @@
 package org.esupportail.activbo.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
+import org.esupportail.activfo.domain.beans.Account;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.commons.exceptions.ConfigException;
 import org.esupportail.commons.exceptions.UserNotFoundException;
 import org.esupportail.commons.services.application.Version;
+import org.esupportail.commons.services.ldap.LdapException;
 import org.esupportail.commons.web.beans.Paginator;
 
 /**
@@ -109,5 +112,14 @@ public interface DomainService extends Serializable {
 	boolean userCanDeleteAdmin(User user, User admin);
 	
 	String getChaine();
+	
+	public boolean validateAccount(String number,String birthName,Date birthDate) throws LdapException;
+	
+	public boolean updateLdapAttributes(final String currentPassword)throws LdapException;
+	//public String getDisplayName();
+	
+	public String getShadowLastChange();
+	
+	public String getId();
 
 }

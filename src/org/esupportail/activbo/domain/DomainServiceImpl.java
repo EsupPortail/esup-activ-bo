@@ -4,14 +4,31 @@
  */
 package org.esupportail.activbo.domain;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import org.esupportail.activbo.dao.DaoService;
+import org.esupportail.activbo.services.remote.Account;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
+
+import org.esupportail.activbo.domain.tools.StringTools;
+import org.esupportail.activbo.services.ldap.InvalidLdapAccountException;
+import org.esupportail.activbo.services.ldap.LdapSchema;
+import org.esupportail.activbo.services.ldap.NotUniqueLdapAccountException;
+import org.esupportail.activbo.services.ldap.WriteableLdapUserService;
 import org.esupportail.commons.exceptions.ConfigException;
 import org.esupportail.commons.exceptions.UserNotFoundException;
 import org.esupportail.commons.services.application.Version;
+import org.esupportail.commons.services.ldap.LdapException;
 import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.ldap.LdapUserService;
 import org.esupportail.commons.services.logging.Logger;
@@ -35,6 +52,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	/**
 	 * {@link DaoService}.
 	 */
+	
+	private Account account;
+	
 	private DaoService daoService;
 
 	/**
@@ -51,6 +71,14 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 * A logger.
 	 */
 	private final Logger logger = new LoggerImpl(getClass());
+	
+	
+	
+	
+	
+	private HashMap<String, String> hm = new HashMap<String, String>();
+	
+	private WriteableLdapUserService writeableLdapUserService;
 
 	/**
 	 * Bean constructor.
@@ -74,9 +102,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	
 	
-	public String getChaine(){
-		return "c'est bon, le webservice, ca marche";
-	}
+	
 	
 	//////////////////////////////////////////////////////////////
 	// User
@@ -271,5 +297,239 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public void setLdapUserService(final LdapUserService ldapUserService) {
 		this.ldapUserService = ldapUserService;
 	}
+	
+	public boolean validateAccount(String number,String birthName,Date birthDate) throws LdapException {
+
+		try {
+			
+			List<LdapUser> ldapUserList = this.ldapUserService.
+					getLdapUsersFromFilter("(supannEmpId="
+							+ number + ")");
+			
+			if (ldapUserList.size() > 1) {
+				throw new NotUniqueLdapAccountException(
+						"LDAP account with supannEmpId "
+								+ number + " not unique");
+			} else if (ldapUserList.size() == 0) {
+				return false;
+			}
+			
+
+			LdapUser ldapUser = ldapUserList.get(0); //recuperation de l'element LDAP correspondant au id 1102
+			
+						
+			if (logger.isDebugEnabled()) {
+				logger.debug("Validating account for : " + ldapUser);
+				logger.debug("Birthdate checking");
+			}
+			
+			/*
+			 * Birthdate checking
+			 */
+			
+			String ldapUserBirthdateStr = ldapUser.getAttribute(LdapSchema.getBirthdate());         //recuperation de la valeur de l'attribut up1Birthday de l'element LDAP
+			
+						
+			if (ldapUserBirthdateStr == null) {
+				String errmsg = "LDAP account with supannEmpId "
+						+ number + " has no birthdate";
+				logger.error(errmsg);
+				throw new InvalidLdapAccountException(errmsg);
+			}
+			
+			Date ldapUserBirthdate;
+
+			try {
+				SimpleDateFormat formatter = new SimpleDateFormat(LdapSchema.getBirthdateFormat());
+
+				/*
+				 * TimeZone must be the same in user interface and LDAP, UTC is
+				 * chosen
+				 */
+				TimeZone tz = TimeZone.getTimeZone("UTC");
+				formatter.setTimeZone(tz);
+
+				ldapUserBirthdate = formatter.parse(ldapUserBirthdateStr);
+			} catch (ParseException e) {
+				throw new InvalidLdapAccountException(e.getMessage());
+			}
+
+			if (birthDate.compareTo(ldapUserBirthdate) != 0) {
+				logger.info("Invalid birthdate (" + ldapUserBirthdate
+						+ ") for LDAP account with supannEmpId "
+						+ number);
+				return false;
+			}
+
+			/*
+			 * Patronymic name checking
+			 */
+			logger.debug("Patronymic name checking");
+
+			List<String> ldapUserBirthnameList = ldapUser
+					.getAttributes(LdapSchema.getBirthName());
+			if (ldapUserBirthnameList == null
+					|| ldapUserBirthnameList.size() == 0) {
+				throw new InvalidLdapAccountException(
+						"LDAP account with supannEmpId "
+								+ number
+								+ " has no patronymic name");
+			}
+
+			Iterator<String> i = ldapUserBirthnameList.iterator();
+			String sn;
+			boolean isInLdap = false;
+			while (i.hasNext()) {
+				sn = i.next();
+				System.out.println(sn);
+				if (StringTools.compareInsensitive(birthName, sn)) {
+					isInLdap = true;
+					break;
+				}
+			}
+
+			if (!isInLdap) {
+				logger.info("Invalid patronymic ("
+						+ ldapUserBirthnameList.toArray()
+						+ ") for LDAP account with supannEmpId "
+						+ number);
+				return false;
+			}
+
+			account.setHarpegeNumber(number);
+			account.setBirthName(birthName);
+			account.setBirthDate(birthDate);
+			
+			
+			account.setId(ldapUser.getId());
+			account.setDisplayName(ldapUser.getAttribute(LdapSchema.getDisplayName()));
+			
+
+			if (logger.isDebugEnabled()) {
+				logger.debug("Setting account mail : "
+						+ ldapUser.getAttribute(LdapSchema.getMail()));
+			}
+			account.setMail(ldapUser.getAttribute(LdapSchema.getMail()));
+			
+			if (logger.isDebugEnabled()) {
+				logger.debug("Setting account shadowLastChange : "
+						+ ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+			}
+			
+			account.setShadowLastChange(ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+			account.generateInitialPassword();
+
+			/* for security reasons */
+			/*account.setBirthName(null);
+			account.setBirthDate(null);
+			account.setHarpegeNumber(null);*/
+
+			return true;
+
+		} catch (LdapException e) {
+			logger.debug("Exception thrown by validateAccount() : "
+					+ e.getMessage());
+			throw e;
+		}
+	}
+	
+	
+	public boolean updateLdapAttributes(final String currentPassword) throws LdapException{
+
+		try {
+			
+			//authentification avec numid et mdpinitial
+			this.writeableLdapUserService.defineAuthenticatedContext(account
+					.getId(), account.getInitialPassword());
+			
+			if (logger.isTraceEnabled()) {
+				logger.trace("Mot de passe initial : "
+						+ account.getInitialPassword());
+			}
+			
+			
+			/* Writing of password in LDAP */
+			LdapUser ldapUser = this.ldapUserService.getLdapUser(account
+					.getId());
+			
+			ldapUser.getAttributes().clear();
+			
+			List<String> listPasswordAttr = new ArrayList<String>();
+			listPasswordAttr.add(currentPassword);
+			ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
+			
+			/* Writing of shadowLastChange in LDAP */
+			List<String> listShadowLastChangeAttr = new ArrayList<String>();
+			Calendar cal = Calendar.getInstance();
+			String shadowLastChange = Integer.toString((int) Math.floor(cal
+					.getTimeInMillis()
+					/ (1000 * 3600 * 24)));
+						
+			if (logger.isDebugEnabled()) {
+				logger.debug("Writing shadowLastChange in LDAP : "
+						+ shadowLastChange);
+			}
+
+			listShadowLastChangeAttr.add(shadowLastChange);
+			ldapUser.getAttributes().put(LdapSchema.getShadowLastChange(),listShadowLastChangeAttr);
+			
+			
+			/* Writing of displayName in LDAP */
+			List<String> listDisplayNameAttr = new ArrayList<String>();
+			listDisplayNameAttr.add(account.getDisplayName());
+			ldapUser.getAttributes().put(LdapSchema.getDisplayName(),
+					listDisplayNameAttr);
+			
+			
+			this.writeableLdapUserService.updateLdapUser(ldapUser);
+			
+			ldapUser.getAttributes().clear();
+
+			logger.info("Activation du compte : " + account.getId());
+
+			this.writeableLdapUserService.defineAnonymousContext();
+		} catch (LdapException e) {
+			logger.error(e.getMessage());
+			throw e;
+		}
+
+		return true;
+	}
+	
+	
+	public String getId(){
+		return account.getId();
+	}
+	
+	
+	public String getChaine(){
+		return account.getDisplayName();//"c'est bon, le webservice, ca marche";
+	}
+	
+	
+	public String getShadowLastChange(){
+		return account.getShadowLastChange();
+	}
+	
+	public WriteableLdapUserService getWriteableLdapUserService() {
+		return writeableLdapUserService;
+	}
+
+	public void setWriteableLdapUserService(
+			
+			WriteableLdapUserService writeableLdapUserService) {
+			this.writeableLdapUserService = writeableLdapUserService;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+	
+	
+	
 
 }

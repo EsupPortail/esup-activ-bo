@@ -136,6 +136,7 @@ public class SessionController extends AbstractDomainAwareBean {
 		// note: the session beans will be kept even when invalidating 
 		// the session so they have to be reset (by the exception controller).
 		// We invalidate the session however for the other attributes.
+		//
 		request.getSession().invalidate();
 		request.getSession(true);
 		// calling this method will reset all the beans of the application
