@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.esupportail.activbo.dao.DaoService;
-import org.esupportail.activbo.services.remote.Account;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
 
@@ -52,9 +51,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	/**
 	 * {@link DaoService}.
 	 */
-	
-	private Account account;
-	
+	private String idKey;
+	private String mailKey;
+	private String shadowLastChangeKey;
+	private String displayNameKey;
+		
 	private DaoService daoService;
 
 	/**
@@ -71,15 +72,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 * A logger.
 	 */
 	private final Logger logger = new LoggerImpl(getClass());
-	
-	
-	
-	
-	
-	private HashMap<String, String> hm = new HashMap<String, String>();
+		
+	private HashMap<String, String> accountDescr;
 	
 	private WriteableLdapUserService writeableLdapUserService;
 
+	private String initialPassword;
 	/**
 	 * Bean constructor.
 	 */
@@ -298,7 +296,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.ldapUserService = ldapUserService;
 	}
 	
-	public boolean validateAccount(String number,String birthName,Date birthDate) throws LdapException {
+	public HashMap<String,String> validateAccount(String number,String birthName,Date birthDate) throws LdapException {
 
 		try {
 			
@@ -311,7 +309,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 						"LDAP account with supannEmpId "
 								+ number + " not unique");
 			} else if (ldapUserList.size() == 0) {
-				return false;
+				return accountDescr;
 			}
 			
 
@@ -358,7 +356,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				logger.info("Invalid birthdate (" + ldapUserBirthdate
 						+ ") for LDAP account with supannEmpId "
 						+ number);
-				return false;
+				return accountDescr;
 			}
 
 			/*
@@ -393,38 +391,24 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 						+ ldapUserBirthnameList.toArray()
 						+ ") for LDAP account with supannEmpId "
 						+ number);
-				return false;
-			}
-
-			account.setHarpegeNumber(number);
-			account.setBirthName(birthName);
-			account.setBirthDate(birthDate);
-			
-			
-			account.setId(ldapUser.getId());
-			account.setDisplayName(ldapUser.getAttribute(LdapSchema.getDisplayName()));
-			
-
-			if (logger.isDebugEnabled()) {
-				logger.debug("Setting account mail : "
-						+ ldapUser.getAttribute(LdapSchema.getMail()));
-			}
-			account.setMail(ldapUser.getAttribute(LdapSchema.getMail()));
-			
-			if (logger.isDebugEnabled()) {
-				logger.debug("Setting account shadowLastChange : "
-						+ ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+				return accountDescr;
 			}
 			
-			account.setShadowLastChange(ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
-			account.generateInitialPassword();
-
-			/* for security reasons */
-			/*account.setBirthName(null);
-			account.setBirthDate(null);
-			account.setHarpegeNumber(null);*/
-
-			return true;
+			accountDescr=new HashMap<String,String>();
+			accountDescr.put(idKey, ldapUser.getId());
+			accountDescr.put(displayNameKey, ldapUser.getAttribute(LdapSchema.getDisplayName()));
+			accountDescr.put(mailKey, ldapUser.getAttribute(LdapSchema.getMail()));
+			accountDescr.put(shadowLastChangeKey, ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+			
+			//génération du password initial
+			initialPassword = "initialseed#";
+			SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy");
+			initialPassword += format.format(birthDate)+"#";
+			initialPassword += number+"#";
+			initialPassword += StringTools.cleanAllSpecialChar(birthName)+"#";
+			
+			//accountDescr.put("initialPassword", ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+			return accountDescr;
 
 		} catch (LdapException e) {
 			logger.debug("Exception thrown by validateAccount() : "
@@ -434,26 +418,25 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	
-	public boolean updateLdapAttributes(final String currentPassword) throws LdapException{
+	public boolean updateLdapAttributes(final String currentPassword,String id,String code) throws LdapException{
 
 		try {
 			
-			//authentification avec numid et mdpinitial
-			this.writeableLdapUserService.defineAuthenticatedContext(account
-					.getId(), account.getInitialPassword());
+			//si la correspondance code/id est présente dans la table de hashage alors...
 			
-			if (logger.isTraceEnabled()) {
+			//authentification avec numid et mdpinitial
+			this.writeableLdapUserService.defineAuthenticatedContext(id, initialPassword);
+			
+			/*if (logger.isTraceEnabled()) {
 				logger.trace("Mot de passe initial : "
 						+ account.getInitialPassword());
-			}
+			}*/
 			
 			
-			/* Writing of password in LDAP */
-			LdapUser ldapUser = this.ldapUserService.getLdapUser(account
-					.getId());
-			
+			LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
 			ldapUser.getAttributes().clear();
-			
+
+			/* Writing of password in LDAP */
 			List<String> listPasswordAttr = new ArrayList<String>();
 			listPasswordAttr.add(currentPassword);
 			ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
@@ -476,7 +459,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			/* Writing of displayName in LDAP */
 			List<String> listDisplayNameAttr = new ArrayList<String>();
-			listDisplayNameAttr.add(account.getDisplayName());
+			listDisplayNameAttr.add(accountDescr.get("diplayName"));
 			ldapUser.getAttributes().put(LdapSchema.getDisplayName(),
 					listDisplayNameAttr);
 			
@@ -485,9 +468,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			ldapUser.getAttributes().clear();
 
-			logger.info("Activation du compte : " + account.getId());
+			logger.info("Activation du compte : " + id);
 
 			this.writeableLdapUserService.defineAnonymousContext();
+		
 		} catch (LdapException e) {
 			logger.error(e.getMessage());
 			throw e;
@@ -496,20 +480,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return true;
 	}
 	
-	
-	public String getId(){
-		return account.getId();
-	}
-	
-	
-	public String getChaine(){
-		return account.getDisplayName();//"c'est bon, le webservice, ca marche";
-	}
-	
-	
-	public String getShadowLastChange(){
-		return account.getShadowLastChange();
-	}
 	
 	public WriteableLdapUserService getWriteableLdapUserService() {
 		return writeableLdapUserService;
@@ -521,15 +491,44 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			this.writeableLdapUserService = writeableLdapUserService;
 	}
 
-	public Account getAccount() {
-		return account;
+	
+	
+	public void updateDisplayName(String displayName){
+		
+		accountDescr.remove("displayName");
+		accountDescr.put("diplayName", displayName);
 	}
 
-	public void setAccount(Account account) {
-		this.account = account;
+	public String getIdKey() {
+		return idKey;
 	}
-	
-	
-	
+
+	public void setIdKey(String idKey) {
+		this.idKey = idKey;
+	}
+
+	public String getMailKey() {
+		return mailKey;
+	}
+
+	public void setMailKey(String mailKey) {
+		this.mailKey = mailKey;
+	}
+
+	public String getShadowLastChangeKey() {
+		return shadowLastChangeKey;
+	}
+
+	public void setShadowLastChangeKey(String shadowLastChangeKey) {
+		this.shadowLastChangeKey = shadowLastChangeKey;
+	}
+
+	public String getDisplayNameKey() {
+		return displayNameKey;
+	}
+
+	public void setDisplayNameKey(String displayNameKey) {
+		this.displayNameKey = displayNameKey;
+	}
 
 }

@@ -6,6 +6,7 @@ package org.esupportail.activbo.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -111,15 +112,13 @@ public interface DomainService extends Serializable {
 	 */
 	boolean userCanDeleteAdmin(User user, User admin);
 	
-	String getChaine();
+		
+	public HashMap<String,String> validateAccount(String number,String birthName,Date birthDate) throws LdapException;
 	
-	public boolean validateAccount(String number,String birthName,Date birthDate) throws LdapException;
+	public boolean updateLdapAttributes(final String currentPassword,String id,String code)throws LdapException;
 	
-	public boolean updateLdapAttributes(final String currentPassword)throws LdapException;
+	public void updateDisplayName(String displayName);
 	//public String getDisplayName();
 	
-	public String getShadowLastChange();
 	
-	public String getId();
-
 }
