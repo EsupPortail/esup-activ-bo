@@ -14,7 +14,11 @@
 		<property name="ldapUserService" ref="ldapUserService" /> 
 		<property name="writeableLdapUserService" ref="writeableLdapUserService" />
 		<property name="displayNameLdapAttribute" value="displayName" />
-		<property name="account" ref="account" />
+		<property name="idKey" value="${hashmap.key.id}"/>
+		<property name="mailKey" value="${hashmap.key.mail}"/>
+		<property name="shadowLastChangeKey" value="${hashmap.key.shadowlastchange}"/>
+		<property name="displayNameKey" value="${hashmap.key.displayname}"/>
+		
 	</bean>
 
 </beans>
