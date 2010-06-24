@@ -37,10 +37,10 @@
 				The LDAP template used to access the LDAP directory.
 			</description>
 		</property>
-		<property name="dnSubPath" value="ou=people">
+		<property name="dnSubPath" value="${ldap.dn.people}">
 			<description>The DN sub path.</description>
 		</property>
-		<property name="idAttribute" value="uid">
+		<property name="idAttribute" value="${ldap.attribute.uid}">
 			<description>
 				The LDAP attribute that stores the unique identifier of
 				users in the LDAP directory (optional, "uid" by
@@ -60,7 +60,7 @@
 				<value>${ldap.attribute.shadowLastChange}</value>
 			</list>
 		</property>
-		<property name="searchAttribute" value="cn">
+		<property name="searchAttribute" value="${ldap.attribute.cn}">
 			<description>The LDAP attribute to search for.</description>
 		</property>
 		<property name="searchDisplayedAttributes">
@@ -114,7 +114,7 @@
 			http://ldaptemplate.sourceforge.net.
 		</description>
 		<property name="url"
-			value="ldap://ldap-test.univ-paris1.fr:389">
+			value="${ldap.host}">
 			<description>The LDAP URL of the directory.</description>
 		</property>
 		<property name="userName" value="${ldap.username}">
@@ -215,7 +215,7 @@
 			http://ldaptemplate.sourceforge.net.
 		</description>
 		<property name="url"
-			value="ldap://ldap-test.univ-paris1.fr:389">
+			value="${ldap.host}">
 			<description>The LDAP URL of the directory.</description>
 		</property>
 		<property name="userName" value="">
