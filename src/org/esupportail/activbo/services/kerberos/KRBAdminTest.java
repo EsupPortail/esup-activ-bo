@@ -1,11 +1,13 @@
 package org.esupportail.activbo.services.kerberos;
 
+import org.springframework.beans.factory.InitializingBean;
+
 
 /**
  * @author aanli
  *
  */
-public class KRBAdminTest implements KRBAdmin {
+public class KRBAdminTest implements KRBAdmin,InitializingBean {
 	
 	
 	/** 
@@ -33,6 +35,12 @@ public class KRBAdminTest implements KRBAdmin {
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#exists(String)
 	 */
-	public boolean exists(String principal) {return true;}	
+	public boolean exists(String principal) {return true;}
+
+
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}	
 
 }

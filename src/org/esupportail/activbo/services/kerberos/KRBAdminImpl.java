@@ -6,13 +6,14 @@ import java.io.PrintWriter;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
 import org.esupportail.commons.utils.Assert;
+import org.springframework.beans.factory.InitializingBean;
 
 
 /**
  * @author aanli
  *
  */
-public class KRBAdminImpl implements KRBAdmin{
+public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	
 	/**
 	 * Log4j logger.
