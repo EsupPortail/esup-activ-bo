@@ -33,6 +33,7 @@
 	<import resource="export/export.xml" />
 	<import resource="i18n/i18n.xml" />
 	<import resource="ldap/ldap.xml" />
+	<import resource="kerberos/kerberos.xml" />
 	<import resource="misc/abstractBeans.xml" />
 	<import resource="misc/application.xml" />
 	<import resource="smtp/smtp.xml" />
