@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 
 import org.esupportail.activbo.dao.DaoService;
@@ -20,6 +21,8 @@ import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
 
 import org.esupportail.activbo.domain.tools.StringTools;
+import org.esupportail.activbo.services.kerberos.KRBAdmin;
+import org.esupportail.activbo.services.kerberos.KRBAdminTest;
 import org.esupportail.activbo.services.ldap.InvalidLdapAccountException;
 import org.esupportail.activbo.services.ldap.LdapSchema;
 import org.esupportail.activbo.services.ldap.NotUniqueLdapAccountException;
@@ -51,11 +54,38 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	/**
 	 * {@link DaoService}.
 	 */
-	private String idKey;
-	private String mailKey;
-	private String shadowLastChangeKey;
-	private String displayNameKey;
+	private String accountIdKey;
+	private String accountMailKey;
+	private String accountSLCKey;
+	private String accountDNKey;
+	
+	
+	private String accessCodeKey;
+	private String accessDateKey;
+	
+	private String formatDateConv;
+	
+	
+	public String code;
+	
+	
+	private static HashMap<String,HashMap<String,String>> access=new HashMap<String,HashMap<String,String>>();
 		
+	
+	/**
+	 * kerberos.ldap.method
+	 * kerberos.host
+	 */
+	private String krbLdapMethod,krbHost;
+	
+	
+	/**
+	 * {@link KerberosAdmin}
+	 */
+	private KRBAdminTest kerberosAdmin;
+	
+	
+	
 	private DaoService daoService;
 
 	/**
@@ -67,6 +97,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 * The LDAP attribute that contains the display name. 
 	 */
 	private String displayNameLdapAttribute;
+	
+	
+	private String mailPerso;
 	
 	/**
 	 * A logger.
@@ -326,8 +359,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			 */
 			
 			String ldapUserBirthdateStr = ldapUser.getAttribute(LdapSchema.getBirthdate());         //recuperation de la valeur de l'attribut up1Birthday de l'element LDAP
-			
-						
+									
 			if (ldapUserBirthdateStr == null) {
 				String errmsg = "LDAP account with supannEmpId "
 						+ number + " has no birthdate";
@@ -338,6 +370,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			Date ldapUserBirthdate;
 
 			try {
+				
 				SimpleDateFormat formatter = new SimpleDateFormat(LdapSchema.getBirthdateFormat());
 
 				/*
@@ -356,6 +389,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				logger.info("Invalid birthdate (" + ldapUserBirthdate
 						+ ") for LDAP account with supannEmpId "
 						+ number);
+				System.out.println("Mauvaise DATE");
 				return accountDescr;
 			}
 
@@ -395,10 +429,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			}
 			
 			accountDescr=new HashMap<String,String>();
-			accountDescr.put(idKey, ldapUser.getId());
-			accountDescr.put(displayNameKey, ldapUser.getAttribute(LdapSchema.getDisplayName()));
-			accountDescr.put(mailKey, ldapUser.getAttribute(LdapSchema.getMail()));
-			accountDescr.put(shadowLastChangeKey, ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+			accountDescr.put(accountIdKey, ldapUser.getId());
+			accountDescr.put(accountDNKey, ldapUser.getAttribute(LdapSchema.getDisplayName()));
+			accountDescr.put(accountMailKey, ldapUser.getAttribute(LdapSchema.getMail()));
+			accountDescr.put(accountSLCKey, ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
 			
 			//génération du password initial
 			initialPassword = "initialseed#";
@@ -408,6 +442,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			initialPassword += StringTools.cleanAllSpecialChar(birthName)+"#";
 			
 			//accountDescr.put("initialPassword", ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+			
 			return accountDescr;
 
 		} catch (LdapException e) {
@@ -418,59 +453,126 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	
+	
+	public void setMailPerso(String id,String mailPerso){
+		
+		try{
+			this.mailPerso=mailPerso;
+			
+			//Génération du code
+			//code=this.genererCode();
+			code="88888888";
+			
+			System.out.println("ENVOI DU CODE PAR MAIL");
+			
+			//insertion dans un HashMap qui établit une correspondance entre l'id et une hashmap contenant code + date d'insertion
+			HashMap<String,String> list= new HashMap<String,String>();
+			list.put(accessCodeKey,code);
+			Date date=new Date();
+			list.put(accessDateKey,this.dateToString(date));
+			access.put(id, list);
+		
+		}catch(Exception e){
+			
+		}
+	}
+	
+	public int validateCode(String id,String code){
+		try{
+			
+			//Si le temps ecoulé est de moins de deux minutes
+			if (verifyTime(id)){
+				if (verifyCode(id,code)){
+					return GOOD;
+				}else
+					return BADCODE;
+			}
+		
+		}catch(ParseException e){
+			
+		}
+	
+		return TIMEOUT;
+	}
+	
+	
+	
 	public boolean updateLdapAttributes(final String currentPassword,String id,String code) throws LdapException{
 
 		try {
 			
 			//si la correspondance code/id est présente dans la table de hashage alors...
+			if (verifyCode(id,code)){
+				
+				//authentification avec numid et mdpinitial
+				this.writeableLdapUserService.defineAuthenticatedContext(id, initialPassword);
+				
+				/*if (logger.isTraceEnabled()) {
+					logger.trace("Mot de passe initial : "
+							+ account.getInitialPassword());
+				}*/
+				
+				
+				LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
+				ldapUser.getAttributes().clear();
+	
+				/* Writing of password in LDAP */
+				List<String> listPasswordAttr = new ArrayList<String>();
+	
+				//Anli redirection du bind LDAP vers Kerberos
+				String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
+				System.out.println("KOUKOU3"+redirectKer);
+				
+				logger.debug(redirectKer);
+				
+				listPasswordAttr.add(redirectKer);
+	
+				//listPasswordAttr.add(currentPassword);
+				ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
+				
+				/* Writing of shadowLastChange in LDAP */
+				List<String> listShadowLastChangeAttr = new ArrayList<String>();
+				Calendar cal = Calendar.getInstance();
+				String shadowLastChange = Integer.toString((int) Math.floor(cal
+						.getTimeInMillis()
+						/ (1000 * 3600 * 24)));
+							
+				if (logger.isDebugEnabled()) {
+					logger.debug("Writing shadowLastChange in LDAP : "
+							+ shadowLastChange);
+				}
+	
+				listShadowLastChangeAttr.add(shadowLastChange);
+				ldapUser.getAttributes().put(LdapSchema.getShadowLastChange(),listShadowLastChangeAttr);
+				
+				
+				/* Writing of displayName in LDAP */
+				List<String> listDisplayNameAttr = new ArrayList<String>();
+				listDisplayNameAttr.add(accountDescr.get("diplayName"));
+				ldapUser.getAttributes().put(LdapSchema.getDisplayName(),
+						listDisplayNameAttr);
+				
+				
+				//Ajout ou modification du mot de passe dans kerberos
+				kerberosAdmin.add(id, currentPassword);
+				System.out.println(kerberosAdmin.add(id, currentPassword));
+				/*if(state==KRBAdmin.ALREADY_EXIST)
+					state=kerberosAdmin.changePasswd(id, currentPassword);*/
+	
+				
+				
+				this.writeableLdapUserService.updateLdapUser(ldapUser);
+				
+				ldapUser.getAttributes().clear();
+	
+				logger.info("Activation du compte : " + id);
+	
+				this.writeableLdapUserService.defineAnonymousContext();
 			
-			//authentification avec numid et mdpinitial
-			this.writeableLdapUserService.defineAuthenticatedContext(id, initialPassword);
-			
-			/*if (logger.isTraceEnabled()) {
-				logger.trace("Mot de passe initial : "
-						+ account.getInitialPassword());
-			}*/
-			
-			
-			LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
-			ldapUser.getAttributes().clear();
-
-			/* Writing of password in LDAP */
-			List<String> listPasswordAttr = new ArrayList<String>();
-			listPasswordAttr.add(currentPassword);
-			ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
-			
-			/* Writing of shadowLastChange in LDAP */
-			List<String> listShadowLastChangeAttr = new ArrayList<String>();
-			Calendar cal = Calendar.getInstance();
-			String shadowLastChange = Integer.toString((int) Math.floor(cal
-					.getTimeInMillis()
-					/ (1000 * 3600 * 24)));
-						
-			if (logger.isDebugEnabled()) {
-				logger.debug("Writing shadowLastChange in LDAP : "
-						+ shadowLastChange);
 			}
-
-			listShadowLastChangeAttr.add(shadowLastChange);
-			ldapUser.getAttributes().put(LdapSchema.getShadowLastChange(),listShadowLastChangeAttr);
-			
-			
-			/* Writing of displayName in LDAP */
-			List<String> listDisplayNameAttr = new ArrayList<String>();
-			listDisplayNameAttr.add(accountDescr.get("diplayName"));
-			ldapUser.getAttributes().put(LdapSchema.getDisplayName(),
-					listDisplayNameAttr);
-			
-			
-			this.writeableLdapUserService.updateLdapUser(ldapUser);
-			
-			ldapUser.getAttributes().clear();
-
-			logger.info("Activation du compte : " + id);
-
-			this.writeableLdapUserService.defineAnonymousContext();
+			else{
+				//Throw nouvelle exception correspondant au code
+			}
 		
 		} catch (LdapException e) {
 			logger.error(e.getMessage());
@@ -493,42 +595,159 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 	
 	
-	public void updateDisplayName(String displayName){
+	public void updateDisplayName(String displayName,String id, String code){
+		if (verifyCode(id,code)){
+			accountDescr.remove("displayName");
+			accountDescr.put("diplayName", displayName);
+		}
+		else{
+			//Throw nouvelle exception correspondant au code
+		}
+	}
+
+	
+	
+	
+	/**
+	 * @param krbLdapMethod
+	 */
+	public final void setKrbLdapMethod(String krbLdapMethod) {
+		this.krbLdapMethod = krbLdapMethod;
+	}
+
+	/**
+	 * @param krbHost
+	 */
+	public final void setKrbHost(String krbHost) {
+		this.krbHost = krbHost;
+	}
+
+	/**
+	 * @param securityCode
+	 */
+/*	public final void setSecurityCode(int securityCode) {
+		this.securityCode = securityCode;
+	}*/
+	
+	
+	/**
+	 * @param kerberosAdmin
+	 */
+	public final void setKerberosAdmin(KRBAdminTest kerberosAdmin) {
+		this.kerberosAdmin = kerberosAdmin;
+	}
+	
+	
+	private String genererCode(){
 		
-		accountDescr.remove("displayName");
-		accountDescr.put("diplayName", displayName);
+		Random r = new Random();
+		String code= "";
+		char [] tableauChiffres = {'0','1','2','3','4','5','6','7','8','9'};
+		
+		for (int i = 0; i < 8; i++){
+		    int indiceChiffre = r.nextInt(tableauChiffres.length);
+			// retourne le chiffre correspondant à cette indice
+			char chiffre = tableauChiffres[indiceChiffre];
+			code=code+chiffre;
+		}
+		return code;
+	}
+	
+	private String dateToString(Date sDate) throws ParseException{
+        SimpleDateFormat sdf = new SimpleDateFormat(formatDateConv);
+        return sdf.format(sDate);
+    }
+    
+	private Date stringToDate(String sDate) throws ParseException{
+        SimpleDateFormat sdf = new SimpleDateFormat(formatDateConv);
+        return sdf.parse(sDate);
+    }
+    
+    private boolean verifyCode(String id,String code){
+    	//Recuperation du hashmap correspondant à l'id de l'utilisateur
+		HashMap <String,String>result=access.get(id);
+		if (result!=null){
+			if (code.equalsIgnoreCase(result.get(accessCodeKey))){
+				return true;
+			}
+		}
+		return false;
+    }
+    
+    private boolean verifyTime(String id)throws ParseException{
+    	//Recuperation du hashmap correspondant à l'id de l'utilisateur
+		HashMap <String,String>result=access.get(id);
+		Date date=stringToDate(dateToString(new Date()));
+		Long tempsEcoule=date.getTime()-this.stringToDate(result.get(accessDateKey)).getTime();
+		if (tempsEcoule<=480000){
+			return true;
+		}
+		return false;
+    }
+    
+    
+
+
+	public String getAccountIdKey() {
+		return accountIdKey;
 	}
 
-	public String getIdKey() {
-		return idKey;
+	public void setAccountIdKey(String accountIdKey) {
+		this.accountIdKey = accountIdKey;
 	}
 
-	public void setIdKey(String idKey) {
-		this.idKey = idKey;
+	public String getAccountMailKey() {
+		return accountMailKey;
 	}
 
-	public String getMailKey() {
-		return mailKey;
+	public void setAccountMailKey(String accountMailKey) {
+		this.accountMailKey = accountMailKey;
 	}
 
-	public void setMailKey(String mailKey) {
-		this.mailKey = mailKey;
+	public String getAccountSLCKey() {
+		return accountSLCKey;
 	}
 
-	public String getShadowLastChangeKey() {
-		return shadowLastChangeKey;
+	public void setAccountSLCKey(String accountSLCKey) {
+		this.accountSLCKey = accountSLCKey;
 	}
 
-	public void setShadowLastChangeKey(String shadowLastChangeKey) {
-		this.shadowLastChangeKey = shadowLastChangeKey;
+	public String getAccountDNKey() {
+		return accountDNKey;
 	}
 
-	public String getDisplayNameKey() {
-		return displayNameKey;
+	public void setAccountDNKey(String accountDNKey) {
+		this.accountDNKey = accountDNKey;
 	}
 
-	public void setDisplayNameKey(String displayNameKey) {
-		this.displayNameKey = displayNameKey;
+	
+	public String getAccessCodeKey() {
+		return accessCodeKey;
 	}
+
+	public void setAccessCodeKey(String accessCodeKey) {
+		this.accessCodeKey = accessCodeKey;
+	}
+
+	public String getAccessDateKey() {
+		return accessDateKey;
+	}
+
+	public void setAccessDateKey(String accessDateKey) {
+		this.accessDateKey = accessDateKey;
+	}
+
+	public String getFormatDateConv() {
+		return formatDateConv;
+	}
+
+	public void setFormatDateConv(String formatDateConv) {
+		this.formatDateConv = formatDateConv;
+	}
+	
+
+
+
+
 
 }
