@@ -18,23 +18,25 @@ public interface KRBAdmin {
 	/**
 	 * @param principal
 	 * @param passwd
-	 * @return ALREADY_EXIST, ADDED, ERROR
+	 * @return ADDED
 	 */
-	public int add(String principal,String passwd);
+	public int add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException;
 	
 	
 	/**
 	 * @param principal
-	 * @return DELETED, ERROR
+	 * @return DELETED
+	 * @throws KRBException 
 	 */
-	public int del(final String principal);
+	public int del(final String principal) throws KRBException;
 	
 	/**
 	 * @param principal
 	 * @param passwd
-	 * @return CHANGED, ILLEGAL_ARGUMENT, ERROR
+	 * @return CHANGED
+	 * @throws KRBException 
 	 */
-	public int changePasswd(String principal,String passwd);
+	public int changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException;
 	
 	
 	/**
@@ -42,14 +44,16 @@ public interface KRBAdmin {
 	 * @param principal
 	 * @param oldPasswd
 	 * @param newPasswd
-	 * @return NOT_CHANGED, CHANGED, ERROR
+	 * @return NOT_CHANGED, CHANGED
+	 * @throws KRBException 
 	 */
-	public int changePasswd(String principal, String oldPasswd, String newPasswd);
+	public int changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException;
 			
 	/**
 	 * @param principal
 	 * @return true if principal exists
+	 * @throws KRBException 
 	 */
-	public boolean exists(String principal) ;	
+	public boolean exists(String principal) throws KRBException ;	
 
 }
