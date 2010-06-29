@@ -22,6 +22,11 @@ import org.esupportail.commons.web.beans.Paginator;
  */
 public interface DomainService extends Serializable {
 
+	public final static int TIMEOUT=0,
+	BADCODE=1,
+	GOOD=2;
+	
+	
 	//////////////////////////////////////////////////////////////
 	// User
 	//////////////////////////////////////////////////////////////
@@ -117,7 +122,11 @@ public interface DomainService extends Serializable {
 	
 	public boolean updateLdapAttributes(final String currentPassword,String id,String code)throws LdapException;
 	
-	public void updateDisplayName(String displayName);
+	public void updateDisplayName(String displayName,String id, String code);
+	
+	public void setMailPerso(String id,String mailPerso);
+	
+	public int validateCode(String id,String code);
 	//public String getDisplayName();
 	
 	
