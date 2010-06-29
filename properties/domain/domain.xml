@@ -14,10 +14,23 @@
 		<property name="ldapUserService" ref="ldapUserService" /> 
 		<property name="writeableLdapUserService" ref="writeableLdapUserService" />
 		<property name="displayNameLdapAttribute" value="displayName" />
-		<property name="idKey" value="${hashmap.key.id}"/>
-		<property name="mailKey" value="${hashmap.key.mail}"/>
-		<property name="shadowLastChangeKey" value="${hashmap.key.shadowlastchange}"/>
-		<property name="displayNameKey" value="${hashmap.key.displayname}"/>
+		
+		<property name="accountIdKey" value="${account.key.id}"/>
+		<property name="accountMailKey" value="${account.key.mail}"/>
+		<property name="accountSLCKey" value="${account.key.shadowlastchange}"/>
+		<property name="accountDNKey" value="${account.key.displayname}"/>
+		
+		<property name="accessCodeKey" value="${access.key.code}"/>
+		<property name="accessDateKey" value="${access.key.date}"/>
+		
+		<property name="formatDateConv" value="${formatdate.conversion}"/>
+		
+		<property name="krbLdapMethod" value="${kerberos.ldap.method}" />
+		<property name="krbHost" value="${kerberos.host}" />
+		
+		<property name="kerberosAdmin" ref="KRBAdminService" />
+		
+		
 		
 	</bean>
 
