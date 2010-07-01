@@ -218,12 +218,12 @@
 			value="${ldap.host}">
 			<description>The LDAP URL of the directory.</description>
 		</property>
-		<property name="userName" value="">
+		<property name="userName" value="${ldap.username}">
 			<description>
 				The dn used to bind to the LDAP directory.
 			</description>
 		</property>
-		<property name="password" value="">
+		<property name="password" value="${ldap.password}">
 			<description>
 				The password used to bind to the LDAP directory.
 			</description>
@@ -264,6 +264,8 @@
 			<property name="password"><value>${ldap.attribute.password}</value></property>
 			<property name="mail"><value>${ldap.attribute.mail}</value></property>
 			<property name="shadowLastChange"><value>${ldap.attribute.shadowLastChange}</value></property>
+			<property name="usernameAdmin"><value>${ldap.username}</value></property>
+			<property name="passwordAdmin"><value>${ldap.password}</value></property>			
 	</bean>
 	
 
