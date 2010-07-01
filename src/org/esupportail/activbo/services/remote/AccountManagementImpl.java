@@ -1,6 +1,7 @@
 package org.esupportail.activbo.services.remote;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.esupportail.activbo.domain.DomainService;
 import org.esupportail.commons.services.ldap.LdapException;
@@ -15,13 +16,13 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		super();
 	}
 
-	public HashMap<String,String> validAccount(String number,String birthName,Date birthDate)throws LdapException{
-		return domainService.validateAccount(number,birthName,birthDate);
+	public HashMap<String,String> validateAccount(String number,String birthName,Date birthDate,List<String>attrPersoInfo) throws LdapException{
+		return domainService.validateAccount(number,birthName,birthDate,attrPersoInfo);
 	}
 	
 	
-	public boolean updateLdap(final String currentPassword,String id,String code)throws LdapException{
-		return domainService.updateLdapAttributes(currentPassword,id,code);
+	public boolean setPassword(final String currentPassword,String id,String code)throws LdapException{
+		return domainService.setPassword(currentPassword,id,code);
 		
 	}
 	
