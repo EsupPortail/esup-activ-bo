@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 
+import javax.mail.internet.InternetAddress;
+
 import org.esupportail.activbo.dao.DaoService;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
@@ -35,6 +37,7 @@ import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.ldap.LdapUserService;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
+import org.esupportail.commons.services.smtp.AsynchronousSmtpServiceImpl;
 import org.esupportail.commons.utils.Assert;
 import org.esupportail.commons.web.beans.Paginator;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,6 +68,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	private String formatDateConv;
 	
+	private AsynchronousSmtpServiceImpl smtpService;
 	
 	public String code;
 	
@@ -329,7 +333,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.ldapUserService = ldapUserService;
 	}
 	
-	public HashMap<String,String> validateAccount(String number,String birthName,Date birthDate) throws LdapException {
+	public HashMap<String,String> validateAccount(String number,String birthName,Date birthDate,List<String>attrPersoInfo) throws LdapException{
 
 		try {
 			
@@ -423,16 +427,23 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			if (!isInLdap) {
 				logger.info("Invalid patronymic ("
 						+ ldapUserBirthnameList.toArray()
-						+ ") for LDAP account with supannEmpId "
+						+ ") for LDAP account with supannEmpId"
 						+ number);
 				return accountDescr;
 			}
 			
 			accountDescr=new HashMap<String,String>();
 			accountDescr.put(accountIdKey, ldapUser.getId());
-			accountDescr.put(accountDNKey, ldapUser.getAttribute(LdapSchema.getDisplayName()));
+			//accountDescr.put(accountDNKey, ldapUser.getAttribute(LdapSchema.getDisplayName()));
 			accountDescr.put(accountMailKey, ldapUser.getAttribute(LdapSchema.getMail()));
 			accountDescr.put(accountSLCKey, ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+			
+			for (int j=0;j<attrPersoInfo.size();j++){
+				accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
+				System.out.println("RECUPERATION");
+				System.out.println(ldapUser.getAttribute(attrPersoInfo.get(j)));
+			}
+			
 			
 			//génération du password initial
 			initialPassword = "initialseed#";
@@ -458,12 +469,15 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		try{
 			this.mailPerso=mailPerso;
+			//InternetAddress mail=new InternetAddress(mailPerso);
 			
 			//Génération du code
 			//code=this.genererCode();
 			code="88888888";
 			
 			System.out.println("ENVOI DU CODE PAR MAIL");
+			//smtpService.send(mail,"Code activation de compte","","Votre code est"+code); 
+			System.out.println("ENVOI DU MAIL FAIT");
 			
 			//insertion dans un HashMap qui établit une correspondance entre l'id et une hashmap contenant code + date d'insertion
 			HashMap<String,String> list= new HashMap<String,String>();
@@ -497,7 +511,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	
 	
-	public boolean updateLdapAttributes(final String currentPassword,String id,String code) throws LdapException{
+	public boolean setPassword(final String currentPassword,String id,String code) throws LdapException{
 
 		try {
 			
@@ -518,10 +532,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 				/* Writing of password in LDAP */
 				List<String> listPasswordAttr = new ArrayList<String>();
-	
+				
+				//
 				//Anli redirection du bind LDAP vers Kerberos
 				String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
-				System.out.println("KOUKOU3"+redirectKer);
+				
 				
 				logger.debug(redirectKer);
 				
@@ -677,6 +692,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     private boolean verifyTime(String id)throws ParseException{
     	//Recuperation du hashmap correspondant à l'id de l'utilisateur
 		HashMap <String,String>result=access.get(id);
+		
+		//tester null
 		Date date=stringToDate(dateToString(new Date()));
 		Long tempsEcoule=date.getTime()-this.stringToDate(result.get(accessDateKey)).getTime();
 		if (tempsEcoule<=480000){
@@ -743,6 +760,14 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 	public void setFormatDateConv(String formatDateConv) {
 		this.formatDateConv = formatDateConv;
+	}
+
+	public AsynchronousSmtpServiceImpl getSmtpService() {
+		return smtpService;
+	}
+
+	public void setSmtpService(AsynchronousSmtpServiceImpl smtpService) {
+		this.smtpService = smtpService;
 	}
 	
 
