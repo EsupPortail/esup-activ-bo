@@ -72,6 +72,12 @@ public final class LdapSchema implements InitializingBean{
 	 * 
 	 */
 	protected static String mail;
+	
+	
+	protected static String usernameAdmin;
+	
+	
+	protected static String passwordAdmin;
 
 
 	/**
@@ -199,6 +205,14 @@ public final class LdapSchema implements InitializingBean{
 		LdapSchema.displayName = displayName;
 	}
 
+	public static String getUsernameAdmin() {
+		return usernameAdmin;
+	}
+
+	public void setUsernameAdmin(String usernameAdmin) {
+		LdapSchema.usernameAdmin = usernameAdmin;
+	}
+
 	public static String getPassword() {
 		return password;
 	}
@@ -221,6 +235,14 @@ public final class LdapSchema implements InitializingBean{
 
 	public void setMail(String mail) {
 		LdapSchema.mail = mail;
+	}
+
+	public static String getPasswordAdmin() {
+		return passwordAdmin;
+	}
+
+	public void setPasswordAdmin(String passwordAdmin) {
+		LdapSchema.passwordAdmin = passwordAdmin;
 	}
 
 }
