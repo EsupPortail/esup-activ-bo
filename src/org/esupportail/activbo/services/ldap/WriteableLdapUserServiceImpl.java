@@ -201,7 +201,7 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 		contextSource.setPassword(password);
 	}
 	
-	public void defineAuthenticatedContext(String userId, String password) throws LdapException {
+	public void defineAuthenticatedContext(String username, String password) throws LdapException {
 
 //		try {
 //			contextSource.close();
@@ -210,15 +210,16 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 //			throw new LdapConnectionException("Unable to close context");
 //		}
 		
-		DistinguishedName ldapBindUserDn = new DistinguishedName(this.dnAuth);
+		/*DistinguishedName ldapBindUserDn = new DistinguishedName(this.dnAuth);
+		System.out.println(this.dnAuth);
 		
 		ldapBindUserDn.add(this.idAuth, userId);
 		
-		System.out.println("lllllllllllllll"+ldapBindUserDn);
+		System.out.println("lllllllllllllll"+ldapBindUserDn);*/
 		/* TODO remove password from logging */
-		logger.debug("Binding to LDAP with DN : "+ldapBindUserDn+" pass : "+password);
-		
-		contextSource.setUserName(ldapBindUserDn.encode());
+		/*logger.debug("Binding to LDAP with DN : "+ldapBindUserDn+" pass : "+password);
+		*/
+		contextSource.setUserName(username);
 		contextSource.setPassword(password);
 		/* TODO is next line usefull ? */
 //		contextSource.getReadWriteContext();
