@@ -21,8 +21,8 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	}
 	
 	
-	public boolean setPassword(final String currentPassword,String id,String code)throws LdapException{
-		return domainService.setPassword(currentPassword,id,code);
+	public boolean setPassword(String id,String code,final String currentPassword)throws LdapException{
+		return domainService.setPassword(id,code,currentPassword);
 		
 	}
 	
