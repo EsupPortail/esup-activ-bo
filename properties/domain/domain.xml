@@ -30,8 +30,20 @@
 		
 		<property name="kerberosAdmin" ref="KRBAdminService" />
 		
+		<property name="clean" ref="cleaningHashCode" />
 		
+		<property name="codeDelay" value="${code.delay}" />
 		
+		<property name="access" ref="hashCode"/>
+			
 	</bean>
+		
+	<bean
+		id="hashCode"
+		class="org.esupportail.activbo.domain.beans.HashCode"
+		
+		>
+	</bean>
+	
 
 </beans>
