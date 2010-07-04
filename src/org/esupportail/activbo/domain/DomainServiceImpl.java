@@ -70,6 +70,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	private int codeDelay;
 	
+	private String ldapUsernameAdmin;
+	
+	private String ldapPasswordAdmin;
+	
 	private String accessCodeKey;
 	private String accessDateKey;
 	
@@ -529,7 +533,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			if (verifyCode(id,code)){
 				
 				//authentification avec numid et mdpinitial
-				this.writeableLdapUserService.defineAuthenticatedContext("cn=activ,ou=admin", "3$up@ct1v");
+				this.writeableLdapUserService.defineAuthenticatedContext(this.ldapUsernameAdmin, ldapPasswordAdmin);
 				
 				/*if (logger.isTraceEnabled()) {
 					logger.trace("Mot de passe initial : "
@@ -815,6 +819,22 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 	public void setAccess(HashCode access) {
 		this.access = access;
+	}
+
+	public String getLdapUsernameAdmin() {
+		return ldapUsernameAdmin;
+	}
+
+	public void setLdapUsernameAdmin(String ldapUsernameAdmin) {
+		this.ldapUsernameAdmin = ldapUsernameAdmin;
+	}
+
+	public String getLdapPasswordAdmin() {
+		return ldapPasswordAdmin;
+	}
+
+	public void setLdapPasswordAdmin(String ldapPasswordAdmin) {
+		this.ldapPasswordAdmin = ldapPasswordAdmin;
 	}
 
 
