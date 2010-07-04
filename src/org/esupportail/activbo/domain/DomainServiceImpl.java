@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +21,8 @@ import java.util.TimeZone;
 import javax.mail.internet.InternetAddress;
 
 import org.esupportail.activbo.dao.DaoService;
+import org.esupportail.activbo.domain.tools.CleaningHashCode;
+import org.esupportail.activbo.domain.beans.HashCode;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
 
@@ -42,6 +46,8 @@ import org.esupportail.commons.utils.Assert;
 import org.esupportail.commons.web.beans.Paginator;
 import org.springframework.beans.factory.InitializingBean;
 
+
+
 /**
  * The basic implementation of DomainService.
  * 
@@ -62,6 +68,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private String accountSLCKey;
 	private String accountDNKey;
 	
+	private int codeDelay;
 	
 	private String accessCodeKey;
 	private String accessDateKey;
@@ -73,9 +80,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public String code;
 	
 	
-	private static HashMap<String,HashMap<String,String>> access=new HashMap<String,HashMap<String,String>>();
+	//private static HashMap<String,HashMap<String,String>> access=new HashMap<String,HashMap<String,String>>();
 		
-	
+	private HashCode access;//=new HashCode();
 	/**
 	 * kerberos.ldap.method
 	 * kerberos.host
@@ -115,10 +122,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private WriteableLdapUserService writeableLdapUserService;
 
 	private String initialPassword;
+	
+	private CleaningHashCode clean;
 	/**
 	 * Bean constructor.
 	 */
 	public DomainServiceImpl() {
+		
 		super();
 	}
 
@@ -126,6 +136,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
+		//clean.putHashCode(access);
+		//lancement du thread de nettoyage de la table de hashage
+		clean.start();
+		
+		
 		Assert.notNull(this.daoService, 
 				"property daoService of class " + this.getClass().getName() + " can not be null");
 		Assert.notNull(this.ldapUserService, 
@@ -432,6 +447,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				return accountDescr;
 			}
 			
+			
 			accountDescr=new HashMap<String,String>();
 			accountDescr.put(accountIdKey, ldapUser.getId());
 			//accountDescr.put(accountDNKey, ldapUser.getAttribute(LdapSchema.getDisplayName()));
@@ -440,19 +456,16 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			for (int j=0;j<attrPersoInfo.size();j++){
 				accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
-				System.out.println("RECUPERATION");
-				System.out.println(ldapUser.getAttribute(attrPersoInfo.get(j)));
 			}
 			
+			//Génération d'un code
+			String code=this.genererCode();
+			accountDescr.put("code", code);
 			
-			//génération du password initial
-			initialPassword = "initialseed#";
-			SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy");
-			initialPassword += format.format(birthDate)+"#";
-			initialPassword += number+"#";
-			initialPassword += StringTools.cleanAllSpecialChar(birthName)+"#";
+			//insertion dans un HashMap qui permet d'établir une correspondance entre id/code d'acces + date fin de validité
+			this.insertInHashAccess(ldapUser.getId(),code);
 			
-			//accountDescr.put("initialPassword", ldapUser.getAttribute(LdapSchema.getShadowLastChange()));
+			
 			
 			return accountDescr;
 
@@ -461,11 +474,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					+ e.getMessage());
 			throw e;
 		}
+		
+		
 	}
 	
 	
 	
-	public void setMailPerso(String id,String mailPerso){
+	/*public void setMailPerso(String id,String mailPerso){
 		
 		try{
 			this.mailPerso=mailPerso;
@@ -479,19 +494,14 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			//smtpService.send(mail,"Code activation de compte","","Votre code est"+code); 
 			System.out.println("ENVOI DU MAIL FAIT");
 			
-			//insertion dans un HashMap qui établit une correspondance entre l'id et une hashmap contenant code + date d'insertion
-			HashMap<String,String> list= new HashMap<String,String>();
-			list.put(accessCodeKey,code);
-			Date date=new Date();
-			list.put(accessDateKey,this.dateToString(date));
-			access.put(id, list);
+			
 		
 		}catch(Exception e){
 			
 		}
 	}
 	
-	public int validateCode(String id,String code){
+	/*public int validateCode(String id,String code){
 		try{
 			
 			//Si le temps ecoulé est de moins de deux minutes
@@ -507,19 +517,19 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		}
 	
 		return TIMEOUT;
-	}
+	}*/
 	
 	
 	
 	public boolean setPassword(final String currentPassword,String id,String code) throws LdapException{
 
 		try {
-			
+						
 			//si la correspondance code/id est présente dans la table de hashage alors...
 			if (verifyCode(id,code)){
 				
 				//authentification avec numid et mdpinitial
-				this.writeableLdapUserService.defineAuthenticatedContext(id, initialPassword);
+				this.writeableLdapUserService.defineAuthenticatedContext("cn=activ,ou=admin", "3$up@ct1v");
 				
 				/*if (logger.isTraceEnabled()) {
 					logger.trace("Mot de passe initial : "
@@ -533,16 +543,15 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				/* Writing of password in LDAP */
 				List<String> listPasswordAttr = new ArrayList<String>();
 				
-				//
 				//Anli redirection du bind LDAP vers Kerberos
-				String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
+				//String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
 				
 				
-				logger.debug(redirectKer);
+				//logger.debug(redirectKer);
 				
-				listPasswordAttr.add(redirectKer);
+				//listPasswordAttr.add(redirectKer);
 	
-				//listPasswordAttr.add(currentPassword);
+				listPasswordAttr.add(currentPassword);
 				ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
 				
 				/* Writing of shadowLastChange in LDAP */
@@ -553,8 +562,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 						/ (1000 * 3600 * 24)));
 							
 				if (logger.isDebugEnabled()) {
-					logger.debug("Writing shadowLastChange in LDAP : "
-							+ shadowLastChange);
+					logger.debug("Writing shadowLastChange in LDAP : " + shadowLastChange);
 				}
 	
 				listShadowLastChangeAttr.add(shadowLastChange);
@@ -562,22 +570,20 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				
 				
 				/* Writing of displayName in LDAP */
-				List<String> listDisplayNameAttr = new ArrayList<String>();
+				
+				/*List<String> listDisplayNameAttr = new ArrayList<String>();
 				listDisplayNameAttr.add(accountDescr.get("diplayName"));
-				ldapUser.getAttributes().put(LdapSchema.getDisplayName(),
-						listDisplayNameAttr);
+				ldapUser.getAttributes().put(LdapSchema.getDisplayName(),listDisplayNameAttr);*/
 				
 				
 				//Ajout ou modification du mot de passe dans kerberos
 				kerberosAdmin.add(id, currentPassword);
 				System.out.println(kerberosAdmin.add(id, currentPassword));
-				/*if(state==KRBAdmin.ALREADY_EXIST)
-					state=kerberosAdmin.changePasswd(id, currentPassword);*/
-	
-				
-				
+				//if(state==KRBAdmin.ALREADY_EXIST)
+				//	state=kerberosAdmin.changePasswd(id, currentPassword);
+			
 				this.writeableLdapUserService.updateLdapUser(ldapUser);
-				
+	
 				ldapUser.getAttributes().clear();
 	
 				logger.info("Activation du compte : " + id);
@@ -586,7 +592,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			}
 			else{
-				//Throw nouvelle exception correspondant au code
+				System.out.println("code pas bon");//Throw nouvelle exception correspondant au code
 			}
 		
 		} catch (LdapException e) {
@@ -610,7 +616,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 	
 	
-	public void updateDisplayName(String displayName,String id, String code){
+	/*public void updateDisplayName(String displayName,String id, String code){
 		if (verifyCode(id,code)){
 			accountDescr.remove("displayName");
 			accountDescr.put("diplayName", displayName);
@@ -618,7 +624,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		else{
 			//Throw nouvelle exception correspondant au code
 		}
-	}
+	}*/
 
 	
 	
@@ -673,14 +679,14 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
         return sdf.format(sDate);
     }
     
-	private Date stringToDate(String sDate) throws ParseException{
+	/*private Date stringToDate(String sDate) throws ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat(formatDateConv);
         return sdf.parse(sDate);
-    }
+    }*/
     
     private boolean verifyCode(String id,String code){
     	//Recuperation du hashmap correspondant à l'id de l'utilisateur
-		HashMap <String,String>result=access.get(id);
+		HashMap <String,String>result=access.getValueWithKey(id);
 		if (result!=null){
 			if (code.equalsIgnoreCase(result.get(accessCodeKey))){
 				return true;
@@ -689,9 +695,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return false;
     }
     
-    private boolean verifyTime(String id)throws ParseException{
+    /*private boolean verifyTime(String id)throws ParseException{
     	//Recuperation du hashmap correspondant à l'id de l'utilisateur
-		HashMap <String,String>result=access.get(id);
+		HashMap <String,String>result=access.getValueWithKey(id);
 		
 		//tester null
 		Date date=stringToDate(dateToString(new Date()));
@@ -700,7 +706,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			return true;
 		}
 		return false;
-    }
+    }*/
     
     
 
@@ -770,6 +776,46 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.smtpService = smtpService;
 	}
 	
+	public void insertInHashAccess(String id,String code){
+		
+		HashMap<String,String> hashCodeDate= new HashMap<String,String>();
+		hashCodeDate.put(accessCodeKey,code);
+		
+		
+		Calendar c = new GregorianCalendar();
+		c.add(Calendar.MINUTE,codeDelay);
+				
+		try {
+			hashCodeDate.put(accessDateKey,this.dateToString(c.getTime()));
+		} catch (ParseException e) {
+		
+		}
+		access.putKeyValue(id, hashCodeDate);
+	}
+
+	public CleaningHashCode getClean() {
+		return clean;
+	}
+
+	public void setClean(CleaningHashCode clean) {
+		this.clean = clean;
+	}
+
+	public int getCodeDelay() {
+		return codeDelay;
+	}
+
+	public void setCodeDelay(int codeDelay) {
+		this.codeDelay = codeDelay;
+	}
+
+	public HashCode getAccess() {
+		return access;
+	}
+
+	public void setAccess(HashCode access) {
+		this.access = access;
+	}
 
 
 
