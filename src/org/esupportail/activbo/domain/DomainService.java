@@ -120,7 +120,7 @@ public interface DomainService extends Serializable {
 		
 	public HashMap<String,String> validateAccount(String number,String birthName,Date birthDate,List<String>attrPersoInfo) throws LdapException;
 	
-	public boolean setPassword(final String currentPassword,String id,String code)throws LdapException;
+	public boolean setPassword(String id,String code,final String currentPassword)throws LdapException;
 	
 	//public void updateDisplayName(String displayName,String id, String code);
 	
