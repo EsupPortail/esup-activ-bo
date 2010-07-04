@@ -26,9 +26,9 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		
 	}
 	
-	public void updateDisplayName(String displayName,String id, String code){
+	/*public void updateDisplayName(String displayName,String id, String code){
 		domainService.updateDisplayName(displayName,id,code);
-	}
+	}*/
 	
 	
 	public void afterPropertiesSet() throws Exception {
@@ -40,13 +40,13 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		this.domainService = domainService;
 	}
 	
-	public void setMailPerso(String id,String mailPerso){
+	/*public void setMailPerso(String id,String mailPerso){
 		domainService.setMailPerso(id,mailPerso);
-	}
+	}*/
 	
-	public int validateCode(String id,String code){
+	/*public int validateCode(String id,String code){
 		return domainService.validateCode(id, code);
-	}
+	}*/
 	
 	/*
 	
