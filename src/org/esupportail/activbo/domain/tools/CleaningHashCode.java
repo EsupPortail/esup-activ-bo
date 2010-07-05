@@ -35,7 +35,7 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 						Date date=stringToDate(dateToString(new Date()));
 						
 						if (date.getTime()>this.stringToDate(hash.get(accessDateKey)).getTime()){
-							System.out.println("temps depassé");
+							System.out.println("temps depassï¿½");
 							hashCode.remove(e.getKey());
 						}  
 					} 
@@ -56,7 +56,6 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 		
 	}
 
-	@Override
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		
