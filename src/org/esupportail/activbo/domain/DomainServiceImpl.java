@@ -82,11 +82,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private AsynchronousSmtpServiceImpl smtpService;
 	
 	public String code;
-	
-	
-	//private static HashMap<String,HashMap<String,String>> access=new HashMap<String,HashMap<String,String>>();
 		
-	private HashCode access;//=new HashCode();
+	private HashCode hashCode;
 	/**
 	 * kerberos.ldap.method
 	 * kerberos.host
@@ -125,14 +122,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	private WriteableLdapUserService writeableLdapUserService;
 
-	private String initialPassword;
-	
+		
 	private CleaningHashCode clean;
 	/**
 	 * Bean constructor.
 	 */
 	public DomainServiceImpl() {
-		
 		super();
 	}
 
@@ -140,8 +135,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		//clean.putHashCode(access);
-		//lancement du thread de nettoyage de la table de hashage
+		
+		logger.info("Lancement du thread de nettoyage de la table de hashage");
 		clean.start();
 		
 		
@@ -436,7 +431,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			boolean isInLdap = false;
 			while (i.hasNext()) {
 				sn = i.next();
-				System.out.println(sn);
+				//System.out.println(sn);
 				if (StringTools.compareInsensitive(birthName, sn)) {
 					isInLdap = true;
 					break;
@@ -467,9 +462,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			accountDescr.put("code", code);
 			
 			//insertion dans un HashMap qui permet d'établir une correspondance entre id/code d'acces + date fin de validité
-			this.insertInHashAccess(ldapUser.getId(),code);
-			
-			
+			this.insertCodeInHash(ldapUser.getId(),code);
 			
 			return accountDescr;
 
@@ -523,7 +516,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return TIMEOUT;
 	}*/
 	
-	
+	public boolean updateInfoPerso(HashMap<String,String> infoPerso){
+		return true;
+	}
 	
 	public boolean setPassword(String id,String code,final String currentPassword) throws LdapException{
 
@@ -535,12 +530,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				//authentification avec numid et mdpinitial
 				this.writeableLdapUserService.defineAuthenticatedContext(this.ldapUsernameAdmin, ldapPasswordAdmin);
 				
-				/*if (logger.isTraceEnabled()) {
-					logger.trace("Mot de passe initial : "
-							+ account.getInitialPassword());
-				}*/
-				
-				
 				LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
 				ldapUser.getAttributes().clear();
 	
@@ -548,12 +537,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				List<String> listPasswordAttr = new ArrayList<String>();
 				
 				//Anli redirection du bind LDAP vers Kerberos
-				//String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
+				String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
 				
+				logger.debug(redirectKer);
 				
-				//logger.debug(redirectKer);
-				
-				//listPasswordAttr.add(redirectKer);
+				listPasswordAttr.add(redirectKer);
 	
 				listPasswordAttr.add(currentPassword);
 				ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
@@ -583,6 +571,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				//Ajout ou modification du mot de passe dans kerberos
 				kerberosAdmin.add(id, currentPassword);
 				System.out.println(kerberosAdmin.add(id, currentPassword));
+				
 				//if(state==KRBAdmin.ALREADY_EXIST)
 				//	state=kerberosAdmin.changePasswd(id, currentPassword);
 			
@@ -596,7 +585,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			}
 			else{
-				System.out.println("code pas bon");//Throw nouvelle exception correspondant au code
+				logger.info("Le code d'accès à la méthode setPassword n'est pas bon");
+				//Throw nouvelle exception correspondant au code
 			}
 		
 		} catch (LdapException e) {
@@ -647,13 +637,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.krbHost = krbHost;
 	}
 
-	/**
-	 * @param securityCode
-	 */
-/*	public final void setSecurityCode(int securityCode) {
-		this.securityCode = securityCode;
-	}*/
-	
 	
 	/**
 	 * @param kerberosAdmin
@@ -690,7 +673,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     
     private boolean verifyCode(String id,String code){
     	//Recuperation du hashmap correspondant à l'id de l'utilisateur
-		HashMap <String,String>result=access.getValueWithKey(id);
+		HashMap <String,String>result=hashCode.getValueWithKey(id);
 		if (result!=null){
 			if (code.equalsIgnoreCase(result.get(accessCodeKey))){
 				return true;
@@ -699,22 +682,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return false;
     }
     
-    /*private boolean verifyTime(String id)throws ParseException{
-    	//Recuperation du hashmap correspondant à l'id de l'utilisateur
-		HashMap <String,String>result=access.getValueWithKey(id);
-		
-		//tester null
-		Date date=stringToDate(dateToString(new Date()));
-		Long tempsEcoule=date.getTime()-this.stringToDate(result.get(accessDateKey)).getTime();
-		if (tempsEcoule<=480000){
-			return true;
-		}
-		return false;
-    }*/
     
     
-
-
 	public String getAccountIdKey() {
 		return accountIdKey;
 	}
@@ -780,7 +749,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.smtpService = smtpService;
 	}
 	
-	public void insertInHashAccess(String id,String code){
+	public void insertCodeInHash(String id,String code){
 		
 		HashMap<String,String> hashCodeDate= new HashMap<String,String>();
 		hashCodeDate.put(accessCodeKey,code);
@@ -794,7 +763,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		} catch (ParseException e) {
 		
 		}
-		access.putKeyValue(id, hashCodeDate);
+		hashCode.putKeyValue(id, hashCodeDate);
 	}
 
 	public CleaningHashCode getClean() {
@@ -813,12 +782,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.codeDelay = codeDelay;
 	}
 
-	public HashCode getAccess() {
-		return access;
+	public HashCode getHashCode() {
+		return hashCode;
 	}
 
-	public void setAccess(HashCode access) {
-		this.access = access;
+	public void setHashCode(HashCode hashCode) {
+		this.hashCode = hashCode;
 	}
 
 	public String getLdapUsernameAdmin() {
