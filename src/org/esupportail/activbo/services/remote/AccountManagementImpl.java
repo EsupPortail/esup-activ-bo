@@ -26,6 +26,10 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		
 	}
 	
+	public boolean updateInfoPerso(HashMap<String,String> infoPerso){
+		return domainService.updateInfoPerso(infoPerso);
+	}
+	
 	/*public void updateDisplayName(String displayName,String id, String code){
 		domainService.updateDisplayName(displayName,id,code);
 	}*/
