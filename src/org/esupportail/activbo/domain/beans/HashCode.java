@@ -1,10 +1,11 @@
 package org.esupportail.activbo.domain.beans;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 
 import org.springframework.beans.factory.InitializingBean;
 
-public class HashCode extends HashMap<String,HashMap<String,String>> implements InitializingBean{
+public class HashCode extends Hashtable<String,HashMap<String,String>> implements InitializingBean{
 	
 	/**
 	 * 
