@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+	>
+
+	<bean
+		id="cleaningHashCode"
+		class="org.esupportail.activbo.domain.tools.CleaningHashCode"
+		>
+		
+		<property name="formatDateConv" value="${formatdate.conversion}"/>
+		<property name="accessDateKey" value="${access.key.date}"/>
+		<property name="accessCodeKey" value="${access.key.code}"/>
+		<property name="hashCode" ref="hashCode"/>
+		<property name="cleaningTimeInterval" value="${cleaning.timeinterval}"/>
+		
+	</bean>
+	
+	
+
+</beans>
