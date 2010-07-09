@@ -16,14 +16,14 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 	
 	private HashCode hashCode;
 	private String formatDateConv;
-	private String accessDateKey;
-	private String accessCodeKey;
+	private String hashCodeDateKey;
+	private String hashCodeCodeKey;
 	private int cleaningTimeInterval;
 	
 	private final Logger logger = new LoggerImpl(getClass());
 	
 	public CleaningHashCode(){
-		//this.hashCode=hashCode;
+
 	}
 	
 	public void run(){
@@ -33,47 +33,24 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 				//logger.info("Boucle de nettoyage lancée");
 				if (!hashCode.isEmpty()){
 					logger.info("La table de hashage n'est pas vide");
-					logger.info("=======================================================================");
-					logger.info("             TABLE DE CODES D'ACCES POUR L'APPLICATION BO            ");
-					logger.info("=======================================================================");
-					
 					Iterator<Map.Entry<String, HashMap<String,String>>> it=hashCode.entrySet().iterator();
 					while(it.hasNext()){
 						Map.Entry<String, HashMap<String,String>> e=it.next();
 						HashMap<String,String> hash=e.getValue();
-						logger.info("======= Utilisateur "+e.getKey()+"(Code --> "+hash.get("code")+"  ||  Date d'expiration --> "+hash.get(accessDateKey)+")");
+						logger.info("======= Utilisateur "+e.getKey()+"(Code --> "+hash.get("code")+"  ||  Date d'expiration --> "+hash.get(hashCodeDateKey)+")");
 						
 						Date date=stringToDate(dateToString(new Date()));
 						
-						if (date.getTime()>this.stringToDate(hash.get(accessDateKey)).getTime()){
+						if (date.getTime()>this.stringToDate(hash.get(hashCodeDateKey)).getTime()){
 							logger.info("Expiration code, Ligne utilisateur "+e.getKey()+" supprimée");
 							it.remove();
 						}
 					}
-					logger.info("=========================================================================");
-					
-					/*for (Map.Entry<String, HashMap<String,String>> e : hashCode.entrySet()){
-						HashMap<String,String> hash=e.getValue();
-						logger.info("====== Utilisateur "+e.getKey()+"============");
-						logger.info("Code --> "+hash.get("code"));
-						logger.info("Date d'expiration --> "+hash.get("date"));
-						Date date=stringToDate(dateToString(new Date()));
-						
-						if (date.getTime()>this.stringToDate(hash.get(accessDateKey)).getTime()){
-							logger.info("Delai de durée du code dépassé, Suppression du code correspondant à l'utilisateur"+e.getKey());
-=======
-							System.out.println("temps depassï¿½");
->>>>>>> .r317
-							hashCode.remove(e.getKey());
-							//System.out.println(e.getValue().toString());
-						}  
-					} 
-					logger.info("===================================");*/
-					
-				}
-				//mettre le temps dans un fichier de properties
-				sleep(cleaningTimeInterval);
-				
+				}	
+				else{
+					logger.info("La table de hashage est vide");
+				}	
+				sleep(cleaningTimeInterval);	
 			}
 		
 		} catch (InterruptedException e) {
@@ -89,7 +66,6 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	
@@ -115,14 +91,6 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 		this.formatDateConv = formatDateConv;
 	}
 
-	public String getAccessDateKey() {
-		return accessDateKey;
-	}
-
-	public void setAccessDateKey(String accessDateKey) {
-		this.accessDateKey = accessDateKey;
-	}
-
 	public HashCode getHashCode() {
 		return hashCode;
 	}
@@ -139,12 +107,21 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 		this.cleaningTimeInterval = cleaningTimeInterval;
 	}
 
-	public String getAccessCodeKey() {
-		return accessCodeKey;
+	
+	public String getHashCodeDateKey() {
+		return hashCodeDateKey;
 	}
 
-	public void setAccessCodeKey(String accessCodeKey) {
-		this.accessCodeKey = accessCodeKey;
+	public void setHashCodeDateKey(String hashCodeDateKey) {
+		this.hashCodeDateKey = hashCodeDateKey;
+	}
+
+	public String getHashCodeCodeKey() {
+		return hashCodeCodeKey;
+	}
+
+	public void setHashCodeCodeKey(String hashCodeCodeKey) {
+		this.hashCodeCodeKey = hashCodeCodeKey;
 	}
 	
 }
