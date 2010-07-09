@@ -41,9 +41,13 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	}
 	
 	
-	/** 
+	/**
+	 *  
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#add(String, String)
+	 * 
+	 * AJOUT d'UN UTILISATEUR
+	 * 
 	 */
 	public int add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException
 	{
@@ -77,6 +81,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#del(String)
+	 * 
+	 * SUPPRESSION D'UN UTILISATEUR
+	 * 
 	 */
 	public int del(final String principal) throws KRBException
 	{
@@ -102,9 +109,13 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		return state;
 	}
 	
+	
 	/** 
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String)
+	 * 
+	 * UTILSISE pour l'ACTIVATION et la REINITIALISATION
+	 * 
 	 */
 	public int changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException
 	{
@@ -136,6 +147,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	/** 
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String, String)
+	 *  
+	 * UTILSISE pour le CHANGEMENT DE MOT DE PASSE
+	 * 
 	 */
 	public int changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException
 	{
