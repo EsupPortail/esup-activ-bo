@@ -19,11 +19,14 @@
 		<property name="accountMailKey" value="${account.key.mail}"/>
 		<property name="accountSLCKey" value="${account.key.shadowlastchange}"/>
 		<property name="accountDNKey" value="${account.key.displayname}"/>
+		<property name="accountCodeKey" value="${account.key.code}"/>
 		
-		<property name="accessCodeKey" value="${access.key.code}"/>
-		<property name="accessDateKey" value="${access.key.date}"/>
+		<property name="hashCodeCodeKey" value="${access.code.key}"/>
+		<property name="hashCodeDateKey" value="${access.date.key}"/>
 		
-		<property name="formatDateConv" value="${formatdate.conversion}"/>
+		<property name="hashCode" ref="hashCode"/>
+
+		<property name="formatDateConv" value="${access.date.format}"/>
 		
 		<property name="krbLdapMethod" value="${kerberos.ldap.method}" />
 		<property name="krbHost" value="${kerberos.host}" />
@@ -32,12 +35,11 @@
 		
 		<property name="clean" ref="cleaningHashCode" />
 		
-		<property name="codeDelay" value="${code.delay}" />
+		<property name="accessCodeDelay" value="${access.code.delay}" />
 		
-		<property name="hashCode" ref="hashCode"/>
+
 		
 		<property name="ldapUsernameAdmin" value="${ldap.username}" />
-		
 		<property name="ldapPasswordAdmin" value="${ldap.password}" />
 			
 	</bean>

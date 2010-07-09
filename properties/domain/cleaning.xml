@@ -11,11 +11,11 @@
 		class="org.esupportail.activbo.domain.tools.CleaningHashCode"
 		>
 		
-		<property name="formatDateConv" value="${formatdate.conversion}"/>
-		<property name="accessDateKey" value="${access.key.date}"/>
-		<property name="accessCodeKey" value="${access.key.code}"/>
+		<property name="formatDateConv" value="${access.date.format}"/>
+		<property name="hashCodeDateKey" value="${access.date.key}"/>
+		<property name="hashCodeCodeKey" value="${access.code.key}"/>
 		<property name="hashCode" ref="hashCode"/>
-		<property name="cleaningTimeInterval" value="${cleaning.timeinterval}"/>
+		<property name="cleaningTimeInterval" value="${access.cleaning.timeinterval}"/>
 		
 	</bean>
 	
