@@ -58,6 +58,9 @@
 				<value>${ldap.attribute.birthname}</value>
 				<value>${ldap.attribute.mail}</value>
 				<value>${ldap.attribute.shadowLastChange}</value>
+				<value>${ldap.attribute.password}</value>
+				<value>${ldap.attribute.givenname}</value>
+				<value>${ldap.attribute.pager}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -75,6 +78,9 @@
 				<value>${ldap.attribute.birthname}</value>
 				<value>${ldap.attribute.mail}</value>
 				<value>${ldap.attribute.shadowLastChange}</value>
+				<value>${ldap.attribute.password}</value>
+				<value>${ldap.attribute.givenname}</value>
+				<value>${ldap.attribute.pager}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -188,6 +194,7 @@
 				<value>cn</value>
 				<value>${ldap.attribute.password}</value>
 				<value>${ldap.attribute.shadowLastChange}</value>
+				<value>${ldap.attribute.pager}</value>
 			</list>
 		</property>
 	</bean>
