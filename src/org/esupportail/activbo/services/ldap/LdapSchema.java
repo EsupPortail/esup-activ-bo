@@ -78,6 +78,8 @@ public final class LdapSchema implements InitializingBean{
 	
 	
 	protected static String passwordAdmin;
+	
+	
 
 
 	/**
