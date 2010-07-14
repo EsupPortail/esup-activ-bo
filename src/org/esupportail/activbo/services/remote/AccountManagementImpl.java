@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.esupportail.activbo.domain.DomainService;
+import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.commons.services.ldap.LdapException;
@@ -23,7 +24,7 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	}
 	
 	
-	public boolean setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException{
+	public boolean setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException{
 		return domainService.setPassword(id,code,currentPassword);
 		
 	}
