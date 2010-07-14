@@ -7,20 +7,20 @@ package org.esupportail.activbo.services.kerberos;
  */
 public interface KRBAdmin {
 	
-	public final static int ADDED=0,
+	/*public final static int ADDED=0,
 							ALREADY_EXIST=1,
 							NOT_CHANGED=2,
 							CHANGED=3,
 							ILLEGAL_ARGUMENT=4,
 							DELETED=5,
-							ERROR=6;
+							ERROR=6;*/
 	
 	/**
 	 * @param principal
 	 * @param passwd
 	 * @return ADDED
 	 */
-	public int add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException;
+	public void add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException;
 	
 	
 	/**
@@ -28,7 +28,7 @@ public interface KRBAdmin {
 	 * @return DELETED
 	 * @throws KRBException 
 	 */
-	public int del(final String principal) throws KRBException;
+	public void del(final String principal) throws KRBException;
 	
 	/**
 	 * @param principal
@@ -36,7 +36,7 @@ public interface KRBAdmin {
 	 * @return CHANGED
 	 * @throws KRBException 
 	 */
-	public int changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException;
+	public void changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException;
 	
 	
 	/**
@@ -47,7 +47,7 @@ public interface KRBAdmin {
 	 * @return NOT_CHANGED, CHANGED
 	 * @throws KRBException 
 	 */
-	public int changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException;
+	public void changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException;
 			
 	/**
 	 * @param principal

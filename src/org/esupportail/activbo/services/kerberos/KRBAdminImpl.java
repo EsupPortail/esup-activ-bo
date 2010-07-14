@@ -20,8 +20,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 */
 	private final Logger logger = new LoggerImpl(getClass());
 		
-	private String  principalAdmin,
-	principalAdminKeyTab;
+	private String  principalAdmin,principalAdminKeyTab;
 
 	private String options="";
 	
@@ -35,8 +34,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 				"property principalAdminKeyTab of class " + this.getClass().getName() + " can not be null");			
 	}
 	
-	public KRBAdminImpl()
-	{
+	public KRBAdminImpl(){
 		super();		
 	}
 	
@@ -49,33 +47,39 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * AJOUT d'UN UTILISATEUR
 	 * 
 	 */
-	public int add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException
-	{
-		int state=ADDED;		
+	public void add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException{
+		
+		//int state=ADDED;		
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
-		if( !(principal.contains(" ") || passwd.contains(" ")))
-		if(!exists(principal))
-		{
-			String cmd =kadmin+" add --password="+passwd+" "+options+" "+principal;
-			Runtime runtime = Runtime.getRuntime();
-			Process process;
-			try {
-				//debug
-				logger.debug(cmd.replaceFirst("--password=.* ", "--password=****** "));
-				
-				process = runtime.exec(cmd);
-				
-				//this command must be silence if not something unknown happened
-				if(verboseProcess(process)) throw new KRBException("Unknown error. See log files for more information");
-				
-			 }catch (IOException e) {				
-				 logger.error(e);				 
-				 throw new KRBException("IOException : "+e);				
-			}
-		}else throw new KRBPrincipalAlreadyExistsException("Principal exists");
-		else throw new KRBIllegalArgumentException("Illegal argument");		
-		return state;
+		if( !(principal.contains(" ") || passwd.contains(" "))){
+			if(!exists(principal)){
+			
+				String cmd =kadmin+" add --password="+passwd+" "+options+" "+principal;
+				Runtime runtime = Runtime.getRuntime();
+				Process process;
+				try {
+					//debug
+					logger.debug(cmd.replaceFirst("--password=.* ", "--password=****** "));
+					
+					process = runtime.exec(cmd);
+					
+					//this command must be silence if not something unknown happened
+					if(verboseProcess(process)) 
+						throw new KRBException("Unknown error. See log files for more information");
+					
+				 }catch (IOException e) {				
+					 logger.error(e);				 
+					 throw new KRBException("IOException : "+e);				
+				}
+			
+			}else 
+				throw new KRBPrincipalAlreadyExistsException("Principal exists");
+		
+		}else 
+			throw new KRBIllegalArgumentException("Illegal argument");		
+		
+		//return state;
 	}
 	
 	
@@ -85,9 +89,8 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * SUPPRESSION D'UN UTILISATEUR
 	 * 
 	 */
-	public int del(final String principal) throws KRBException
-	{
-		int state=DELETED;
+	public void del(final String principal) throws KRBException{
+		//int state=DELETED;
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
 		String cmd =kadmin+" del "+principal;
@@ -99,14 +102,15 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			
 			process = runtime.exec(cmd);
 			//this command must be silence if not something unknown happened
-			if(verboseProcess(process)) throw new KRBException("Unknown error. See log files for more information");
+			if(verboseProcess(process)) 
+				throw new KRBException("Unknown error. See log files for more information");
 			
 		 }catch (IOException e) {
 			 logger.error(e);
 			 throw new KRBException("IOException : "+e);		
 		}
 		
-		return state;
+		//return state;
 	}
 	
 	
@@ -114,34 +118,38 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String)
 	 * 
-	 * UTILSISE pour l'ACTIVATION et la REINITIALISATION
+	 * UTILISE pour l'ACTIVATION et la REINITIALISATION
 	 * 
 	 */
-	public int changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException
-	{
-		int state=CHANGED;
+	public void changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException{
+		
+		//int state=CHANGED;
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
-		//eliminer les requêtes par injection de code
-		if( !(principal.contains(" ") || passwd.contains(" ")))
-		{
+		
+		//eliminer les requetes par injection de code
+		if( !(principal.contains(" ") || passwd.contains(" "))){
 			String cmd =kadmin+" passwd --password="+passwd+" "+principal;
 			Runtime runtime = Runtime.getRuntime();
 			Process process;
 			try {
 				//debug				
 				logger.debug(cmd.replaceFirst("--password=.* ", "--password=****** "));
-				
+
 				process = runtime.exec(cmd);
 				//this command must be silence if not something unknown happened
-				if(verboseProcess(process)) throw new KRBException("Unknown error. See log files for more information");
-				
-			 }catch (IOException e) {
-				 logger.error(e);
-				 throw new KRBException("IOException : "+e);		
-		}
-		}
-		else throw new KRBIllegalArgumentException("Illegal argument");		
-		return state;
+				if(verboseProcess(process)) 
+					throw new KRBException("Unknown error. See log files for more information");
+
+			}catch (IOException e){
+				logger.error(e);
+				throw new KRBException("IOException : "+e);		
+			}
+			
+		}else 
+			throw new KRBIllegalArgumentException("Illegal argument");		
+		
+		//return state;
+	
 	}
 	
 	/** 
@@ -151,9 +159,8 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * UTILSISE pour le CHANGEMENT DE MOT DE PASSE
 	 * 
 	 */
-	public int changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException
-	{
-		int state=NOT_CHANGED;
+	public void changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException{
+		//int state=NOT_CHANGED;
 		String cmd="kpasswd "+principal;
 		Runtime runtime = Runtime.getRuntime();
 		PrintWriter pw=null;	
@@ -171,27 +178,28 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			pw.println(newPasswd);
 			pw.flush();
 			
-			StandardInput input=new StandardInput(process,1);
+			/*StandardInput input=new StandardInput(process,1);
 			if(input.getLines().size()>0 && input.getLines().get(0).contains("Password changed"))
-				state=CHANGED;																	
-		}		
-		catch(IOException e) {
+				state=CHANGED;*/																	
+		
+		}catch(IOException e) {
 			logger.error(e);
 			throw new KRBException("Unknown error. See log files for more information");
-		}
-		finally{
-			if(pw!=null) pw.close();
-			}
 		
-		return state;
+		}finally{
+			if(pw!=null) 
+				pw.close();
+		}
+		
+		//return state;
 	}
 		
 	/** 
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#exists(String)
 	 */
-	public boolean exists(String principal) throws KRBException
-	{
+	public boolean exists(String principal) throws KRBException{
+		
 		boolean exist=false; 	
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
@@ -199,7 +207,6 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		Runtime runtime = Runtime.getRuntime();
 		Process process=null;
 		try {
-			
 			//debug
 			logger.debug(cmd);
 			
@@ -228,7 +235,8 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		ErrorInput input2=new ErrorInput(process,1);
 		if(input1.getLines().size()>0 || input2.getLines().size()>0)
 			return true;
-		else return false;					
+		else 
+			return false;					
 	}
 	
 
