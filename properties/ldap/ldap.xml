@@ -58,8 +58,6 @@
 				<value>${ldap.attribute.birthname}</value>
 				<value>${ldap.attribute.mail}</value>
 				<value>${ldap.attribute.shadowLastChange}</value>
-				<value>${ldap.attribute.password}</value>
-				<value>${ldap.attribute.givenname}</value>
 				<value>${ldap.attribute.pager}</value>
 			</list>
 		</property>
@@ -78,8 +76,6 @@
 				<value>${ldap.attribute.birthname}</value>
 				<value>${ldap.attribute.mail}</value>
 				<value>${ldap.attribute.shadowLastChange}</value>
-				<value>${ldap.attribute.password}</value>
-				<value>${ldap.attribute.givenname}</value>
 				<value>${ldap.attribute.pager}</value>
 			</list>
 		</property>
