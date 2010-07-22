@@ -19,8 +19,8 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		super();
 	}
 
-	public HashMap<String,String> validateAccount(String number,String birthName,Date birthDate,List<String>attrPersoInfo) throws LdapProblemException{
-		return domainService.validateAccount(number,birthName,birthDate,attrPersoInfo);
+	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException{
+		return domainService.validateAccount(hashInfToValidate,attrPersoInfo);
 	}
 	
 	
@@ -29,8 +29,20 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		
 	}
 	
-	public boolean updateInfoPerso(String id,String code,HashMap<String,String> infoPerso)throws LdapProblemException,UserPermissionException{
-		return domainService.updateInfoPerso(id,code,infoPerso);
+	public boolean setPassword(String id,String code,String oldPassword, final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException{
+		return domainService.setPassword(id,code,oldPassword,currentPassword);
+	}
+	
+	public boolean updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException{
+		return domainService.updatePersonalInformations(id,code,hashBeanPersoInfo);
+	}
+	
+	public String getCode(String id,String canal){
+		return domainService.getCode(id, canal);
+	}
+	
+	public String getCode(String id){
+		return domainService.getCode(id);
 	}
 	
 	/*public void updateDisplayName(String displayName,String id, String code){
@@ -47,6 +59,9 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		this.domainService = domainService;
 	}
 	
+	public boolean validateCode(String id,String code){
+		return domainService.validateCode(id, code);
+	}
 	/*public void setMailPerso(String id,String mailPerso){
 		domainService.setMailPerso(id,mailPerso);
 	}*/
