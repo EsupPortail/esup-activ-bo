@@ -37,10 +37,18 @@
 		
 		<property name="accessCodeDelay" value="${access.code.delay}" />
 		
-
+		<property name="codeTransmission" value="${code.transmission}" />
+		<property name="codeTransmissionMail" value="${code.transmission.email}" />
+		<property name="codeTransmissionSms" value="${code.transmission.sms}" />
 		
 		<property name="ldapUsernameAdmin" value="${ldap.username}" />
 		<property name="ldapPasswordAdmin" value="${ldap.password}" />
+		<property name="clePrimaireValidation" value="${cleprimaire.validation}" />
+		
+		<property name="smtpService" ref="smtpService" />
+		
+		<property name="mailCodeSubject" value="${smtp.mailcode.subject.french}" />
+		<property name="mailCodeBody" value="${smtp.mailcode.body.french}" />
 			
 	</bean>
 		
