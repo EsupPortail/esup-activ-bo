@@ -121,11 +121,19 @@ public interface DomainService extends Serializable {
 	boolean userCanDeleteAdmin(User user, User admin);
 	
 		
-	public HashMap<String,String> validateAccount(String number,String birthName,Date birthDate,List<String>attrPersoInfo) throws LdapProblemException;
+	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException;
 	
 	public boolean setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException;
 	
-	public boolean updateInfoPerso(String id,String code,HashMap<String,String> infoPerso) throws LdapProblemException,UserPermissionException;
+	public boolean setPassword(String id,String code,String oldPassword,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException;
+	
+	public boolean updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo) throws LdapProblemException,UserPermissionException;
+	
+	public String getCode(String id,String canal);
+	
+	public String getCode(String id);
+	
+	public boolean validateCode(String id,String code);
 	
 	//public void updateDisplayName(String displayName,String id, String code);
 	

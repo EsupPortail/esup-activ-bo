@@ -30,7 +30,7 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 	
 		try {
 			while(true){
-				//logger.info("Boucle de nettoyage lancée");
+				logger.info("Boucle de nettoyage lancée");
 				if (!hashCode.isEmpty()){
 					logger.info("La table de hashage n'est pas vide");
 					Iterator<Map.Entry<String, HashMap<String,String>>> it=hashCode.entrySet().iterator();
