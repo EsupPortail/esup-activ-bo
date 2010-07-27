@@ -391,6 +391,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				logger.debug("Validating account for : " + ldapUser);
 		}
 		
+		//Parcours des informations à valider
 		Iterator<Map.Entry<String,String>> it=hashInfToValidate.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry<String,String> e=it.next();
@@ -411,7 +412,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				}
 			}
 		}
-	
+		//Construction du hasMap de retour
 		accountDescr=new HashMap<String,String>();
 		accountDescr.put(accountIdKey, ldapUser.getId());
 		accountDescr.put(accountMailKey, ldapUser.getAttribute(LdapSchema.getMail()));
@@ -444,7 +445,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 			if (verifyCode(id,code)){/*security reasons*/
 	
-				this.writeableLdapUserService.defineAuthenticatedContext(this.ldapUsernameAdmin, ldapPasswordAdmin);
+				this.writeableLdapUserService.defineAuthenticatedContext(ldapUsernameAdmin, ldapPasswordAdmin);
 				logger.info("Authentification LDAP réussie");
 				
 				LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
@@ -467,9 +468,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					try{
 						InternetAddress mail=new InternetAddress("lorvivien@yahoo.fr");
 						
-						logger.info("ENVOI DU CODE PAR MAIL");
+						logger.info("Envoi du code de réinitialisation par mail");
 						smtpService.send(mail,"Code activation de compte","","Votre code est"+code); 
-						logger.info("ENVOI DU MAIL FAIT");
+						logger.info("Envoi du code de réinitialisation par mail fait");
 					}
 					catch (Exception e){
 						
@@ -635,6 +636,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	public boolean setPassword(String id,String code,String oldPassword,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException{
+		//Lecture du password initial et comparaison avec l'ancien password menitonné par l'uitlisateur
+		
+		
+		
+		
+		
 		return true;
 	}
 	
