@@ -29,8 +29,8 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		
 	}
 	
-	public boolean setPassword(String id,String code,String oldPassword, final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException{
-		return domainService.setPassword(id,code,oldPassword,currentPassword);
+	public HashMap<String,String> setPassword(String id,String oldPassword,final String currentPassword,List<String>attrPersoInfo)throws LdapProblemException,UserPermissionException,KerberosException{
+		return domainService.setPassword(id,oldPassword,currentPassword,attrPersoInfo);
 	}
 	
 	public boolean updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException{
