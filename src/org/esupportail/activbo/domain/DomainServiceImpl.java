@@ -75,11 +75,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	/**
 	 * {@link DaoService}.
 	 */
-	private String accountIdKey;
-	private String accountMailKey;
-	private String accountSLCKey;
-	private String accountDNKey;
-	private String accountCodeKey;
+	private String accountDescrIdKey;
+	private String accountDescrMailKey;
+	private String accountDescrDNKey;
+	private String accountDescrCodeKey;
 	
 	private int accessCodeDelay;
 	
@@ -113,8 +112,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 */
 	private KRBAdminTest kerberosAdmin;
 	
-	boolean reinit;
-	
+		
 	private String codeTransmission;
 	
 	private String codeTransmissionMail;
@@ -142,14 +140,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 */
 	private final Logger logger = new LoggerImpl(getClass());
 		
-	private HashMap<String, String> accountDescr;
 	
 	private WriteableLdapUserService writeableLdapUserService;
 
 		
 	private CleaningHashCode clean;
 	
-	private LdapUser ldapUser;
+	
 	/**
 	 * Bean constructor.
 	 */
@@ -374,68 +371,68 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException{
 		
+		HashMap<String, String> accountDescr=new HashMap<String,String>();
+		
 		try {
 			
-		this.attrPersoInfo=attrPersoInfo;
+			this.attrPersoInfo=attrPersoInfo;
+					
+			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+clePrimaireValidation+"="+ hashInfToValidate.get(clePrimaireValidation) + ")");
 				
-		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+clePrimaireValidation+"="+ hashInfToValidate.get(clePrimaireValidation) + ")");
-			
-		if (ldapUserList.size() == 0) {
-			return null;
-		}
-
-		LdapUser ldapUser = ldapUserList.get(0); 
-						
-			
-		if (logger.isDebugEnabled()) {
-				logger.debug("Validating account for : " + ldapUser);
-		}
-		
-		//Parcours des informations à valider
-		Iterator<Map.Entry<String,String>> it=hashInfToValidate.entrySet().iterator();
-		while(it.hasNext()){
-			Map.Entry<String,String> e=it.next();
-			
-			//on ne teste pas la validité de la valeur clé
-			if (!e.getKey().equals(clePrimaireValidation)){
-				String ldapUserAttrValue = ldapUser.getAttribute(e.getKey());
+			if (ldapUserList.size() == 0) {
+				return null;
+			}
+	
+			LdapUser ldapUser = ldapUserList.get(0); 
+							
 				
-				if (ldapUserAttrValue == null) {
-					String errmsg = "LDAP account with "+ this.clePrimaireValidation+" "+ hashInfToValidate.get(clePrimaireValidation) + " has no "+e.getKey();
-					logger.error(errmsg);
-					throw new InvalidLdapAccountException(errmsg);
-				}
-
-				if (!ldapUserAttrValue.equals(e.getValue())){
-					logger.info("Invalid value "+e.getValue()+" associate to attribute "+e.getKey()+" for LDAP Account with "+clePrimaireValidation+" "+hashInfToValidate.get(clePrimaireValidation));
-					return null;
+			if (logger.isDebugEnabled()) {
+					logger.debug("Validating account for : " + ldapUser);
+			}
+			
+			//Parcours des informations à valider
+			Iterator<Map.Entry<String,String>> it=hashInfToValidate.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry<String,String> e=it.next();
+				
+				//on ne teste pas la validité de la valeur clé
+				if (!e.getKey().equals(clePrimaireValidation)){
+					String ldapUserAttrValue = ldapUser.getAttribute(e.getKey());
+					
+					if (ldapUserAttrValue == null) {
+						String errmsg = "LDAP account with "+ this.clePrimaireValidation+" "+ hashInfToValidate.get(clePrimaireValidation) + " has no "+e.getKey();
+						logger.error(errmsg);
+						throw new InvalidLdapAccountException(errmsg);
+					}
+	
+					if (!ldapUserAttrValue.equals(e.getValue())){
+						logger.info("Invalid value "+e.getValue()+" associate to attribute "+e.getKey()+" for LDAP Account with "+clePrimaireValidation+" "+hashInfToValidate.get(clePrimaireValidation));
+						return null;
+					}
 				}
 			}
-		}
-		//Construction du hasMap de retour
-		accountDescr=new HashMap<String,String>();
-		accountDescr.put(accountIdKey, ldapUser.getId());
-		accountDescr.put(accountMailKey, ldapUser.getAttribute(LdapSchema.getMail()));
+			//Construction du hasMap de retour
+			accountDescr.put(accountDescrIdKey, ldapUser.getId());
+			accountDescr.put(accountDescrMailKey, ldapUser.getAttribute(LdapSchema.getMail()));
+			
+			for (int j=0;j<attrPersoInfo.size();j++){
+				accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
+			}
+		
+			//envoi d'un code si le compte n'est pas activé
+			if (ldapUser.getAttribute(LdapSchema.getShadowLastChange())==null){
+				String code=this.genererCode();
+				accountDescr.put(accountDescrCodeKey, code);
+				this.insertCodeInHash(ldapUser.getId(),code);
+				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getId()+" dans la table effectuée");
+			}
 				
-		for (int j=0;j<attrPersoInfo.size();j++){
-			accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
-		}
-	
-		//envoi d'un code si le compte n'est pas activé
-		if (ldapUser.getAttribute(LdapSchema.getShadowLastChange())==null){
-			String code=this.genererCode();
-			accountDescr.put(accountCodeKey, code);
-			this.insertCodeInHash(ldapUser.getId(),code);
-			logger.debug("Insertion code pour l'utilisateur "+ldapUser.getId()+" dans la table effectuée");
-		}
+			} catch (LdapException e) {
+				logger.debug("Exception thrown by updateInfoPerso() : "+ e.getMessage());
+				throw new LdapProblemException("Probleme au niveau du LDAP");
+			}
 		
 		return accountDescr;
-
-			
-		} catch (LdapException e) {
-			logger.debug("Exception thrown by updateInfoPerso() : "+ e.getMessage());
-			throw new LdapProblemException("Probleme au niveau du LDAP");
-		}
 	}
 
 	
@@ -463,19 +460,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				}
 				
 				this.finalizeLdapWriting(ldapUser);
-				
-				if (reinit){
-					try{
-						InternetAddress mail=new InternetAddress("lorvivien@yahoo.fr");
-						
-						logger.info("Envoi du code de réinitialisation par mail");
-						smtpService.send(mail,"Code activation de compte","","Votre code est"+code); 
-						logger.info("Envoi du code de réinitialisation par mail fait");
-					}
-					catch (Exception e){
-						
-					}
-				}
 			}
 			else{
 				throw new UserPermissionException("L'utilisateur n'a pas le droit de continuer l'activation");
@@ -493,26 +477,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public String getCode(String id,String canal){
 		
 		return null;
-		/*String code=this.genererCode();
-		this.insertCodeInHash(id,code);
-		logger.info("Insertion code pour l'utilisateur "+id+" dans la table effectuée");
 		
-		if (codeTransmission.equals(canal)){
-			InternetAddress mail=null;
-			try {
-				mail = new InternetAddress("lorvivien@yahoo.fr");
-			} catch (AddressException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			smtpService.send(mail,this.mailCodeSubject,this.mailCodeBody+" "+code,"");
-		}
-		
-		else{
-			//Evoi du code par sms
-		}
-		
-		return code;*/
 	}
 	
 	
@@ -554,8 +519,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	public boolean setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException{
 		
+		LdapUser ldapUser=null;
+		
 		try {
-						
+			
+			
 			if (verifyCode(id,code)){/*security reasons*/
 				
 				this.writeableLdapUserService.defineAuthenticatedContext(this.ldapUsernameAdmin, ldapPasswordAdmin);
@@ -588,7 +556,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 						logger.debug("Writing Kerberos redirection in LDAP : " + redirectKer);
 					}
 				}			
-				
+				//si SLC null{
 				/* Writing of shadowLastChange in LDAP */
 				List<String> listShadowLastChangeAttr = new ArrayList<String>();
 				Calendar cal = Calendar.getInstance();
@@ -627,6 +595,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				throw new KerberosException("Probleme au niveau de Kerberos");
 			}
 			
+		}catch(KRBException ke){
+			logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
+			throw new KerberosException("Probleme au niveau de Kerberos");
+		
 		} catch (LdapException e) {
 			logger.debug("Exception thrown by setPassword() : "+ e.getMessage());
 			throw new LdapProblemException("Probleme au niveau du LDAP");
@@ -635,14 +607,89 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return true;
 	}
 	
-	public boolean setPassword(String id,String code,String oldPassword,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException{
-		//Lecture du password initial et comparaison avec l'ancien password menitonné par l'uitlisateur
+	public HashMap<String,String> setPassword(String id,String oldPassword,final String currentPassword,List<String>attrPersoInfo)throws LdapProblemException,UserPermissionException,KerberosException{
 		
+		HashMap<String, String> accountDescr=new HashMap<String,String>();
 		
+		try{
+			
+			this.writeableLdapUserService.defineAuthenticatedContext(this.ldapUsernameAdmin, ldapPasswordAdmin);
+			logger.info("Authentification LDAP réussie");
+			
+			
+			//Lecture LDAP
+			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("(uid="+ id + ")");
+			
+			if (ldapUserList.size() == 0) {
+				return null;
+			}
+	
+			LdapUser ldapUserRead = ldapUserList.get(0); 
+			
+			String ldapUserRedirectKerb = ldapUserRead.getAttribute("userPassword");
+			String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
+			
+			logger.info("Lecture du ldap: "+ldapUserRead.toString());
+	
+			LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
+			
+			//si pas de redirection --> lecture du mot de passe dans le LDAP
+			if (true){//if (!ldapUserRedirectKerb.equals(redirectKer)) {
+				logger.debug("Le compte Kerberos ne gère pas encore l'authentification");
+							
+				if (ldapUserRedirectKerb.equals(oldPassword)){
+					logger.debug("Ancien Password valide dans le LDAP");
+					kerberosAdmin.add(id, currentPassword);
+					logger.info("Ajout du nouveau mot de passe dans kerberos effectuée");
+				}
+				
+				/* Writing of Kerberos redirection in LDAP */
+				List<String> listPasswordAttr = new ArrayList<String>();
+				listPasswordAttr.add(redirectKer);
+				ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Writing Kerberos redirection in LDAP : " + redirectKer);
+				}
+			}
+			
+			kerberosAdmin.changePasswd(id,oldPassword, currentPassword);
+			
+			//Construction du hasMap de retour
+			accountDescr.put(accountDescrIdKey, ldapUser.getId());
+			accountDescr.put(accountDescrMailKey, ldapUser.getAttribute(LdapSchema.getMail()));
+					
+			for (int j=0;j<attrPersoInfo.size();j++){
+				accountDescr.put(attrPersoInfo.get(j), ldapUserRead.getAttribute(attrPersoInfo.get(j)));
+			}
 		
+			//envoi d'un code si le compte n'est pas activé
+			String code=new String(this.genererCode());
+			accountDescr.put(accountDescrCodeKey, code);
+			this.insertCodeInHash(ldapUser.getId(),code);
+			logger.debug("Insertion code pour l'utilisateur "+ldapUser.getId()+" dans la table effectuée");
+			
+		} catch (KRBPrincipalAlreadyExistsException e){
+			
+			try{
+				logger.info("Le compte kerberos existe déja, changement du password");
+				kerberosAdmin.changePasswd(id,oldPassword, currentPassword);
+			
+			}catch(KRBException ke){
+				logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
+				//changer le nom de l'exception pour l'echec de mauvais mot de passe?????? 
+				throw new KerberosException("Authentification invalide");
+			}
 		
+		}catch(KRBException ke){
+			logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
+			throw new KerberosException("Probleme au niveau de Kerberos");
 		
-		return true;
+		} catch (LdapException e) {
+			logger.debug("Exception thrown by setPassword() : "+ e.getMessage());
+			throw new LdapProblemException("Probleme au niveau du LDAP");
+		}
+		return accountDescr;
+		
 	}
 	
 	
@@ -719,41 +766,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return false;
 		
     }
-    
-    
-    
-	public String getAccountIdKey() {
-		return accountIdKey;
-	}
-
-	public void setAccountIdKey(String accountIdKey) {
-		this.accountIdKey = accountIdKey;
-	}
-
-	public String getAccountMailKey() {
-		return accountMailKey;
-	}
-
-	public void setAccountMailKey(String accountMailKey) {
-		this.accountMailKey = accountMailKey;
-	}
-
-	public String getAccountSLCKey() {
-		return accountSLCKey;
-	}
-
-	public void setAccountSLCKey(String accountSLCKey) {
-		this.accountSLCKey = accountSLCKey;
-	}
-
-	public String getAccountDNKey() {
-		return accountDNKey;
-	}
-
-	public void setAccountDNKey(String accountDNKey) {
-		this.accountDNKey = accountDNKey;
-	}
-	
+   
 	public String getFormatDateConv() {
 		return formatDateConv;
 	}
@@ -835,13 +848,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.hashCodeDateKey = hashCodeDateKey;
 	}
 
-	public String getAccountCodeKey() {
-		return accountCodeKey;
-	}
-
-	public void setAccountCodeKey(String accountCodeKey) {
-		this.accountCodeKey = accountCodeKey;
-	}
+	
 
 	public int getAccessCodeDelay() {
 		return accessCodeDelay;
@@ -936,5 +943,37 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 	public void setMailCodeBody(String mailCodeBody) {
 		this.mailCodeBody = mailCodeBody;
+	}
+
+	public String getAccountDescrIdKey() {
+		return accountDescrIdKey;
+	}
+
+	public void setAccountDescrIdKey(String accountDescrIdKey) {
+		this.accountDescrIdKey = accountDescrIdKey;
+	}
+
+	public String getAccountDescrMailKey() {
+		return accountDescrMailKey;
+	}
+
+	public void setAccountDescrMailKey(String accountDescrMailKey) {
+		this.accountDescrMailKey = accountDescrMailKey;
+	}
+
+	public String getAccountDescrDNKey() {
+		return accountDescrDNKey;
+	}
+
+	public void setAccountDescrDNKey(String accountDescrDNKey) {
+		this.accountDescrDNKey = accountDescrDNKey;
+	}
+
+	public String getAccountDescrCodeKey() {
+		return accountDescrCodeKey;
+	}
+
+	public void setAccountDescrCodeKey(String accountDescrCodeKey) {
+		this.accountDescrCodeKey = accountDescrCodeKey;
 	}
 }
