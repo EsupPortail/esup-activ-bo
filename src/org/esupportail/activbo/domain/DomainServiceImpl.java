@@ -34,7 +34,6 @@ import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.activbo.services.kerberos.KRBAdmin;
-import org.esupportail.activbo.services.kerberos.KRBAdminTest;
 import org.esupportail.activbo.services.kerberos.KRBException;
 import org.esupportail.activbo.services.kerberos.KRBIllegalArgumentException;
 import org.esupportail.activbo.services.kerberos.KRBPrincipalAlreadyExistsException;
@@ -110,7 +109,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	/**
 	 * {@link KerberosAdmin}
 	 */
-	private KRBAdminTest kerberosAdmin;
+	private KRBAdmin kerberosAdmin;
 	
 		
 	private String codeTransmission;
@@ -390,12 +389,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					logger.debug("Validating account for : " + ldapUser);
 			}
 			
-			//Parcours des informations à valider
+			//Parcours des informations ï¿½ valider
 			Iterator<Map.Entry<String,String>> it=hashInfToValidate.entrySet().iterator();
 			while(it.hasNext()){
 				Map.Entry<String,String> e=it.next();
 				
-				//on ne teste pas la validité de la valeur clé
+				//on ne teste pas la validitï¿½ de la valeur clï¿½
 				if (!e.getKey().equals(clePrimaireValidation)){
 					String ldapUserAttrValue = ldapUser.getAttribute(e.getKey());
 					
@@ -419,12 +418,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
 			}
 		
-			//envoi d'un code si le compte n'est pas activé
+			//envoi d'un code si le compte n'est pas activï¿½
 			if (ldapUser.getAttribute(LdapSchema.getShadowLastChange())==null){
 				String code=this.genererCode();
 				accountDescr.put(accountDescrCodeKey, code);
 				this.insertCodeInHash(ldapUser.getId(),code);
-				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getId()+" dans la table effectuée");
+				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getId()+" dans la table effectuï¿½e");
 			}
 				
 			} catch (LdapException e) {
@@ -443,12 +442,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			if (verifyCode(id,code)){/*security reasons*/
 	
 				this.writeableLdapUserService.defineAuthenticatedContext(ldapUsernameAdmin, ldapPasswordAdmin);
-				logger.info("Authentification LDAP réussie");
+				logger.info("Authentification LDAP rï¿½ussie");
 				
 				LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
 				ldapUser.getAttributes().clear();
 				
-				logger.debug("Parcours des informations personnelles mises à jour au niveau du FO pour insertion LDAP");
+				logger.debug("Parcours des informations personnelles mises ï¿½ jour au niveau du FO pour insertion LDAP");
 				Iterator<Map.Entry<String,String>> it=hashBeanPersoInfo.entrySet().iterator();
 				int i=0;
 				while(it.hasNext()){
@@ -485,7 +484,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 		String code=this.genererCode();
 		this.insertCodeInHash(id,code);
-		logger.info("Insertion code pour l'utilisateur "+id+" dans la table effectuée");
+		logger.info("Insertion code pour l'utilisateur "+id+" dans la table effectuï¿½e");
 		
 		//Lecture LDAP pour obtenir l'adresse mail Perso
 		/*List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("(uid="+ id + ")");
@@ -503,7 +502,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			try {
 				mail = new InternetAddress(mailPerso);
 				smtpService.send(mail,this.mailCodeSubject,this.mailCodeBody+" "+code,"");
-				logger.info("Envoi du code à l'adresse mail "+mailPerso);
+				logger.info("Envoi du code ï¿½ l'adresse mail "+mailPerso);
 			
 			}catch (Exception e) {
 				return null;
@@ -527,7 +526,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			if (verifyCode(id,code)){/*security reasons*/
 				
 				this.writeableLdapUserService.defineAuthenticatedContext(this.ldapUsernameAdmin, ldapPasswordAdmin);
-				logger.info("Authentification LDAP réussie");
+				logger.info("Authentification LDAP rï¿½ussie");
 								
 				//Lecture LDAP
 				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("(uid="+ id + ")");
@@ -546,7 +545,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				ldapUser = this.ldapUserService.getLdapUser(id);
 				
 				if (true){//if (!ldapUserRedirectKerb.equals(redirectKer)) {
-					logger.debug("Le compte Kerberos ne gère pas encore l'authentification");
+					logger.debug("Le compte Kerberos ne gï¿½re pas encore l'authentification");
 					
 					/* Writing of Kerberos redirection in LDAP */
 					List<String> listPasswordAttr = new ArrayList<String>();
@@ -570,7 +569,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				
 				//Ajout ou modification du mot de passe dans kerberos
 				kerberosAdmin.add(id, currentPassword);
-				logger.info("Ajout de mot de passe dans kerberos effectuée");
+				logger.info("Ajout de mot de passe dans kerberos effectuï¿½e");
 
 				this.finalizeLdapWriting(ldapUser);
 							
@@ -582,7 +581,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		} catch (KRBPrincipalAlreadyExistsException e){
 			
 			try{
-				logger.info("Le compte kerberos existe déja, Modification du password");
+				logger.info("Le compte kerberos existe dï¿½ja, Modification du password");
 				kerberosAdmin.changePasswd(id, currentPassword);
 				this.finalizeLdapWriting(ldapUser);
 			
@@ -614,7 +613,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		try{
 			
 			this.writeableLdapUserService.defineAuthenticatedContext(this.ldapUsernameAdmin, ldapPasswordAdmin);
-			logger.info("Authentification LDAP réussie");
+			logger.info("Authentification LDAP rï¿½ussie");
 			
 			
 			//Lecture LDAP
@@ -635,12 +634,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			//si pas de redirection --> lecture du mot de passe dans le LDAP
 			if (true){//if (!ldapUserRedirectKerb.equals(redirectKer)) {
-				logger.debug("Le compte Kerberos ne gère pas encore l'authentification");
+				logger.debug("Le compte Kerberos ne gï¿½re pas encore l'authentification");
 							
 				if (ldapUserRedirectKerb.equals(oldPassword)){
 					logger.debug("Ancien Password valide dans le LDAP");
 					kerberosAdmin.add(id, currentPassword);
-					logger.info("Ajout du nouveau mot de passe dans kerberos effectuée");
+					logger.info("Ajout du nouveau mot de passe dans kerberos effectuï¿½e");
 				}
 				
 				/* Writing of Kerberos redirection in LDAP */
@@ -662,16 +661,16 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				accountDescr.put(attrPersoInfo.get(j), ldapUserRead.getAttribute(attrPersoInfo.get(j)));
 			}
 		
-			//envoi d'un code si le compte n'est pas activé
+			//envoi d'un code si le compte n'est pas activï¿½
 			String code=new String(this.genererCode());
 			accountDescr.put(accountDescrCodeKey, code);
 			this.insertCodeInHash(ldapUser.getId(),code);
-			logger.debug("Insertion code pour l'utilisateur "+ldapUser.getId()+" dans la table effectuée");
+			logger.debug("Insertion code pour l'utilisateur "+ldapUser.getId()+" dans la table effectuï¿½e");
 			
 		} catch (KRBPrincipalAlreadyExistsException e){
 			
 			try{
-				logger.info("Le compte kerberos existe déja, changement du password");
+				logger.info("Le compte kerberos existe dï¿½ja, changement du password");
 				kerberosAdmin.changePasswd(id,oldPassword, currentPassword);
 			
 			}catch(KRBException ke){
@@ -721,7 +720,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	/**
 	 * @param kerberosAdmin
 	 */
-	public final void setKerberosAdmin(KRBAdminTest kerberosAdmin) {
+	public final void setKerberosAdmin(KRBAdmin kerberosAdmin) {
 		this.kerberosAdmin = kerberosAdmin;
 	}
 	
@@ -734,7 +733,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		for (int i = 0; i < 8; i++){
 		    int indiceChiffre = r.nextInt(tableauChiffres.length);
-			// retourne le chiffre correspondant à cette indice
+			// retourne le chiffre correspondant ï¿½ cette indice
 			char chiffre = tableauChiffres[indiceChiffre];
 			code=code+chiffre;
 		}
@@ -747,16 +746,16 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     }
     
     private boolean verifyCode(String id,String code){
-    	//Recuperation du hashmap correspondant à l'id de l'utilisateur
+    	//Recuperation du hashmap correspondant ï¿½ l'id de l'utilisateur
 		HashMap <String,String>result=hashCode.getValueWithKey(id);
 		if (result!=null){
-			logger.info("L'utilisateur "+id+" possède un code");//l'utilisateur possède un code 
+			logger.info("L'utilisateur "+id+" possï¿½de un code");//l'utilisateur possï¿½de un code 
 			if (code.equalsIgnoreCase(result.get(hashCodeCodeKey))){
 				logger.info("Code utilisateur "+id+" valide");//code invalide
 				return true;
 			}
 			else{
-				logger.warn("Attention!!!, code en paramètre de la méthode invalide");
+				logger.warn("Attention!!!, code en paramï¿½tre de la mï¿½thode invalide");
 			}
 		}
 		else{
@@ -863,7 +862,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.writeableLdapUserService.updateLdapUser(ldapUser);
 		ldapUser.getAttributes().clear();
 		this.writeableLdapUserService.defineAnonymousContext();
-		logger.info("Ecriture dans le LDAP réussie");
+		logger.info("Ecriture dans le LDAP rï¿½ussie");
 	}
 	
 	/*public void setMailPerso(String id,String mailPerso){
@@ -872,7 +871,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.mailPerso=mailPerso;
 		//InternetAddress mail=new InternetAddress(mailPerso);
 		
-		//Génération du code
+		//Gï¿½nï¿½ration du code
 		//code=this.genererCode();
 		code="88888888";
 		
@@ -888,7 +887,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 }*/
 
 	public boolean validateCode(String id,String code){
-				//Si le temps ecoulé est de moins de deux minutes
+				//Si le temps ecoulï¿½ est de moins de deux minutes
 		if (verifyCode(id,code)){
 			return true;
 		
