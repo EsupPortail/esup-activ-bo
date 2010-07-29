@@ -235,7 +235,6 @@ public final class LdapSchema implements InitializingBean{
 		LdapSchema.passwordAdmin = passwordAdmin;
 	}
 
-	@Override
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		
