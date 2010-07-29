@@ -80,33 +80,21 @@ public final class LdapSchema implements InitializingBean{
 	protected static String passwordAdmin;
 	
 	
+	protected static String mailPerso;
 
+
+	public static String getMailPerso() {
+		return mailPerso;
+	}
+
+	public static void setMailPerso(String mailPerso) {
+		LdapSchema.mailPerso = mailPerso;
+	}
 
 	/**
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.displayName, 
-				"property displayName of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.birthdate, 
-				"property birthdate of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.birthdateFormat, 
-				"property birthdateFormat of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.uid, 
-				"property uid of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.employeeId, 
-				"property employeeId of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.cn, 
-				"property cn of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.birthName, 
-				"property sn of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.password, 
-				"property password of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.shadowLastChange, 
-				"property shadowLastChange of class " + this.getClass().getName() + " can not be null");
-		Assert.notNull(this.mail, 
-				"property mail of class " + this.getClass().getName() + " can not be null");
-	}
+	
 	
 	/**
 	 * @return Returns the birthdate.
@@ -245,6 +233,12 @@ public final class LdapSchema implements InitializingBean{
 
 	public void setPasswordAdmin(String passwordAdmin) {
 		LdapSchema.passwordAdmin = passwordAdmin;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
