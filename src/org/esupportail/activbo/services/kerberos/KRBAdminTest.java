@@ -13,7 +13,7 @@ public class KRBAdminTest implements KRBAdmin,InitializingBean {
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#add(String, String)
 	 */
-	public void add(String principal,String passwd)throws KRBPrincipalAlreadyExistsException{
+	public void add(String principal,String passwd)throws KRBPrincipalAlreadyExistsException,KRBException{
 		throw new KRBPrincipalAlreadyExistsException("");
 		//return ADDED; 
 	}
@@ -22,7 +22,7 @@ public class KRBAdminTest implements KRBAdmin,InitializingBean {
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#del(String)
 	 */
-	public void del(final String principal) {
+	public void del(final String principal) throws KRBException{
 		//return DELETED; 
 	} 
 	
@@ -37,14 +37,15 @@ public class KRBAdminTest implements KRBAdmin,InitializingBean {
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String, String)
 	 */
-	public void changePasswd(String principal, String oldPasswd, String newPasswd){
+	public void changePasswd(String principal, String oldPasswd, String newPasswd)throws KRBException{
+		throw new KRBException("");
 		//return CHANGED;
 	}
 			
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#exists(String)
 	 */
-	public boolean exists(String principal) {
+	public boolean exists(String principal)throws KRBException {
 		return true;
 	}
 
