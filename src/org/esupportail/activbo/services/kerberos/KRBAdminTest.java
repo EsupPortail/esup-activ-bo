@@ -1,5 +1,6 @@
 package org.esupportail.activbo.services.kerberos;
 
+import org.esupportail.activbo.exceptions.OldPasswordException;
 import org.springframework.beans.factory.InitializingBean;
 
 
@@ -37,8 +38,8 @@ public class KRBAdminTest implements KRBAdmin,InitializingBean {
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String, String)
 	 */
-	public void changePasswd(String principal, String oldPasswd, String newPasswd)throws KRBException{
-		throw new KRBException("");
+	public void changePasswd(String principal, String oldPasswd, String newPasswd)throws KRBException,OldPasswordException{
+		throw new OldPasswordException("");
 		//return CHANGED;
 	}
 			
