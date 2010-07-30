@@ -32,6 +32,7 @@ import org.esupportail.activbo.domain.beans.VersionManager;
 import org.esupportail.activbo.domain.tools.StringTools;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
+import org.esupportail.activbo.exceptions.OldPasswordException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.activbo.services.kerberos.KRBAdmin;
 import org.esupportail.activbo.services.kerberos.KRBException;
@@ -606,10 +607,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return true;
 	}
 	
-	public HashMap<String,String> setPassword(String id,String oldPassword,final String currentPassword,List<String>attrPersoInfo)throws LdapProblemException,UserPermissionException,KerberosException{
+	public HashMap<String,String> setPassword(String id,String oldPassword,final String currentPassword,List<String>attrPersoInfo)throws LdapProblemException,UserPermissionException,KerberosException,OldPasswordException{
 		
 		HashMap<String, String> accountDescr=new HashMap<String,String>();
-		
+		LdapUser ldapUser=null;
 		try{
 			
 			this.writeableLdapUserService.defineAuthenticatedContext(this.ldapUsernameAdmin, ldapPasswordAdmin);
@@ -630,28 +631,34 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			logger.info("Lecture du ldap: "+ldapUserRead.toString());
 	
-			LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
+			
 			
 			//si pas de redirection --> lecture du mot de passe dans le LDAP
 			if (true){//if (!ldapUserRedirectKerb.equals(redirectKer)) {
 				logger.debug("Le compte Kerberos ne g�re pas encore l'authentification");
-							
+				String oldPasswordEncrypt=this.encryptPassword(oldPassword);			
 				if (ldapUserRedirectKerb.equals(oldPassword)){
 					logger.debug("Ancien Password valide dans le LDAP");
+					ldapUser = this.ldapUserService.getLdapUser(id);
+					/* Writing of Kerberos redirection in LDAP */
+					List<String> listPasswordAttr = new ArrayList<String>();
+					listPasswordAttr.add(redirectKer);
+					ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
+					if (logger.isDebugEnabled()) {
+						logger.debug("Writing Kerberos redirection in LDAP : " + redirectKer);
+					}
 					kerberosAdmin.add(id, currentPassword);
 					logger.info("Ajout du nouveau mot de passe dans kerberos effectu�e");
+					this.finalizeLdapWriting(ldapUser);
 				}
 				
-				/* Writing of Kerberos redirection in LDAP */
-				List<String> listPasswordAttr = new ArrayList<String>();
-				listPasswordAttr.add(redirectKer);
-				ldapUser.getAttributes().put(LdapSchema.getPassword(),listPasswordAttr);
-				if (logger.isDebugEnabled()) {
-					logger.debug("Writing Kerberos redirection in LDAP : " + redirectKer);
+				else{
+					throw new OldPasswordException("Old password invalid");
 				}
 			}
-			
-			kerberosAdmin.changePasswd(id,oldPassword, currentPassword);
+			else{
+				kerberosAdmin.changePasswd(id,oldPassword, currentPassword);
+			}
 			
 			//Construction du hasMap de retour
 			accountDescr.put(accountDescrIdKey, ldapUser.getId());
@@ -672,12 +679,22 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			try{
 				logger.info("Le compte kerberos existe d�ja, changement du password");
 				kerberosAdmin.changePasswd(id,oldPassword, currentPassword);
-			
+				this.finalizeLdapWriting(ldapUser);
 			}catch(KRBException ke){
 				logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
 				//changer le nom de l'exception pour l'echec de mauvais mot de passe?????? 
 				throw new KerberosException("Authentification invalide");
+			
+			}catch(OldPasswordException ke){
+				logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
+				//changer le nom de l'exception pour l'echec de mauvais mot de passe?????? 
+				throw new KerberosException("Ancien Mot de passe invalide");
 			}
+			
+		}catch(OldPasswordException ke){
+			logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
+			//changer le nom de l'exception pour l'echec de mauvais mot de passe?????? 
+			throw new KerberosException("Ancien Mot de passe invalide");
 		
 		}catch(KRBException ke){
 			logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
@@ -974,5 +991,26 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 	public void setAccountDescrCodeKey(String accountDescrCodeKey) {
 		this.accountDescrCodeKey = accountDescrCodeKey;
+	}
+	
+	private String encryptPassword(String clearassword) {
+		return null;
+		/*
+		 * If we look at phpldapadmin SSHA encryption algorithm in :
+		 * /usr/share/phpldapadmin/lib/functions.php function password_hash(
+		 * $password_clear, $enc_type ) salt length for SSHA is 4
+		 */
+		/*final int SALT_LENGTH = 4;
+		
+		LdapShaPasswordEncoder ldapShaPasswordEncoder = new LdapShaPasswordEncoder();
+		/* Salt generation */
+		/*byte[] salt = new byte[SALT_LENGTH];
+		Random generator = new Random();
+		generator.nextBytes(salt);*/
+		/* SSHA encoding */
+		//String encryptedPassword = ldapShaPasswordEncoder.encodePassword(this.getPassword(), salt);
+		
+		
+		
 	}
 }
