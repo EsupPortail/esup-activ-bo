@@ -38,8 +38,8 @@ public class KRBAdminTest implements KRBAdmin,InitializingBean {
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String, String)
 	 */
-	public void changePasswd(String principal, String oldPasswd, String newPasswd)throws KRBException,OldPasswordException{
-		throw new OldPasswordException("");
+	public void changePasswd(String principal, String oldPasswd, String newPasswd)throws KRBException,OldPassException{
+		throw new OldPassException("");
 		//return CHANGED;
 	}
 			
