@@ -38,7 +38,7 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		return domainService.updatePersonalInformations(id,code,hashBeanPersoInfo);
 	}
 	
-	public String getCode(String id,String canal){
+	public String getCode(String id,String canal)throws LdapProblemException{
 		return domainService.getCode(id, canal);
 	}
 	
