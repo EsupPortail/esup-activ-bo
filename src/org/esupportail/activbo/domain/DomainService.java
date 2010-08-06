@@ -130,7 +130,7 @@ public interface DomainService extends Serializable {
 	
 	public boolean updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo) throws LdapProblemException,UserPermissionException;
 	
-	public String getCode(String id,String canal);
+	public String getCode(String id,String canal)throws LdapProblemException;
 	
 	public String getCode(String id);
 	
