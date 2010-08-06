@@ -47,5 +47,7 @@ public interface WriteableLdapUserService extends Serializable {
 	void defineAnonymousContext();
 	
 	public void defineAuthenticatedContext(String userId, String password) throws LdapException;
+	
+	public void defineAuthenticatedContextForUser(String userId, String password) throws LdapException;
 
 }

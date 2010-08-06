@@ -24,7 +24,7 @@ import org.springframework.ldap.support.LdapContextSource;
  * An implementation of WriteableLdapService based on LdapTemplate.
  * See /properties/ldap/ldap-write-example.xml.
  */
-public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, InitializingBean {
+public class WriteableLdapUserServiceTest implements WriteableLdapUserService, InitializingBean {
 	
 	/**
 	 * The serialization id.
@@ -74,7 +74,7 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 	/**
 	 * Bean constructor.
 	 */
-	public WriteableLdapUserServiceImpl() {
+	public WriteableLdapUserServiceTest() {
 		super();
 	}
 
@@ -82,22 +82,7 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() {
-		Assert.hasText(idAttribute, 
-				"property idAttribute of class " + getClass().getName() + " can not be null");
-		Assert.notEmpty(attributes,  
-				"property attributes of class " + getClass().getName() + " can not be empty");
-		Assert.hasText(dnSubPath,  
-				"property dnSubPath of class " + getClass().getName() + " can not be empty");
-		if (ldapTemplate == null) {
-			dnSubPath = null;
-			logger.info(getClass() + ": property ldapTemplate is not set"); 
-		}
-		if (logger.isDebugEnabled() && dnAuth != null) {
-			logger.debug("dnAuth" + dnAuth); 
-		}
-		if (!attributes.contains(idAttribute)) {
-			attributes.add(idAttribute);
-		}
+		
 	}
 
 	/** Modify an LDAP user using Spring LdapContextSource.
@@ -106,34 +91,7 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 	 */
 	public void updateLdapUser(final LdapUser ldapUser) throws LdapAttributesModificationException {
 		
-		Name dn = buildLdapUserDn(ldapUser.getId());
 		
-		try {
-			if (logger.isTraceEnabled()) {
-				logger.trace("Looking for :" + dn);
-			}
-			
-			DirContextAdapter context = (DirContextAdapter) ldapTemplate.lookup(dn);
-			if (logger.isTraceEnabled()) {
-				logger.trace("mapToContext()" + ldapUser);
-			}
-			
-			mapToContext(ldapUser, context);
-			logger.info("Update of LDAP user :" + dn + " : " + ldapUser);
-			
-			ldapTemplate.modifyAttributes(dn, context.getModificationItems());
-			
-		} catch (UncategorizedLdapException e) {
-			if (e.getCause() instanceof javax.naming.AuthenticationException) {
-				throw new LdapBindFailedException("Couldn't bind to LDAP with user" + ldapUser.getId());
-			}
-		} catch (Exception e) {
-			if (logger.isTraceEnabled()) {
-				logger.trace("Error in updateLdapUser(): ", e);
-			}
-			throw new LdapAttributesModificationException(
-					"Couldn't get modification items for '" + dn + "'", e);
-		}
 		
 	}
 	
@@ -202,27 +160,18 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 	}
 	
 	public void defineAuthenticatedContext(String username, String password) throws LdapException {
-		contextSource.setUserName(username);
-		contextSource.setPassword(password);
+		
 	}
 	
 	public void defineAuthenticatedContextForUser(String userId, String password) throws LdapException{
-		DistinguishedName ldapBindUserDn = new DistinguishedName(this.dnAuth);
-		ldapBindUserDn.add(this.idAuth, userId);
 		
-		/* TODO remove password from logging */
-		logger.debug("Binding to LDAP with DN : "+ldapBindUserDn+" pass : "+password);
-		
-		contextSource.setUserName(ldapBindUserDn.encode());
-		contextSource.setPassword(password);
 	}
 
 	/**
 	 * @see org.esupportail.commons.services.ldap.WriteableLdapUserService#defineAnonymousContext()
 	 */
 	public void defineAnonymousContext() throws LdapException {
-		contextSource.setUserName("");
-		contextSource.setPassword("");
+		
 	}
 
 	/**
