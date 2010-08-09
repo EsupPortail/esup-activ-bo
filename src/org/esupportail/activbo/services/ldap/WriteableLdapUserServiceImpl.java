@@ -210,7 +210,6 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 		DistinguishedName ldapBindUserDn = new DistinguishedName(this.dnAuth);
 		ldapBindUserDn.add(this.idAuth, userId);
 		
-		/* TODO remove password from logging */
 		logger.debug("Binding to LDAP with DN : "+ldapBindUserDn+" pass : "+password);
 		
 		contextSource.setUserName(ldapBindUserDn.encode());
