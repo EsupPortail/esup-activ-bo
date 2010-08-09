@@ -1,6 +1,5 @@
 package org.esupportail.activbo.services.kerberos;
 
-import org.esupportail.activbo.exceptions.OldPasswordException;
 
 
 /**
@@ -49,7 +48,7 @@ public interface KRBAdmin {
 	 * @return NOT_CHANGED, CHANGED
 	 * @throws KRBException 
 	 */
-	public void changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException,OldPassException;
+	public void changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException;
 			
 	/**
 	 * @param principal
