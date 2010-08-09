@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
+import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.OldPasswordException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.commons.services.ldap.LdapException;
@@ -18,32 +20,13 @@ public interface AccountManagement {
 
 	public boolean setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException;
 		
-	public HashMap<String,String> setPassword(String id,String oldPassword,final String currentPassword,List<String>attrPersoInfo)throws LdapProblemException,UserPermissionException,KerberosException,OldPasswordException;
-	
 	public boolean updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException;
 	
-	public String getCode(String id,String canal)throws LdapProblemException;
-	
-	public String getCode(String id);
-	
+	public boolean getCode(String id,String canal)throws LdapProblemException;
+		
 	public boolean validateCode(String id,String code);
 	
-	//public void updateDisplayName(String displayName,String id,String code);
-
-
-	//public void setMailPerso(String id,String mailPerso);
+	public boolean changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException;
 	
-	/*public int validateCode(String id,String code);*/
-	
-	/*verification du code mentionné par l'utilisateur*/
-	/*public boolean verifyCode(String id,String code);
-	
-	public void updateMailPerso(String mailPerso);
-	
-	public void updatePhoneNumber(String phoneNumber);
-	
-	public putPassword(String password,String id,String newPassword);
-	
-	*
-	*/
+	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException;
 }
