@@ -8,7 +8,6 @@ import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
-import org.esupportail.activbo.exceptions.OldPasswordException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.commons.services.ldap.LdapException;
 import org.springframework.beans.factory.InitializingBean;
