@@ -49,6 +49,10 @@ public class KRBAdminTest implements KRBAdmin,InitializingBean {
 	public boolean exists(String principal)throws KRBException {
 		return true;
 	}
+	
+	public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException{
+		
+	}
 
 
 	public void afterPropertiesSet() throws Exception {

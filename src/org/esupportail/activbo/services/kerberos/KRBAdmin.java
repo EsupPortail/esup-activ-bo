@@ -57,5 +57,8 @@ public interface KRBAdmin {
 	 * @throws KRBException 
 	 */
 	public boolean exists(String principal) throws KRBException ;	
+	
+	
+	public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException;
 
 }

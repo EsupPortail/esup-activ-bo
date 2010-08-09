@@ -253,5 +253,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	public void setOptions(String options) {
 		this.options = options;
 	}
+	
+	public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException{
+	
+	}
 
 }
