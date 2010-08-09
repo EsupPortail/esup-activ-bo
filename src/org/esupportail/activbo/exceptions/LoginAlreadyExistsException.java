@@ -1,6 +1,6 @@
 package org.esupportail.activbo.exceptions;
 
-public class OldPasswordException extends Exception{
+public class LoginAlreadyExistsException extends Exception{
 	
 	/**
 	 * The id for serialization.
@@ -10,14 +10,14 @@ public class OldPasswordException extends Exception{
 	/**
 	 * @param message
 	 */
-	public OldPasswordException(final String message) {
+	public LoginAlreadyExistsException(final String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public OldPasswordException(final Throwable cause) {
+	public LoginAlreadyExistsException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -25,7 +25,7 @@ public class OldPasswordException extends Exception{
 	 * @param message
 	 * @param cause
 	 */
-	public OldPasswordException(final String message, final Throwable cause) {
+	public LoginAlreadyExistsException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
