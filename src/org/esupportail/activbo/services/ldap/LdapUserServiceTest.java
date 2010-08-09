@@ -129,7 +129,7 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("supannMailPerso", listMailPerso);
 		
 		List<String> listSLC=new ArrayList<String>();
-		listSLC.add(null);
+		listSLC.add("14804");
 		e.put("shadowLastChange", listSLC);
 		
 		List<String> listHN=new ArrayList<String>();
@@ -183,7 +183,7 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("supannMailPerso", listMailPerso);
 		
 		List<String> listSLC=new ArrayList<String>();
-		listSLC.add(null);
+		listSLC.add("14804");
 		e.put("shadowLastChange", listSLC);
 		
 		List<String> listHN=new ArrayList<String>();
