@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.esupportail.activbo.domain.DomainService;
+import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
+import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.OldPasswordException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.commons.services.ldap.LdapException;
@@ -30,25 +32,18 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		
 	}
 	
-	public HashMap<String,String> setPassword(String id,String oldPassword,final String currentPassword,List<String>attrPersoInfo)throws LdapProblemException,UserPermissionException,KerberosException,OldPasswordException{
+	/*public HashMap<String,String> setPassword(String id,String oldPassword,final String currentPassword,List<String>attrPersoInfo)throws LdapProblemException,UserPermissionException,KerberosException,OldPasswordException{
 		return domainService.setPassword(id,oldPassword,currentPassword,attrPersoInfo);
-	}
+	}*/
 	
 	public boolean updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException{
 		return domainService.updatePersonalInformations(id,code,hashBeanPersoInfo);
 	}
 	
-	public String getCode(String id,String canal)throws LdapProblemException{
+	public boolean getCode(String id,String canal)throws LdapProblemException{
 		return domainService.getCode(id, canal);
 	}
 	
-	public String getCode(String id){
-		return domainService.getCode(id);
-	}
-	
-	/*public void updateDisplayName(String displayName,String id, String code){
-		domainService.updateDisplayName(displayName,id,code);
-	}*/
 	
 	
 	public void afterPropertiesSet() throws Exception {
@@ -63,40 +58,13 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	public boolean validateCode(String id,String code){
 		return domainService.validateCode(id, code);
 	}
-	/*public void setMailPerso(String id,String mailPerso){
-		domainService.setMailPerso(id,mailPerso);
-	}*/
 	
-	/*public int validateCode(String id,String code){
-		return domainService.validateCode(id, code);
-	}*/
-	
-	/*
-	
-	public boolean verifyCode(String id,String code){
-		return true;
+	public boolean changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException{
+		return domainService.changeLogin(id, code, newLogin);
 	}
 	
-	public void setMailPerso(String mailPerso){
-		System.out.println("Modification du mail perso");
+	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException{
+		return domainService.authentificateUser(id, password,attrPersoInfo);
 	}
-	
-	public void setPhoneNumber(String phoneNumber){
-		System.out.println("Modification du numero de telephone");
-	}
-	
-	public putPassword(String password,String id,String newPassword){
-	
-	}
-	
-	
-	*
-	*
-	*
-	*
-	*
-	*/
-
-
 
 }
