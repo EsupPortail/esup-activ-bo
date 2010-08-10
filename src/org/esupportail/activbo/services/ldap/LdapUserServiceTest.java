@@ -116,6 +116,14 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		listDisplayName.add("Claudine Diallo Tissier");
 		e.put("displayName", listDisplayName);
 		
+		List<String> listUid=new ArrayList<String>();
+		listUid.add("cdiallo");
+		e.put("uid", listUid);
+		
+		List<String> listLogin=new ArrayList<String>();
+		listLogin.add("claudiallo");
+		e.put("supannAliasLogin", listLogin);
+		
 		List<String> listMail=new ArrayList<String>();
 		listMail.add("Claudine.Diallo@univ-paris1.fr");
 		e.put("mail", listMail);
@@ -164,7 +172,13 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		ldapUser.setId("cdiallo");
 	
 		
+		
 		Map<String,List<String>>e=new HashMap<String,List<String>>();
+		
+		List<String> listUid=new ArrayList<String>();
+		listUid.add("cdiallo");
+		e.put("uid", listUid);
+		
 		
 		List<String> listDisplayName=new ArrayList<String>();
 		listDisplayName.add("Claudine Diallo Tissier");
@@ -177,6 +191,11 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		List<String> listPager=new ArrayList<String>();
 		listPager.add(null);
 		e.put("pager", listPager);
+		
+		List<String> listLogin=new ArrayList<String>();
+		listLogin.add("claudiallo");
+		e.put("supannAliasLogin", listLogin);
+		
 		
 		List<String> listMailPerso=new ArrayList<String>();
 		listMailPerso.add("lorvivien@yahoo.fr");

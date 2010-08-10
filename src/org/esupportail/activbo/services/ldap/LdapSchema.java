@@ -6,238 +6,225 @@
  */
 package org.esupportail.activbo.services.ldap;
 
-import org.esupportail.commons.utils.Assert;
+
 import org.springframework.beans.factory.InitializingBean;
 
-/**
- * @brief Load and manage properties file
- * 
- * @author fjammes
- * 
- */
 
-/* TODO : gérer une liste de noms d'attributs afin de
- * ne pas avoir de code à ajouter ici en cas d'ajout
- * de paramètres */
 
-public final class LdapSchema implements InitializingBean{
+public class LdapSchema implements InitializingBean{
 	
-
+	private String pager;
 	/**
 	 * 
 	 */
-	public static String displayName;
+	private String displayName;
 	
 	/**
 	 * 
 	 */
-	protected static String birthdate;
+	private String birthdate;
 	
 	/**
 	 * 
 	 */
-	protected static String birthdateFormat;
+	private String birthdateFormat;
 	
 	/**
 	 * 
 	 */
-	protected static String uid;
+	private String uid;
 	
 	/**
 	 * 
 	 */
-	protected static String employeeId;
+	private String employeeId;
 	
 	/**
 	 * 
 	 */
-	protected static String cn;
+	private String cn;
 	
 	/**
 	 * 
 	 */
-	protected static String birthName;
+	private String birthName;
 	
 	/**
 	 * 
 	 */
-	protected static String password;
+	private String password;
 	
 	/**
 	 * 
 	 */
-	protected static String shadowLastChange;
+	private String shadowLastChange;
 	
 	/**
 	 * 
 	 */
-	protected static String mail;
+	private String mail;
 	
 	
-	protected static String usernameAdmin;
+	
+	private String usernameAdmin;
 	
 	
-	protected static String passwordAdmin;
+	private String passwordAdmin;
 	
 	
-	protected static String mailPerso;
+	private String mailPerso;
 
 
-	public static String getMailPerso() {
-		return mailPerso;
-	}
-
-	public static void setMailPerso(String mailPerso) {
-		LdapSchema.mailPerso = mailPerso;
-	}
-
-	/**
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	
-	
-	/**
-	 * @return Returns the birthdate.
-	 */
-	public static String getBirthdate() {
-		return birthdate;
-	}
-
-	/**
-	 * @param birthdate The birthdate to set.
-	 */
-	public void setBirthdate(String birthdate) {
-		LdapSchema.birthdate = birthdate;
-	}
-	
-	/**
-	 * @return Returns the birthdateFormat.
-	 */
-	public static String getBirthdateFormat() {
-		return birthdateFormat;
-	}
-
-	/**
-	 * @param birthdateFormat The birthdate format to set.
-	 */
-	public void setBirthdateFormat(String birthdateFormat) {
-		LdapSchema.birthdateFormat = birthdateFormat;
-	}
-
-	/**
-	 * @return Returns the cn.
-	 */
-	public static String getCn() {
-		return cn;
-	}
-
-	/**
-	 * @param cn The cn to set.
-	 */
-	public void setCn(String cn) {
-		LdapSchema.cn = cn;
-	}
-
-	/**
-	 * @return Returns the sn.
-	 */
-	public static String getBirthName() {
-		return birthName;
-	}
-
-	/**
-	 * @param sn The sn to set.
-	 */
-	public void setBirthName(String sn) {
-		LdapSchema.birthName = sn;
+	public LdapSchema(){
+		super();
 	}
 
 
-	/**
-	 * @return Returns the supannEmpId.
-	 */
-	public static String getEmployeeId() {
-		return employeeId;
+	public String getPager() {
+		return pager;
 	}
 
-	/**
-	 * @param supannEmpId The supannEmpId to set.
-	 */
-	public void setEmployeeId(String employeeId) {
-		LdapSchema.employeeId = employeeId;
+
+	public void setPager(String pager) {
+		this.pager = pager;
 	}
 
-	/**
-	 * @return Returns the uid.
-	 */
-	public static String getUid() {
-		return uid;
-	}
 
-	/**
-	 * @param uid The uid to set.
-	 */
-	public void setUid(String uid) {
-		LdapSchema.uid = uid;
-	}
-	
-	/**
-	 * @return Returns the displayName.
-	 */
-	public static String getDisplayName() {
+	public String getDisplayName() {
 		return displayName;
 	}
 
-	/**
-	 * @param displayName The displayName to set.
-	 */
+
 	public void setDisplayName(String displayName) {
-		LdapSchema.displayName = displayName;
+		this.displayName = displayName;
 	}
 
-	public static String getUsernameAdmin() {
-		return usernameAdmin;
+
+	public String getBirthdate() {
+		return birthdate;
 	}
 
-	public void setUsernameAdmin(String usernameAdmin) {
-		LdapSchema.usernameAdmin = usernameAdmin;
+
+	public void setBirthdate(String birthdate) {
+		this.birthdate = birthdate;
 	}
 
-	public static String getPassword() {
+
+	
+
+	public String getUid() {
+		return uid;
+	}
+
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
+
+	public String getEmployeeId() {
+		return employeeId;
+	}
+
+
+	public void setEmployeeId(String employeeId) {
+		this.employeeId = employeeId;
+	}
+
+
+	public String getCn() {
+		return cn;
+	}
+
+
+	public void setCn(String cn) {
+		this.cn = cn;
+	}
+
+
+	public String getBirthName() {
+		return birthName;
+	}
+
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
+	}
+
+
+	public String getPassword() {
 		return password;
 	}
 
+
 	public void setPassword(String password) {
-		LdapSchema.password = password;
+		this.password = password;
 	}
 
-	public static String getShadowLastChange() {
+
+	public String getShadowLastChange() {
 		return shadowLastChange;
 	}
 
+
 	public void setShadowLastChange(String shadowLastChange) {
-		LdapSchema.shadowLastChange = shadowLastChange;
+		this.shadowLastChange = shadowLastChange;
 	}
 
-	public static String getMail() {
+
+	public String getMail() {
 		return mail;
 	}
 
+
 	public void setMail(String mail) {
-		LdapSchema.mail = mail;
+		this.mail = mail;
 	}
 
-	public static String getPasswordAdmin() {
+
+	public String getUsernameAdmin() {
+		return usernameAdmin;
+	}
+
+
+	public void setUsernameAdmin(String usernameAdmin) {
+		this.usernameAdmin = usernameAdmin;
+	}
+
+
+	public String getPasswordAdmin() {
 		return passwordAdmin;
 	}
 
+
 	public void setPasswordAdmin(String passwordAdmin) {
-		LdapSchema.passwordAdmin = passwordAdmin;
+		this.passwordAdmin = passwordAdmin;
 	}
 
+
+	public String getMailPerso() {
+		return mailPerso;
+	}
+
+
+	public void setMailPerso(String mailPerso) {
+		this.mailPerso = mailPerso;
+	}
+
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
 
+
+	public String getBirthdateFormat() {
+		return birthdateFormat;
+	}
+
+
+	public void setBirthdateFormat(String birthdateFormat) {
+		this.birthdateFormat = birthdateFormat;
+	}
 }
