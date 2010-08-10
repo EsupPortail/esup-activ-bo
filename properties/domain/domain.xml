@@ -16,14 +16,16 @@
 		<property name="displayNameLdapAttribute" value="displayName" />
 		
 		<property name="accountDescrIdKey" value="${ldap.attribute.uid}"/>
-		<property name="accountDescrMailKey" value="${ldap.attribute.mail}"/>
+		
 		<property name="accountDescrCodeKey" value="${account.key.code}"/>
 		
 		<property name="hashCodeCodeKey" value="${access.code.key}"/>
 		<property name="hashCodeDateKey" value="${access.date.key}"/>
 		
 		<property name="hashCode" ref="hashCode"/>
-
+		
+		<property name="ldapSchema" ref="ldapSchema"/>
+		
 		<property name="formatDateConv" value="${access.date.format}"/>
 		
 		<property name="krbLdapMethod" value="${kerberos.ldap.method}" />
@@ -35,14 +37,10 @@
 		
 		<property name="accessCodeDelay" value="${access.code.delay}" />
 		
-		<property name="codeTransmission" value="${code.transmission}" />
-		<property name="codeTransmissionMail" value="${ldap.attribute.mailPerso}" />
-		<property name="codeTransmissionSms" value="${ldap.attribute.pager}" />
+		<property name="cleValidationPers" value="${ldap.attribute.employeeId}" />
 		
-		<property name="ldapUsernameAdmin" value="${ldap.username}" />
-		<property name="ldapPasswordAdmin" value="${ldap.password}" />
-		<property name="clePrimaireValidation" value="${cleprimaire.validation}" />
-		
+		<property name="cleValidationEtu" value="${ldap.attribute.studentId}" />
+				
 		<property name="smtpService" ref="smtpService" />
 		
 		<property name="mailCodeSubject" value="${smtp.mailcode.subject.french}" />

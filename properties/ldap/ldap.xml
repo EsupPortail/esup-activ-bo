@@ -266,19 +266,22 @@
 	
 	<bean id="ldapSchema"
 		class="org.esupportail.activbo.services.ldap.LdapSchema" >
-			<property name="displayName"><value>${ldap.attribute.displayName}</value></property>
-		    <property name="birthdate"><value>${ldap.attribute.birthdate}</value></property>
-		    <property name="birthdateFormat"><value>${ldap.attribute.birthdate.format}</value></property>
-			<property name="uid"><value>${ldap.attribute.uid}</value></property>
-			<property name="employeeId"><value>${ldap.attribute.employeeId}</value></property>
-			<property name="cn"><value>${ldap.attribute.cn}</value></property>
-			<property name="birthName"><value>${ldap.attribute.birthname}</value></property>
-			<property name="password"><value>${ldap.attribute.password}</value></property>
-			<property name="mail"><value>${ldap.attribute.mail}</value></property>
-			<property name="shadowLastChange"><value>${ldap.attribute.shadowLastChange}</value></property>
-			<property name="usernameAdmin"><value>${ldap.username}</value></property>
-			<property name="passwordAdmin"><value>${ldap.password}</value></property>			
+			
+			
+			<property name="displayName" value="${ldap.attribute.displayName}"/>
+			<property name="birthdate" value="${ldap.attribute.birthdate}"/>
+			<property name="birthdateFormat" value="${ldap.attribute.birthdate.format}"/>
+			<property name="uid" value="${ldap.attribute.uid}"/>
+			<property name="employeeId" value="${ldap.attribute.employeeId}"/>
+			<property name="cn" value="${ldap.attribute.cn}"/>
+			<property name="birthName" value="${ldap.attribute.birthname}"/>
+			<property name="password" value="${ldap.attribute.password}"/>
+			<property name="shadowLastChange" value="${ldap.attribute.shadowLastChange}"/>
+			<property name="mail" value="${ldap.attribute.mail}"/>
+			<property name="usernameAdmin" value="${ldap.username}"/>
+			<property name="passwordAdmin" value="${ldap.password}"/>
+			<property name="mailPerso" value="${ldap.attribute.mailPerso}"/>
+						
 	</bean>
-	
 
 </beans>
