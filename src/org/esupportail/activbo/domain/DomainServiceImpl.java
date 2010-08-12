@@ -638,40 +638,82 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return accountDescr;
 	}
 	
-	public WriteableLdapUserService getWriteableLdapUserService() {
-		return writeableLdapUserService;
-	}
+	
+	    
+    public boolean changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException{
+    	LdapUser ldapUser=null;
+    	try{
+	    	if (verifyCode(id,code)){/*security reasons*/
 
-	public void setWriteableLdapUserService(
-			
-			WriteableLdapUserService writeableLdapUserService) {
-			this.writeableLdapUserService = writeableLdapUserService;
-	}
+	    		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+newLogin+ ")");
+				
+				if (ldapUserList.size() == 0) {
+					throw new LdapLoginAlreadyExistsException("");
+				}
+	    		
+	    		this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(), ldapSchema.getPasswordAdmin());
+				logger.info("Authentification LDAP rï¿½ussie");
+				
+				ldapUser = this.ldapUserService.getLdapUser(id);
+				ldapUser.getAttributes().clear();
+				
+				List<String> list=new ArrayList<String>();
+				list.add(newLogin);
+				ldapUser.getAttributes().put(accountDescrIdKey,list);
+				
+				kerberosAdmin.rename(id,newLogin);
+				this.finalizeLdapWriting(ldapUser);
+					    	
+	    	}else{
+	    		throw new UserPermissionException("L'utilisateur n'a pas le droit de continuer l'activation");
+	    	}
 		
-	/**
-	 * @param krbLdapMethod
-	 */
-	public final void setKrbLdapMethod(String krbLdapMethod) {
-		this.krbLdapMethod = krbLdapMethod;
+    	
+    	}catch (LdapException e) {
+			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
+			throw new LdapProblemException("Probleme au niveau du LDAP");    	
+    	}catch(KRBPrincipalAlreadyExistsException e){
+			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
+			throw new LoginAlreadyExistsException("Le login existe déja");
+			
+    	}catch(KRBException e){
+			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
+			throw new KerberosException("Probleme au niveau de Kerberos");
+    	
+    	}catch(LdapLoginAlreadyExistsException e){
+			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
+			throw new LoginAlreadyExistsException("Le login existe déja");
+    	}	
+
+    	return true;
+    	
+	}
+    
+    public boolean validateCode(String id,String code){
+		
+		if (verifyCode(id,code)){
+			return true;
+		}
+		return false;
+	}
+   
+	public String getFormatDateConv() {
+		return formatDateConv;
 	}
 
-	/**
-	 * @param krbHost
-	 */
-	public final void setKrbHost(String krbHost) {
-		this.krbHost = krbHost;
+	public void setFormatDateConv(String formatDateConv) {
+		this.formatDateConv = formatDateConv;
 	}
 
-	
-	/**
-	 * @param kerberosAdmin
-	 */
-	public final void setKerberosAdmin(KRBAdmin kerberosAdmin) {
-		this.kerberosAdmin = kerberosAdmin;
+	public AsynchronousSmtpServiceImpl getSmtpService() {
+		return smtpService;
+	}
+
+	public void setSmtpService(AsynchronousSmtpServiceImpl smtpService) {
+		this.smtpService = smtpService;
 	}
 	
-	
-	private String genererCode(){
+private String genererCode(){
 		
 		Random r = new Random();
 		String code= "";
@@ -711,74 +753,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return false;
 		
     }
-    
-    public boolean changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException{
-    	LdapUser ldapUser=null;
-    	try{
-	    	if (verifyCode(id,code)){/*security reasons*/
 
-	    		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+newLogin+ ")");
-				
-				if (ldapUserList.size() == 0) {
-					throw new LdapLoginAlreadyExistsException("");
-				}
-	    		
-	    		this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(), ldapSchema.getPasswordAdmin());
-				logger.info("Authentification LDAP rï¿½ussie");
-				
-				ldapUser = this.ldapUserService.getLdapUser(id);
-				ldapUser.getAttributes().clear();
-				
-				List<String> list=new ArrayList<String>();
-				list.add(newLogin);
-				ldapUser.getAttributes().put(accountDescrIdKey,list);
-				
-				kerberosAdmin.rename(id,newLogin);
-				this.finalizeLdapWriting(ldapUser);
-					    	
-	    	}else{
-	    		throw new UserPermissionException("L'utilisateur n'a pas le droit de continuer l'activation");
-	    	}
-		
-    	
-    	}catch (LdapException e) {
-			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
-			throw new LdapProblemException("Probleme au niveau du LDAP");
-    	
-    	}catch(KRBPrincipalAlreadyExistsException e){
-			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
-			throw new LoginAlreadyExistsException("Le login existe déja");
-			
-    	}catch(KRBException e){
-			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
-			throw new KerberosException("Probleme au niveau de Kerberos");
-    	
-    	}catch(LdapLoginAlreadyExistsException e){
-			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
-			throw new LoginAlreadyExistsException("Le login existe déja");
-    	}	
-
-    	return true;
-    	
-	}
-   
-	public String getFormatDateConv() {
-		return formatDateConv;
-	}
-
-	public void setFormatDateConv(String formatDateConv) {
-		this.formatDateConv = formatDateConv;
-	}
-
-	public AsynchronousSmtpServiceImpl getSmtpService() {
-		return smtpService;
-	}
-
-	public void setSmtpService(AsynchronousSmtpServiceImpl smtpService) {
-		this.smtpService = smtpService;
-	}
 	
-	public void insertCodeInHash(String id){
+	private void insertCodeInHash(String id){
 		
 		if (!hashCode.containsKey(id)){
 			String code="12345678";
@@ -811,7 +788,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		}
 			
 	}
+
 	
+		
 	public String searchCode(String id){
 		HashMap<String,String>hashCodeDate=hashCode.get(id);
 		return hashCodeDate.get(hashCodeCodeKey);
@@ -865,17 +844,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		ldapUser.getAttributes().clear();
 		this.writeableLdapUserService.defineAnonymousContext();
 		logger.info("Ecriture dans le LDAP rï¿½ussie");
-	}
-	
-	
-	public boolean validateCode(String id,String code){
-				//Si le temps ecoulï¿½ est de moins de deux minutes
-		if (verifyCode(id,code)){
-			return true;
-		
-			
-		}
-		return false;
 	}
 	
 	public String getMailCodeSubject() {
@@ -933,6 +901,39 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public void setLdapSchema(LdapSchema ldapSchema) {
 		this.ldapSchema = ldapSchema;
 	}
+	
+	public WriteableLdapUserService getWriteableLdapUserService() {
+		return writeableLdapUserService;
+	}
+
+	public void setWriteableLdapUserService(
+			
+			WriteableLdapUserService writeableLdapUserService) {
+			this.writeableLdapUserService = writeableLdapUserService;
+	}
+		
+	/**
+	 * @param krbLdapMethod
+	 */
+	public final void setKrbLdapMethod(String krbLdapMethod) {
+		this.krbLdapMethod = krbLdapMethod;
+	}
+
+	/**
+	 * @param krbHost
+	 */
+	public final void setKrbHost(String krbHost) {
+		this.krbHost = krbHost;
+	}
+
+	
+	/**
+	 * @param kerberosAdmin
+	 */
+	public final void setKerberosAdmin(KRBAdmin kerberosAdmin) {
+		this.kerberosAdmin = kerberosAdmin;
+	}
+
 
 	
 	
