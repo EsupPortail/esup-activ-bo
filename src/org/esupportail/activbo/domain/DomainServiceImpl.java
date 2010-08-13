@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.esupportail.activbo.dao.DaoService;
 import org.esupportail.activbo.domain.tools.CleaningValidationCode;
@@ -40,7 +41,6 @@ import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.ldap.LdapUserService;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
-import org.esupportail.commons.services.smtp.AsynchronousSmtpServiceImpl;
 import org.esupportail.commons.utils.Assert;
 import org.esupportail.commons.web.beans.Paginator;
 import org.springframework.beans.factory.InitializingBean;
@@ -59,9 +59,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 */
 	private static final long serialVersionUID = -8200845058340254019L;
 	
-	private String cleValidationPers;
-	private String cleValidationEtu;
-	
+	/**
+	 * liste des canaux pouvant être gérés par l'application
+	 */
 	private List<Channel> channels;
 	
 	/**
@@ -337,53 +337,31 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException{
-		String cle=null;
 		HashMap<String, String> accountDescr=new HashMap<String,String>();
 		List<LdapUser> ldapUserList=null;
 		
-		try {
-			if (hashInfToValidate.containsKey(cleValidationPers)){
-				cle=cleValidationPers;
-				ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+cleValidationPers+"="+ hashInfToValidate.get(cleValidationPers) + ")");
-			}
-			else if (hashInfToValidate.containsKey(cleValidationEtu)){
-				cle=cleValidationEtu;
-				ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+cleValidationEtu+"="+ hashInfToValidate.get(cleValidationEtu) + ")");
-			}
+		/**
+		 * Construction d'un filtre ldap à partir des données à valider.
+		 * Si l'application du filtre retourne une entrée, c'est que les données sont valides
+		 */
+		
+		String filter="(&";
+		Set<String> keys=hashInfToValidate.keySet();
+		for(String key:keys)
+		{
+			String value=hashInfToValidate.get(key);
+			filter+="("+key+"="+value+")";
+		}
+		filter+=")";
+		if (logger.isDebugEnabled()) 
+			logger.debug("Le filtre construit pour la validation est : "+filter);
+		
+		ldapUserList = this.ldapUserService.getLdapUsersFromFilter(filter);									
 				
-				
-			if (ldapUserList.size() == 0) {
-				return null;
-			}
+		if (ldapUserList.size() == 0) throw new LdapProblemException("Identification échouée : "+filter);
 	
-			LdapUser ldapUser = ldapUserList.get(0); 
-							
-				
-			if (logger.isDebugEnabled()) {
-					logger.debug("Validating account for : " + ldapUser);
-			}
-			
-			//Parcours des informations � valider
-			Iterator<Map.Entry<String,String>> it=hashInfToValidate.entrySet().iterator();
-			while(it.hasNext()){
-				Map.Entry<String,String> e=it.next();
-				
-				//on ne teste pas la validit� de la valeur cl�
-				if (!e.getKey().equals(cle)){
-					String ldapUserAttrValue = ldapUser.getAttribute(e.getKey());
-					
-					if (ldapUserAttrValue == null) {
-						String errmsg = "LDAP account with "+ cle+" "+ hashInfToValidate.get(cle) + " has no "+e.getKey();
-						logger.error(errmsg);
-						throw new InvalidLdapAccountException(errmsg);
-					}
-	
-					if (!ldapUserAttrValue.equals(e.getValue())){
-						logger.info("Invalid value "+e.getValue()+" associate to attribute "+e.getKey()+" for LDAP Account with "+cle+" "+hashInfToValidate.get(cle));
-						return null;
-					}
-				}
-			}
+		LdapUser ldapUser = ldapUserList.get(0); 
+
 			//Construction du hasMap de retour
 			accountDescr.put(accountDescrIdKey, ldapUser.getAttribute(accountDescrIdKey));
 			accountDescr.put(ldapSchema.getMail(), ldapUser.getAttribute(ldapSchema.getMail()));
@@ -394,16 +372,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			//envoi d'un code si le compte n'est pas activ�
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())==null){
-				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey),1800);
+				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey));
 				accountDescr.put(accountDescrCodeKey,code);
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(accountDescrIdKey)+" dans la table effectu�e");
 			}
-				
-			} catch (LdapException e) {
-				logger.debug("Exception thrown by validateAccount() : "+ e.getMessage());
-				throw new LdapProblemException("Probleme au niveau du LDAP");
-			}
-		
+						
 		return accountDescr;
 	}
 
@@ -577,7 +550,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			}
 			//envoi d'un code si le compte n'est pas activ�
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())!=null){
-				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey),1800);
+				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey));
 				accountDescr.put(accountDescrCodeKey,code );
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(accountDescrIdKey)+" dans la table effectu�e");
 			}
@@ -690,22 +663,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 	public void setAccountDescrCodeKey(String accountDescrCodeKey) {
 		this.accountDescrCodeKey = accountDescrCodeKey;
-	}
-
-	public String getCleValidationEtu() {
-		return cleValidationEtu;
-	}
-
-	public void setCleValidationEtu(String cleValidationEtu) {
-		this.cleValidationEtu = cleValidationEtu;
-	}
-
-	public String getCleValidationPers() {
-		return cleValidationPers;
-	}
-
-	public void setCleValidationPers(String cleValidationPers) {
-		this.cleValidationPers = cleValidationPers;
 	}
 
 	public LdapSchema getLdapSchema() {
