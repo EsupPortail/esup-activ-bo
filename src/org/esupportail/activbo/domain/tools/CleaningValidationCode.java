@@ -7,14 +7,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.esupportail.activbo.domain.beans.HashCode;
+import org.esupportail.activbo.domain.beans.ValidationCode;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
 import org.springframework.beans.factory.InitializingBean;
 
-public class CleaningHashCode extends Thread implements InitializingBean{
+public class CleaningValidationCode extends Thread implements InitializingBean{
 	
-	private HashCode hashCode;
+	private ValidationCode validationCode;
 	private String formatDateConv;
 	private String hashCodeDateKey;
 	private String hashCodeCodeKey;
@@ -22,7 +22,7 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 	
 	private final Logger logger = new LoggerImpl(getClass());
 	
-	public CleaningHashCode(){
+	public CleaningValidationCode(){
 
 	}
 	
@@ -30,10 +30,10 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 	
 		try {
 			while(true){
-				logger.info("Boucle de nettoyage lancée");
-				if (!hashCode.isEmpty()){
+				logger.info("Boucle de nettoyage lancï¿½e");
+				if (!validationCode.isEmpty()){
 					logger.info("La table de hashage n'est pas vide");
-					Iterator<Map.Entry<String, HashMap<String,String>>> it=hashCode.entrySet().iterator();
+					Iterator<Map.Entry<String, HashMap<String,String>>> it=validationCode.entrySet().iterator();
 					while(it.hasNext()){
 						Map.Entry<String, HashMap<String,String>> e=it.next();
 						HashMap<String,String> hash=e.getValue();
@@ -42,7 +42,7 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 						Date date=stringToDate(dateToString(new Date()));
 						
 						if (date.getTime()>this.stringToDate(hash.get(hashCodeDateKey)).getTime()){
-							logger.info("Expiration code, Ligne utilisateur "+e.getKey()+" supprimée");
+							logger.info("Expiration code, Ligne utilisateur "+e.getKey()+" supprimï¿½e");
 							it.remove();
 						}
 					}
@@ -91,12 +91,12 @@ public class CleaningHashCode extends Thread implements InitializingBean{
 		this.formatDateConv = formatDateConv;
 	}
 
-	public HashCode getHashCode() {
-		return hashCode;
+	public ValidationCode getHashCode() {
+		return validationCode;
 	}
 
-	public void setHashCode(HashCode hashCode) {
-		this.hashCode = hashCode;
+	public void setHashCode(ValidationCode validationCode) {
+		this.validationCode = validationCode;
 	}
 
 	public int getCleaningTimeInterval() {
