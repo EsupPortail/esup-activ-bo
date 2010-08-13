@@ -18,40 +18,61 @@
 		<property name="accountDescrIdKey" value="${ldap.attribute.uid}"/>
 		
 		<property name="accountDescrCodeKey" value="${account.key.code}"/>
-		
-		<property name="hashCodeCodeKey" value="${access.code.key}"/>
-		<property name="hashCodeDateKey" value="${access.date.key}"/>
-		
-		<property name="hashCode" ref="hashCode"/>
+						
+		<property name="validationCode" ref="validationCode"/>
 		
 		<property name="ldapSchema" ref="ldapSchema"/>
-		
-		<property name="formatDateConv" value="${access.date.format}"/>
 		
 		<property name="krbLdapMethod" value="${kerberos.ldap.method}" />
 		<property name="krbHost" value="${kerberos.host}" />
 		
 		<property name="kerberosAdmin" ref="KRBAdminService" />
 		
-		<property name="clean" ref="cleaningHashCode" />
-		
-		<property name="accessCodeDelay" value="${access.code.delay}" />
-		
+		<property name="clean" ref="cleaningValidationCode" />
+				
 		<property name="cleValidationPers" value="${ldap.attribute.employeeId}" />
 		
-		<property name="cleValidationEtu" value="${ldap.attribute.studentId}" />
-				
-		<property name="smtpService" ref="smtpService" />
+		<property name="cleValidationEtu" value="${ldap.attribute.studentId}" />				
 		
-		<property name="mailCodeSubject" value="${smtp.mailcode.subject.french}" />
-		<property name="mailCodeBody" value="${smtp.mailcode.body.french}" />
+		<property name="channels">
+			<list>
+				<ref bean="mailPersoChannel"/>		
+			</list>
+		</property>	
 			
 	</bean>
+	
+	<bean
+		id="abstractChannel"
+		class="org.esupportail.activbo.domain.beans.channels.AbstractChannel"
+		abstract="true"
+		>
+		<property name="codeDelay" value="${validation.code.delay}"/>
+		<property name="accountDescrIdKey" value="${ldap.attribute.uid}"/>
+		<property name="ldapUserService" ref="ldapUserService"/>
+		<property name="validationCode" ref="validationCode"/>
+	</bean>	
+	
+	<bean
+		id="mailPersoChannel"
+		class="org.esupportail.activbo.domain.beans.channels.MailPersoChannel"
+		parent="abstractChannel"
+		>
+		<property name="name" value="${validation.code.delay}"/>	
+		<property name="smtpService" ref="smtpService"/>
+		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
+		<property name="mailCodeBody" value="${channel.persomail.body.fr}"/>
+	</bean>	
 		
 	<bean
-		id="hashCode"
-		class="org.esupportail.activbo.domain.beans.HashCode"
+		id="validationCode"
+		class="org.esupportail.activbo.domain.beans.ValidationCode"
 		>
+		<property name="codeKey" value="${validation.code.key}"/>
+		<property name="dateKey" value="${validation.date.key}"/>
+		<property name="dateFormat" value="${validation.date.format}"/>
+		<property name="codeLenght" value="${validation.code.lenght}"/>
+		<property name="nbMaxFail" value="${validation.code.nbMaxFail}"/>
 	</bean>
 	
 

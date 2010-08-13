@@ -7,13 +7,14 @@
 	>
 
 	<bean
-		id="cleaningHashCode"
-		class="org.esupportail.activbo.domain.tools.CleaningHashCode"
+		id="cleaningValidationCode"
+		class="org.esupportail.activbo.domain.tools.CleaningValidationCode"
 		>
 		
-		<property name="formatDateConv" value="${formatdate.conversion}"/>
-		<property name="accessDateKey" value="${access.key.date}"/>
-		<property name="hashCode" ref="hashCode"/>
+		<property name="formatDateConv" value="${validation.date.format}"/>
+		<property name="validationCodeDateKey" value="${validation.date.key}"/>
+		<property name="cleaningTimeInterval" value="${access.cleaning.timeinterval}"/>
+		<property name="validationCode" ref="validationCode"/>
 		
 	</bean>
 	
