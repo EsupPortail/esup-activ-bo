@@ -169,5 +169,12 @@ private String dateToString(Date sDate){
 		this.nbMaxFail = nbMaxFail;
 	}
 
+	/**
+	 * @param dateFormat the dateFormat to set
+	 */
+	public void setDateFormat(String dateFormat) {
+		this.dateFormat = dateFormat;
+	}
+
 
 }
