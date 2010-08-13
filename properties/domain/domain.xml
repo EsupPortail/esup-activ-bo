@@ -28,11 +28,7 @@
 		
 		<property name="kerberosAdmin" ref="KRBAdminService" />
 		
-		<property name="clean" ref="cleaningValidationCode" />
-				
-		<property name="cleValidationPers" value="${ldap.attribute.employeeId}" />
-		
-		<property name="cleValidationEtu" value="${ldap.attribute.studentId}" />				
+		<property name="clean" ref="cleaningValidationCode" />								
 		
 		<property name="channels">
 			<list>
