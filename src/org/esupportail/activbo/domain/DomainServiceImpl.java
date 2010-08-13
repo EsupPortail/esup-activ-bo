@@ -4,26 +4,20 @@
  */
 package org.esupportail.activbo.domain;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-
-import javax.mail.internet.InternetAddress;
 
 import org.esupportail.activbo.dao.DaoService;
-import org.esupportail.activbo.domain.tools.CleaningHashCode;
-import org.esupportail.activbo.domain.beans.HashCode;
+import org.esupportail.activbo.domain.tools.CleaningValidationCode;
+import org.esupportail.activbo.domain.beans.ValidationCode;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
+import org.esupportail.activbo.domain.beans.channels.Channel;
+import org.esupportail.activbo.domain.beans.channels.ChannelException;
 
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
@@ -68,6 +62,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private String cleValidationPers;
 	private String cleValidationEtu;
 	
+	private List<Channel> channels;
 	
 	/**
 	 * {@link DaoService}.
@@ -77,24 +72,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	private LdapSchema ldapSchema;
 	
-	private String accountDescrCodeKey;
-	
-	private int accessCodeDelay;
-	
-		
-	private String hashCodeCodeKey;
-	private String hashCodeDateKey;
-	
-	
-	private String formatDateConv;
-	
-	private AsynchronousSmtpServiceImpl smtpService;
-	
-	private String mailCodeSubject;
-	private String mailCodeBody;
-	
+	private String accountDescrCodeKey;	
 			
-	private HashCode hashCode;
+	private ValidationCode validationCode;
 	/**
 	 * kerberos.ldap.method
 	 * kerberos.host
@@ -121,9 +101,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 */
 	private String displayNameLdapAttribute;
 	
-	
-	private String mailPerso;
-	
 	/**
 	 * A logger.
 	 */
@@ -132,7 +109,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private WriteableLdapUserService writeableLdapUserService;
 
 		
-	private CleaningHashCode clean;
+	private CleaningValidationCode clean;
 	
 	
 	/**
@@ -154,6 +131,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				"property daoService of class " + this.getClass().getName() + " can not be null");
 		Assert.notNull(this.ldapUserService, 
 				"property ldapUserService of class " + this.getClass().getName() + " can not be null");
+		Assert.notNull(this.channels, 
+				"property channels of class " + this.getClass().getName() + " can not be null");
 		Assert.hasText(this.displayNameLdapAttribute, 
 				"property displayNameLdapAttribute of class " + this.getClass().getName() 
 				+ " can not be null");
@@ -384,12 +363,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					logger.debug("Validating account for : " + ldapUser);
 			}
 			
-			//Parcours des informations à valider
+			//Parcours des informations ï¿½ valider
 			Iterator<Map.Entry<String,String>> it=hashInfToValidate.entrySet().iterator();
 			while(it.hasNext()){
 				Map.Entry<String,String> e=it.next();
 				
-				//on ne teste pas la validité de la valeur clé
+				//on ne teste pas la validitï¿½ de la valeur clï¿½
 				if (!e.getKey().equals(cle)){
 					String ldapUserAttrValue = ldapUser.getAttribute(e.getKey());
 					
@@ -415,8 +394,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			//envoi d'un code si le compte n'est pas activï¿½
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())==null){
-				this.insertCodeInHash(ldapUser.getAttribute(accountDescrIdKey));
-				accountDescr.put(accountDescrCodeKey, searchCode(ldapUser.getAttribute(accountDescrIdKey)));
+				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey),1800);
+				accountDescr.put(accountDescrCodeKey,code);
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(accountDescrIdKey)+" dans la table effectuï¿½e");
 			}
 				
@@ -433,7 +412,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		try{
 
-			if (verifyCode(id,code)){/*security reasons*/
+			if (validationCode.verify(id,code)){/*security reasons*/
 				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(),ldapSchema.getPasswordAdmin());
 				logger.info("Authentification LDAP rï¿½ussie");
 				
@@ -469,44 +448,16 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	public boolean getCode(String id,String canal)throws LdapProblemException{
 		
-		try{
-			this.insertCodeInHash(id);
-			logger.info("Insertion code pour l'utilisateur "+id+" dans la table effectuï¿½e");
-			
-			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+ id + ")");
-			
-			if (ldapUserList.size() == 0) {
-				return false;
-			}
-	
-			LdapUser ldapUserRead = ldapUserList.get(0); 
-			
-			String mailPerso = ldapUserRead.getAttribute(ldapSchema.getMailPerso());
-			String mobile= ldapUserRead.getAttribute(ldapSchema.getPager());
-			
-			//String mailPerso="lorvivien@yahoo.fr";
-			if (canal.equals(ldapSchema.getMailPerso())){
-				InternetAddress mail=null;
+		for(Channel c:channels)
+			if(c.getName().equalsIgnoreCase(canal))
 				try {
-					mail = new InternetAddress(mailPerso);
-					smtpService.send(mail,this.mailCodeSubject,this.mailCodeBody+" "+this.searchCode(id),"");
-					logger.info("Envoi du code ï¿½ l'adresse mail "+mailPerso);
-				
-				}catch (Exception e) {
-					return false;
+					c.send(id);
+					break;
+				} catch (ChannelException e) {
+					// TODO supprimer le try catch et remplacer LdapProblemException par ChannelException 
+					e.printStackTrace();
 				}
-			}
-		
-			else if (canal.equals(ldapSchema.getPager())){
-				//envoi de sms au numero +mobile+
-			}
-	
-		} catch (LdapException e) {
-			logger.debug("Exception thrown by getCode() : "+ e.getMessage());
-			throw new LdapProblemException("Probleme au niveau du LDAP");
-		}
-		
-		
+		//TODO supprimer le return et changer le nom de la mÃ©thode
 		return true;
 		
 	}
@@ -518,7 +469,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		try {
 			
 			
-			if (verifyCode(id,code)){/*security reasons*/
+			if (validationCode.verify(id,code)){/*security reasons*/
 				
 				//Lecture LDAP
 				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+ id + ")");
@@ -626,8 +577,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			}
 			//envoi d'un code si le compte n'est pas activï¿½
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())!=null){
-				this.insertCodeInHash(ldapUser.getAttribute(accountDescrIdKey));
-				accountDescr.put(accountDescrCodeKey, searchCode(ldapUser.getAttribute(accountDescrIdKey)));
+				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey),1800);
+				accountDescr.put(accountDescrCodeKey,code );
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(accountDescrIdKey)+" dans la table effectuï¿½e");
 			}
 			
@@ -643,7 +594,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     public boolean changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException{
     	LdapUser ldapUser=null;
     	try{
-	    	if (verifyCode(id,code)){/*security reasons*/
+	    	if (validationCode.verify(id,code)){/*security reasons*/
 
 	    		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+newLogin+ ")");
 				
@@ -674,7 +625,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			throw new LdapProblemException("Probleme au niveau du LDAP");    	
     	}catch(KRBPrincipalAlreadyExistsException e){
 			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
-			throw new LoginAlreadyExistsException("Le login existe déja");
+			throw new LoginAlreadyExistsException("Le login existe dï¿½ja");
 			
     	}catch(KRBException e){
 			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
@@ -682,163 +633,42 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     	
     	}catch(LdapLoginAlreadyExistsException e){
 			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
-			throw new LoginAlreadyExistsException("Le login existe déja");
+			throw new LoginAlreadyExistsException("Le login existe dï¿½ja");
     	}	
 
     	return true;
     	
 	}
     
-    public boolean validateCode(String id,String code){
+    public boolean validateCode(String id,String code) {
 		
-		if (verifyCode(id,code)){
-			return true;
-		}
-		return false;
-	}
-   
-	public String getFormatDateConv() {
-		return formatDateConv;
-	}
-
-	public void setFormatDateConv(String formatDateConv) {
-		this.formatDateConv = formatDateConv;
-	}
-
-	public AsynchronousSmtpServiceImpl getSmtpService() {
-		return smtpService;
-	}
-
-	public void setSmtpService(AsynchronousSmtpServiceImpl smtpService) {
-		this.smtpService = smtpService;
-	}
-	
-private String genererCode(){
-		
-		Random r = new Random();
-		String code= "";
-		char [] tableauChiffres = {'0','1','2','3','4','5','6','7','8','9'};
-		
-		for (int i = 0; i < 8; i++){
-		    int indiceChiffre = r.nextInt(tableauChiffres.length);
-			// retourne le chiffre correspondant ï¿½ cette indice
-			char chiffre = tableauChiffres[indiceChiffre];
-			code=code+chiffre;
-		}
-		return code;
-	}
-	
-	private String dateToString(Date sDate) throws ParseException{
-        SimpleDateFormat sdf = new SimpleDateFormat(formatDateConv);
-        return sdf.format(sDate);
-    }
-    
-    private boolean verifyCode(String id,String code){
-    	//Recuperation du hashmap correspondant ï¿½ l'id de l'utilisateur
-		HashMap <String,String>result=hashCode.getValueWithKey(id);
-		if (result!=null){
-			logger.info("L'utilisateur "+id+" possï¿½de un code");//l'utilisateur possï¿½de un code 
-			if (code.equalsIgnoreCase(result.get(hashCodeCodeKey))){
-				logger.info("Code utilisateur "+id+" valide");//code invalide
+		try {
+			if (validationCode.verify(id,code)){
 				return true;
 			}
-			else{
-				logger.warn("Attention!!!, code en paramï¿½tre de la mï¿½thode invalide");
-			}
-		}
-		else{
-			logger.info("Pas de code pour l'utilisateur "+id);
-
+		} catch (UserPermissionException e) {
+			// TODO supprimer le try catch et Ã©chaper l'exception de la mÃ©thode
+			e.printStackTrace();
 		}
 		return false;
-		
-    }
-
-	
-	private void insertCodeInHash(String id){
-		
-		if (!hashCode.containsKey(id)){
-			String code="12345678";
-			HashMap<String,String> hashCodeDate= new HashMap<String,String>();
-			hashCodeDate.put(hashCodeCodeKey,code);
-			
-			
-			Calendar c = new GregorianCalendar();
-			c.add(Calendar.MINUTE,accessCodeDelay);
-					
-			try {
-				hashCodeDate.put(hashCodeDateKey,this.dateToString(c.getTime()));
-			} catch (ParseException e) {
-			
-			}
-			hashCode.putKeyValue(id, hashCodeDate);
-		}
-		
-		else{
-			HashMap<String,String> hashCodeDate=hashCode.get(id);
-			Calendar c = new GregorianCalendar();
-			c.add(Calendar.MINUTE,accessCodeDelay);
-			try {
-				hashCodeDate.put(hashCodeDateKey,this.dateToString(c.getTime()));
-			} catch (ParseException e) {
-				
-			}
-			
-			hashCode.putKeyValue(id, hashCodeDate);
-		}
-			
 	}
-
-	
-		
-	public String searchCode(String id){
-		HashMap<String,String>hashCodeDate=hashCode.get(id);
-		return hashCodeDate.get(hashCodeCodeKey);
-	}
-
-	public CleaningHashCode getClean() {
+			
+	public CleaningValidationCode getClean() {
 		return clean;
 	}
 
-	public void setClean(CleaningHashCode clean) {
+	public void setClean(CleaningValidationCode clean) {
 		this.clean = clean;
 	}
 	
-	public HashCode getHashCode() {
-		return hashCode;
+	public ValidationCode getValidationCode() {
+		return validationCode;
 	}
 
-	public void setHashCode(HashCode hashCode) {
-		this.hashCode = hashCode;
+	public void setValidationCode(ValidationCode validationCode) {
+		this.validationCode = validationCode;
 	}
-
-	public String getHashCodeCodeKey() {
-		return hashCodeCodeKey;
-	}
-
-	public void setHashCodeCodeKey(String hashCodeCodeKey) {
-		this.hashCodeCodeKey = hashCodeCodeKey;
-	}
-
-	public String getHashCodeDateKey() {
-		return hashCodeDateKey;
-	}
-
-	public void setHashCodeDateKey(String hashCodeDateKey) {
-		this.hashCodeDateKey = hashCodeDateKey;
-	}
-
-	
-
-	public int getAccessCodeDelay() {
-		return accessCodeDelay;
-	}
-
-	public void setAccessCodeDelay(int accessCodeDelay) {
-		this.accessCodeDelay = accessCodeDelay;
-	}
-	
-	
+		
 	private void finalizeLdapWriting(LdapUser ldapUser){
 		this.writeableLdapUserService.updateLdapUser(ldapUser);
 		ldapUser.getAttributes().clear();
@@ -846,22 +676,6 @@ private String genererCode(){
 		logger.info("Ecriture dans le LDAP rï¿½ussie");
 	}
 	
-	public String getMailCodeSubject() {
-		return mailCodeSubject;
-	}
-
-	public void setMailCodeSubject(String mailCodeSubject) {
-		this.mailCodeSubject = mailCodeSubject;
-	}
-
-	public String getMailCodeBody() {
-		return mailCodeBody;
-	}
-
-	public void setMailCodeBody(String mailCodeBody) {
-		this.mailCodeBody = mailCodeBody;
-	}
-
 	public String getAccountDescrIdKey() {
 		return accountDescrIdKey;
 	}
@@ -932,6 +746,13 @@ private String genererCode(){
 	 */
 	public final void setKerberosAdmin(KRBAdmin kerberosAdmin) {
 		this.kerberosAdmin = kerberosAdmin;
+	}
+
+	/**
+	 * @param channels the channels to set
+	 */
+	public void setChannels(List<Channel> channels) {
+		this.channels = channels;
 	}
 
 
