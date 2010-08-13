@@ -49,7 +49,6 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 */
 	public void add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException{
 		
-		//int state=ADDED;		
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
 		if( !(principal.contains(" ") || passwd.contains(" "))){
@@ -79,18 +78,13 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		}else 
 			throw new KRBIllegalArgumentException("Illegal argument");		
 		
-		//return state;
 	}
 	
 	
 	/** 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#del(String)
-	 * 
-	 * SUPPRESSION D'UN UTILISATEUR
-	 * 
 	 */
 	public void del(final String principal) throws KRBException{
-		//int state=DELETED;
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
 		String cmd =kadmin+" del "+principal;
@@ -109,8 +103,6 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			 logger.error(e);
 			 throw new KRBException("IOException : "+e);		
 		}
-		
-		//return state;
 	}
 	
 	
@@ -118,12 +110,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String)
 	 * 
-	 * UTILISE pour l'ACTIVATION et la REINITIALISATION
-	 * 
 	 */
 	public void changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException{
 		
-		//int state=CHANGED;
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
 		//eliminer les requetes par injection de code
@@ -146,18 +135,12 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			}
 			
 		}else 
-			throw new KRBIllegalArgumentException("Illegal argument");		
-		
-		//return state;
-	
+			throw new KRBIllegalArgumentException("Illegal argument");			
 	}
 	
 	/** 
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String, String)
-	 *  
-	 * UTILSISE pour le CHANGEMENT DE MOT DE PASSE
-	 * 
 	 */
 	public void changePasswd(String principal, String oldPasswd, String newPasswd) throws KRBException{
 		//int state=NOT_CHANGED;
@@ -191,7 +174,31 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 				pw.close();
 		}
 		
-		//return state;
+	}
+	/** 
+	 * @throws KRBException,KRBPrincipalAlreadyExistsException 
+	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#rename(String,String)
+	 */
+	public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException{
+		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
+		String cmd=kadmin+" rename "+oldPrincipal+" "+newPrincipal;
+		
+		Runtime runtime = Runtime.getRuntime();
+		Process process;
+		try {
+			//debug
+			logger.debug(cmd);
+			
+			process = runtime.exec(cmd);
+			//this command must be silence if not something unknown happened
+			//TODO voir si on peut reperer si le principal existe déjà et lancer une exception
+			if(verboseProcess(process)) 
+				throw new KRBException("Unknown error. See log files for more information. oldPrincipal="+oldPrincipal+", newPrincipal="+newPrincipal);
+			
+		 }catch (IOException e) {
+			 logger.error(e);
+			 throw new KRBException("IOException : "+e);		
+		}
 	}
 		
 	/** 
@@ -239,12 +246,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			return false;					
 	}
 	
-
-
 	public void setPrincipalAdmin(final String principalAdmin) {
 		this.principalAdmin = principalAdmin;
 	}
-
 
 	public void setPrincipalAdminKeyTab(final String principalAdminKeyTab) {
 		this.principalAdminKeyTab = principalAdminKeyTab;
@@ -252,10 +256,6 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 
 	public void setOptions(String options) {
 		this.options = options;
-	}
-	
-	public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException{
-	
 	}
 
 }
