@@ -72,7 +72,7 @@
 		<property name="dateKey" value="${validation.date.key}"/>
 		<property name="dateFormat" value="${validation.date.format}"/>
 		<property name="codeLenght" value="${validation.code.lenght}"/>
-		<property name="nbMaxFail" value="${validation.code.nbMaxFail}"/>
+		<property name="codeDelay" value="${validation.code.delay}"/>
 	</bean>
 	
 
