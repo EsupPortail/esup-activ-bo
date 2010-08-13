@@ -16,8 +16,8 @@ public class CleaningValidationCode extends Thread implements InitializingBean{
 	
 	private ValidationCode validationCode;
 	private String formatDateConv;
-	private String hashCodeDateKey;
-	private String hashCodeCodeKey;
+	private String validationCodeDateKey;
+
 	private int cleaningTimeInterval;
 	
 	private final Logger logger = new LoggerImpl(getClass());
@@ -37,11 +37,11 @@ public class CleaningValidationCode extends Thread implements InitializingBean{
 					while(it.hasNext()){
 						Map.Entry<String, HashMap<String,String>> e=it.next();
 						HashMap<String,String> hash=e.getValue();
-						logger.info("======= Utilisateur "+e.getKey()+"(Code --> "+hash.get("code")+"  ||  Date d'expiration --> "+hash.get(hashCodeDateKey)+")");
+						logger.info("======= Utilisateur "+e.getKey()+"(Code --> "+hash.get("code")+"  ||  Date d'expiration --> "+hash.get(validationCodeDateKey)+")");
 						
 						Date date=stringToDate(dateToString(new Date()));
 						
-						if (date.getTime()>this.stringToDate(hash.get(hashCodeDateKey)).getTime()){
+						if (date.getTime()>this.stringToDate(hash.get(validationCodeDateKey)).getTime()){
 							logger.info("Expiration code, Ligne utilisateur "+e.getKey()+" supprim�e");
 							it.remove();
 						}
@@ -91,37 +91,27 @@ public class CleaningValidationCode extends Thread implements InitializingBean{
 		this.formatDateConv = formatDateConv;
 	}
 
-	public ValidationCode getHashCode() {
-		return validationCode;
-	}
-
-	public void setHashCode(ValidationCode validationCode) {
-		this.validationCode = validationCode;
-	}
 
 	public int getCleaningTimeInterval() {
 		return cleaningTimeInterval;
 	}
 
 	public void setCleaningTimeInterval(int cleaningTimeInterval) {
-		this.cleaningTimeInterval = cleaningTimeInterval;
+		this.cleaningTimeInterval = cleaningTimeInterval*1000; //en secondes
 	}
 
-	
-	public String getHashCodeDateKey() {
-		return hashCodeDateKey;
+	/**
+	 * @param validationCodeDateKey the validationCodeDateKey to set
+	 */
+	public void setValidationCodeDateKey(String validationCodeDateKey) {
+		this.validationCodeDateKey = validationCodeDateKey;
 	}
 
-	public void setHashCodeDateKey(String hashCodeDateKey) {
-		this.hashCodeDateKey = hashCodeDateKey;
-	}
-
-	public String getHashCodeCodeKey() {
-		return hashCodeCodeKey;
-	}
-
-	public void setHashCodeCodeKey(String hashCodeCodeKey) {
-		this.hashCodeCodeKey = hashCodeCodeKey;
+	/**
+	 * @param validationCode the validationCode to set
+	 */
+	public void setValidationCode(ValidationCode validationCode) {
+		this.validationCode = validationCode;
 	}
 	
 }
