@@ -27,10 +27,11 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 	private final Logger logger = new LoggerImpl(getClass());
 	
 	private String codeKey;
+	private int codeDelay;
+	private int codeLenght;
 	private String dateKey;
 	private String dateFormat;
 
-	private int codeLenght;
 	private int nbMaxFail;
 	
 	private HashMap<String,Integer> failValidation=new HashMap<String,Integer>();
@@ -94,6 +95,10 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 		return code;
 				
 		}
+	
+	public String generateCode(String id){
+		return generateCode(id,codeDelay);
+	}
 
 private String getRandomCode()
 {
@@ -174,6 +179,13 @@ private String dateToString(Date sDate){
 	 */
 	public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
+	}
+
+	/**
+	 * @param codeDelay the codeDelay to set
+	 */
+	public void setCodeDelay(int codeDelay) {
+		this.codeDelay = codeDelay;
 	}
 
 
