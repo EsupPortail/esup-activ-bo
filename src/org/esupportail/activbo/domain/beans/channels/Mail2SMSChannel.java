@@ -32,8 +32,7 @@ public class Mail2SMSChannel extends AbstractChannel{
 			logger.debug("Insertion code pour l'utilisateur "+id+" dans la table effectuée");
 			
 			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+ id + ")");
-			
-			if (ldapUserList.size() == 0) throw new ChannelException("Utilisateur "+id+" inconnu");
+						if (ldapUserList.size() == 0) throw new ChannelException("Utilisateur "+id+" inconnu");
 	
 			LdapUser ldapUserRead = ldapUserList.get(0); 
 			
@@ -53,7 +52,7 @@ public class Mail2SMSChannel extends AbstractChannel{
 			mailBody=mailBody.replace("{1}", validationCode.getCode(id));
 			mailBody=mailBody.replace("{2}", validationCode.getDate(id));
 			
-			smtpService.send(mail,this.mailCodeSubject,mailBody,"");
+			smtpService.send(mail,this.mailCodeSubject,"",mailBody);
 			
 			logger.debug("Envoi du code par sms via mail2sms au numéro portable "+pager);										
 	}
