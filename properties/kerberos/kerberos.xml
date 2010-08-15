@@ -12,18 +12,18 @@
 		The configuration file for domain services.
 		This file is referenced by /properties/applicationContext.xml.
 	-->
-<!-- 
+
 	<bean id="KRBAdminService"
 		class="org.esupportail.activbo.services.kerberos.KRBAdminTest" >
 		<description>
 			Bean de test pour l'administration d'un serveur Kerberos
 		</description>		
 	</bean>
--->
+
 	<!-- décommenter ce bean pour l'utilisation de kerberos
 		 le client kerberos doit être installé sur la machine exécutant cette application
 	 -->
-	 
+<!--	 
 	<bean id="KRBAdminService"
 		class="org.esupportail.activbo.services.kerberos.KRBAdminImpl">
 		<description>The business layer concerning the Kerberos' administration.</description>
@@ -37,5 +37,5 @@
 			<description>Options for add kerberos command</description>
 		</property>
 	</bean>
-	
+-->	
 </beans>
