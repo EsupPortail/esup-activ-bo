@@ -32,10 +32,11 @@
 		
 		<property name="channels">
 			<list>
-				<ref bean="mailPersoChannel"/>		
+				<ref bean="mailPersoChannel"/>
+				<ref bean="mail2GestChannel"/>
+				<ref bean="mail2SMSChannel"/>			
 			</list>
-		</property>	
-			
+		</property>				
 	</bean>
 	
 	<bean
@@ -54,10 +55,35 @@
 		class="org.esupportail.activbo.domain.beans.channels.MailPersoChannel"
 		parent="abstractChannel"
 		>
-		<property name="name" value="${validation.code.delay}"/>	
+		<property name="name" value="${channel.persomail.name}"/>	
 		<property name="smtpService" ref="smtpService"/>
+		<property name="attributeMailPerso" value="${ldap.attribute.mailPerso}"/>
 		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
 		<property name="mailCodeBody" value="${channel.persomail.body.fr}"/>
+	</bean>	
+	<bean
+		id="mail2GestChannel"
+		class="org.esupportail.activbo.domain.beans.channels.Mail2GestChannel"
+		parent="abstractChannel"
+		>
+		<property name="name" value="${channel.gestmail.name}"/>	
+		<property name="codeDelay" value="${validation.code.delay.third}"/>
+		<property name="smtpService" ref="smtpService"/>
+		<property name="mailGest" value="${channel.gestmail.mail}"/>
+		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
+		<property name="mailCodeBody" value="${channel.gestmail.body.fr}"/>
+	</bean>	
+	<bean
+		id="mail2SMSChannel"
+		class="org.esupportail.activbo.domain.beans.channels.Mail2SMSChannel"
+		parent="abstractChannel"
+		>
+		<property name="name" value="${channel.sms.name}"/>
+		<property name="attributePager" value="${ldap.attribute.pager}"/>				
+		<property name="smtpService" ref="smtpService"/>
+		<property name="mailSMS" value="${channel.sms.mailSMS}"/>
+		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
+		<property name="mailCodeBody" value="${channel.sms.body.fr}"/>
 	</bean>	
 		
 	<bean
