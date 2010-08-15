@@ -41,13 +41,14 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 		
 	}
 	
-    public boolean verify(String id,String code) throws UserPermissionException{
-    	//Recuperation des données correspondant de l'id de l'utilisateur
-		HashMap <String,String>userData=this.get(id);
+    public boolean verify(String id,String code) throws UserPermissionException{    	
 		
 		int nbFail=0;
 		if(failValidation.containsKey(id)) nbFail=failValidation.get(id);
 		if(nbFail>nbMaxFail) throw new UserPermissionException ("Nombre de tentative de validation de code atteint pour l'utitilisateur "+id);
+		
+		//Recuperation des données correspondant de l'id de l'utilisateur
+		HashMap <String,String>userData=this.get(id);
 		
 		if (userData!=null){
 			logger.debug("L'utilisateur "+id+" possède un code");
@@ -73,6 +74,10 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
     public String getCode(String id)
     {
     	return this.get(id).get(codeKey);    	
+    }
+    public String getDate(String id)
+    {
+    	return this.get(id).get(dateKey);
     }
     
 	public String generateCode(String id,int codeDelay){

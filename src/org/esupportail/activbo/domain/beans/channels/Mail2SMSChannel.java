@@ -15,9 +15,10 @@ import org.esupportail.commons.services.smtp.AsynchronousSmtpServiceImpl;
  * @author aanli
  *
  */
-public class MailPersoChannel extends AbstractChannel{
+public class Mail2SMSChannel extends AbstractChannel{
 
-	private String attributeMailPerso;
+	private String attributePager;
+	private String mailSMS;
 	private AsynchronousSmtpServiceImpl smtpService;
 	private String mailCodeSubject;
 	private String mailCodeBody;
@@ -36,31 +37,27 @@ public class MailPersoChannel extends AbstractChannel{
 	
 			LdapUser ldapUserRead = ldapUserList.get(0); 
 			
-			String mailPerso = ldapUserRead.getAttribute(attributeMailPerso);
+			String pager = ldapUserRead.getAttribute(attributePager);
 			
-			if(mailPerso==null) throw new ChannelException("Utilisateur "+id+" n'a pas de mail perso");
+			if(pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
 									
 			InternetAddress mail=null;			
 			try {
-				mail = new InternetAddress(mailPerso);
+				mail = new InternetAddress(mailSMS);
 			} catch (AddressException e) {
-				throw new ChannelException("Problem de création de InternetAddress "+mailPerso);
+				throw new ChannelException("Problem de création de InternetAddress "+mailSMS);
 			}
 			
 			String mailBody=this.mailCodeBody;
-			mailBody=mailBody.replace("{0}", validationCode.getCode(id));
-			mailBody=mailBody.replace("{1}", validationCode.getDate(id));
+			mailBody=mailBody.replace("{0}", pager);
+			mailBody=mailBody.replace("{1}", validationCode.getCode(id));
+			mailBody=mailBody.replace("{2}", validationCode.getDate(id));
 			
 			smtpService.send(mail,this.mailCodeSubject,mailBody,"");
 			
-			logger.debug("Envoi du code à l'adresse mail "+mailPerso);										
+			logger.debug("Envoi du code par sms via mail2sms au numéro portable "+pager);										
 	}
-	/**
-	 * @param attributeMailPerso the attributeMailPerso to set
-	 */
-	public void setAttributeMailPerso(String attributeMailPerso) {
-		this.attributeMailPerso = attributeMailPerso;
-	}
+	
 	/**
 	 * @param smtpService the smtpService to set
 	 */
@@ -78,6 +75,20 @@ public class MailPersoChannel extends AbstractChannel{
 	 */
 	public void setMailCodeBody(String mailCodeBody) {
 		this.mailCodeBody = mailCodeBody;
+	}
+
+	/**
+	 * @param attributePager the attributePager to set
+	 */
+	public void setAttributePager(String attributePager) {
+		this.attributePager = attributePager;
+	}
+
+	/**
+	 * @param mailSMS the mailSMS to set
+	 */
+	public void setMailSMS(String mailSMS) {
+		this.mailSMS = mailSMS;
 	}
 
 }
