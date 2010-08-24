@@ -130,10 +130,10 @@ public interface DomainService extends Serializable {
 	
 	public boolean getCode(String id,String canal)throws LdapProblemException;
 	
-	public boolean validateCode(String id,String code);
+	public boolean validateCode(String id,String code)throws UserPermissionException;
 	
 	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException;
 	
-	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException;
+	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException;
 	
 }

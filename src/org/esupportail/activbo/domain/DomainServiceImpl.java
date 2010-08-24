@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.esupportail.activbo.dao.DaoService;
 import org.esupportail.activbo.domain.tools.CleaningValidationCode;
+import org.esupportail.activbo.domain.beans.FailValidation;
 import org.esupportail.activbo.domain.beans.ValidationCode;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
@@ -75,6 +76,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private String accountDescrCodeKey;	
 			
 	private ValidationCode validationCode;
+	
+	
+	private FailValidation failValidation;
+	
 	/**
 	 * kerberos.ldap.method
 	 * kerberos.host
@@ -358,7 +363,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		ldapUserList = this.ldapUserService.getLdapUsersFromFilter(filter);									
 				
-		if (ldapUserList.size() == 0) throw new LdapProblemException("Identification échouée : "+filter);
+		if (ldapUserList.size() == 0) throw new LdapProblemException("Identification �chouée : "+filter);
 	
 		LdapUser ldapUser = ldapUserList.get(0); 
 
@@ -381,7 +386,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 
 	
-	public boolean updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException{
+	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException{
 		
 		try{
 
@@ -415,12 +420,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			throw new LdapProblemException("Probleme au niveau du LDAP");
 		}
 
-		return true;
+		
 	}
 	
 	
 	public boolean getCode(String id,String canal)throws LdapProblemException{
-		
+		//validationCode.generateCode(id);
+		//return true;
 		for(Channel c:channels)
 			if(c.getName().equalsIgnoreCase(canal))
 				try {
@@ -435,7 +441,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 	}
 	
-	public boolean setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException{
+	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException{
 		
 		LdapUser ldapUser=null;
 		
@@ -447,9 +453,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				//Lecture LDAP
 				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+ id + ")");
 				
-				if (ldapUserList.size() == 0) {
-					return false;
-				}
 
 				LdapUser ldapUserRead = ldapUserList.get(0); 
 				
@@ -471,7 +474,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					}
 				}
 				
-				if (ldapUserRead.getAttribute(ldapSchema.getShadowLastChange())==null){//si SLC null{
+				if (ldapUserRead.getAttribute(ldapSchema.getShadowLastChange())==null){
 					/* Writing of shadowLastChange in LDAP */
 					List<String> listShadowLastChangeAttr = new ArrayList<String>();
 					Calendar cal = Calendar.getInstance();
@@ -519,14 +522,18 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			throw new LdapProblemException("Probleme au niveau du LDAP");
 		}
 
-		return true;
+		
 	}
 	
-	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException{
+	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException{
 		
 		HashMap<String, String> accountDescr=new HashMap<String,String>();
 		
 		try{
+			if (!failValidation.verify(id)){
+				throw new UserPermissionException("Nombre de tentative d'authentification atteint pour l'utilisateur "+id);
+			}
+			
 			this.writeableLdapUserService.defineAuthenticatedContextForUser(id, password);
 			
 			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+id+ ")");
@@ -548,12 +555,16 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			for (int j=0;j<attrPersoInfo.size();j++){
 				accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
 			}
+
 			//envoi d'un code si le compte n'est pas activ�
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())!=null){
 				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey));
 				accountDescr.put(accountDescrCodeKey,code );
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(accountDescrIdKey)+" dans la table effectu�e");
 			}
+			
+			//si authentification pas bonne 
+			failValidation.incrementFail(id);
 			
 		}catch(LdapException e){
 			logger.debug("Exception thrown by authentificateUser() : "+ e.getMessage());
@@ -564,7 +575,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	
 	    
-    public boolean changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException{
+    public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException{
     	LdapUser ldapUser=null;
     	try{
 	    	if (validationCode.verify(id,code)){/*security reasons*/
@@ -582,6 +593,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				ldapUser.getAttributes().clear();
 				
 				List<String> list=new ArrayList<String>();
+				
 				list.add(newLogin);
 				ldapUser.getAttributes().put(accountDescrIdKey,list);
 				
@@ -596,6 +608,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     	}catch (LdapException e) {
 			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
 			throw new LdapProblemException("Probleme au niveau du LDAP");    	
+    	
     	}catch(KRBPrincipalAlreadyExistsException e){
 			logger.debug("Exception thrown by changeLogin() : "+ e.getMessage());
 			throw new LoginAlreadyExistsException("Le login existe d�ja");
@@ -609,22 +622,21 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			throw new LoginAlreadyExistsException("Le login existe d�ja");
     	}	
 
-    	return true;
+    	
     	
 	}
     
-    public boolean validateCode(String id,String code) {
+    public boolean validateCode(String id,String code)throws UserPermissionException {
 		
-		try {
-			if (validationCode.verify(id,code)){
-				return true;
-			}
-		} catch (UserPermissionException e) {
-			// TODO supprimer le try catch et échaper l'exception de la méthode
-			e.printStackTrace();
+
+		if (validationCode.verify(id,code)){
+			return true;
 		}
 		return false;
 	}
+   
+		
+	
 			
 	public CleaningValidationCode getClean() {
 		return clean;
@@ -710,6 +722,14 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 */
 	public void setChannels(List<Channel> channels) {
 		this.channels = channels;
+	}
+
+	public FailValidation getFailValidation() {
+		return failValidation;
+	}
+
+	public void setFailValidation(FailValidation failValidation) {
+		this.failValidation = failValidation;
 	}
 
 
