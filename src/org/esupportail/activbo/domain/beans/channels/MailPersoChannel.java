@@ -44,7 +44,7 @@ public class MailPersoChannel extends AbstractChannel{
 			try {
 				mail = new InternetAddress(mailPerso);
 			} catch (AddressException e) {
-				throw new ChannelException("Problem de création de InternetAddress "+mailPerso);
+				throw new ChannelException("Probleme de création de InternetAddress "+mailPerso);
 			}
 			
 			String mailBody=this.mailCodeBody;
