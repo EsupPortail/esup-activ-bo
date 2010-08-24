@@ -12,7 +12,7 @@ import java.util.Map;
 
 import net.sf.ehcache.CacheManager;
 
-import org.esupportail.commons.exceptions.ObjectNotFoundException;
+
 import org.esupportail.commons.exceptions.UserNotFoundException;
 import org.esupportail.commons.services.i18n.I18nService;
 import org.esupportail.commons.services.ldap.CachingLdapEntityServiceImpl;
@@ -108,12 +108,12 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 	 */
 	public LdapUser getLdapUser(final String id) throws LdapException, UserNotFoundException {
 		LdapUserImpl ldapUser = new LdapUserImpl();
-		ldapUser.setId("cdiallo");
+		ldapUser.setId("lorvivien");
 	//	ldapUser.setAttributes(ldapEntity.getAttributes());
 		Map<String,List<String>>e=new HashMap<String,List<String>>();
 		
 		List<String> listDisplayName=new ArrayList<String>();
-		listDisplayName.add("Claudine Diallo Tissier");
+		listDisplayName.add("Vivien LORENTE");
 		e.put("displayName", listDisplayName);
 		
 		List<String> listUid=new ArrayList<String>();
@@ -125,7 +125,7 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("supannAliasLogin", listLogin);
 		
 		List<String> listMail=new ArrayList<String>();
-		listMail.add("Claudine.Diallo@univ-paris1.fr");
+		listMail.add("Vivien.Lorente@univ-paris1.fr");
 		e.put("mail", listMail);
 		
 		List<String> listPager=new ArrayList<String>();
@@ -145,11 +145,11 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("supannEmpId", listHN);
 		
 		List<String> listBirthDay=new ArrayList<String>();
-		listBirthDay.add("19520321000000Z");
+		listBirthDay.add("198120515000000Z");
 		e.put("up1BirthDay", listBirthDay);
 		
 		List<String> listBirthName=new ArrayList<String>();
-		listBirthName.add("Diallo-Tissier");
+		listBirthName.add("Lorente");
 		e.put("up1BirthName", listBirthName);
 		
 		List<String> listPassword=new ArrayList<String>();
@@ -157,7 +157,7 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("userPassword", listPassword);
 		
 		List<String> listSmsAgreement=new ArrayList<String>();
-		listSmsAgreement.add("{lol}");
+		listSmsAgreement.add("{SMSU}CG");
 		e.put("up1TermsOfUse", listSmsAgreement);
 		
 		ldapUser.setAttributes(e);
@@ -176,16 +176,16 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		Map<String,List<String>>e=new HashMap<String,List<String>>();
 		
 		List<String> listUid=new ArrayList<String>();
-		listUid.add("cdiallo");
+		listUid.add("lorvivien");
 		e.put("uid", listUid);
 		
 		
 		List<String> listDisplayName=new ArrayList<String>();
-		listDisplayName.add("Claudine Diallo Tissier");
+		listDisplayName.add("Vivien LORENTE");
 		e.put("displayName", listDisplayName);
 		
 		List<String> listMail=new ArrayList<String>();
-		listMail.add("Claudine.Diallo@univ-paris1.fr");
+		listMail.add("Vivien.Lorente@univ-paris1.fr");
 		e.put("mail", listMail);
 		
 		List<String> listPager=new ArrayList<String>();
@@ -210,11 +210,11 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("supannEmpId", listHN);
 		
 		List<String> listBirthDay=new ArrayList<String>();
-		listBirthDay.add("19520321000000Z");
+		listBirthDay.add("19810515000000Z");
 		e.put("up1BirthDay", listBirthDay);
 		
 		List<String> listBirthName=new ArrayList<String>();
-		listBirthName.add("Diallo-Tissier");
+		listBirthName.add("Lorente");
 		e.put("up1BirthName", listBirthName);
 		
 		List<String> listPassword=new ArrayList<String>();
@@ -222,12 +222,13 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("userPassword", listPassword);
 		
 		List<String> listSmsAgreement=new ArrayList<String>();
-		listSmsAgreement.add("{lol}");
+		listSmsAgreement.add("{SMSU}CG");
 		e.put("up1TermsOfUse", listSmsAgreement);
 
 		ldapUser.setAttributes(e);
 		List<LdapUser> listLdapUser=new ArrayList<LdapUser>();
 		listLdapUser.add(0,ldapUser);
+		
 		return listLdapUser; 
 		
 		//return LdapUserImpl.createLdapUsers(service.getLdapEntitiesFromFilter(filterExpr));
