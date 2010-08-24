@@ -32,9 +32,9 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 	private String dateKey;
 	private String dateFormat;
 
-	private int nbMaxFail;
+
 	
-	private HashMap<String,Integer> failValidation=new HashMap<String,Integer>();
+	private FailValidation failValidation;
 	
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
@@ -42,25 +42,24 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 	}
 	
     public boolean verify(String id,String code) throws UserPermissionException{    	
-		
-		int nbFail=0;
-		if(failValidation.containsKey(id)) nbFail=failValidation.get(id);
-		if(nbFail>nbMaxFail) throw new UserPermissionException ("Nombre de tentative de validation de code atteint pour l'utitilisateur "+id);
+				
+		if (!failValidation.verify(id))
+			throw new UserPermissionException ("Nombre de tentative de validation de code atteint pour l'utitilisateur "+id);
 		
 		//Recuperation des données correspondant de l'id de l'utilisateur
 		HashMap <String,String>userData=this.get(id);
 		
 		if (userData!=null){
-			logger.debug("L'utilisateur "+id+" possède un code");
+			logger.debug("L'utilisateur "+id+" poss�de un code");
 			if (code.equalsIgnoreCase(userData.get(codeKey))){
 				logger.debug("Code utilisateur "+id+" valide");
 				failValidation.remove(id);
 				return true;
 			}
 			else{
+				System.out.println("Code Faux");
 				logger.warn("Code pour l'utilisateur "+id+" invalide");				
-				nbFail++;
-				failValidation.put(id, nbFail);
+				failValidation.incrementFail(id);
 			}
 		}
 		else{
@@ -82,7 +81,9 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
     
 	public String generateCode(String id,int codeDelay){
 		
+		
 		String code=getRandomCode();
+		logger.debug(code);
 		
 		Calendar c = new GregorianCalendar();
 		c.add(Calendar.SECOND,codeDelay);
@@ -105,23 +106,23 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 		return generateCode(id,codeDelay);
 	}
 
-private String getRandomCode()
-{
-	Random r = new Random();
-	String code="";
-	for(int i=0;i<codeLenght;i++)
+	private String getRandomCode()
 	{
-	  int num=r.nextInt(10);
-	  code+=String.valueOf(num);
-	}	
-	return code;
-}
+		Random r = new Random();
+		String code="";
+		for(int i=0;i<codeLenght;i++)
+		{
+		  int num=r.nextInt(10);
+		  code+=String.valueOf(num);
+		}	
+		return code;
+	}
 
-private String dateToString(Date sDate){
-	
-    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-    return sdf.format(sDate);
-}
+	private String dateToString(Date sDate){
+		
+	    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+	    return sdf.format(sDate);
+	}
 
 	/**
 	 * @return the codeKey
@@ -166,20 +167,6 @@ private String dateToString(Date sDate){
 	}
 
 	/**
-	 * @return the nbMaxFail
-	 */
-	public int getNbMaxFail() {
-		return nbMaxFail;
-	}
-
-	/**
-	 * @param nbMaxFail the nbMaxFail to set
-	 */
-	public void setNbMaxFail(int nbMaxFail) {
-		this.nbMaxFail = nbMaxFail;
-	}
-
-	/**
 	 * @param dateFormat the dateFormat to set
 	 */
 	public void setDateFormat(String dateFormat) {
@@ -191,6 +178,14 @@ private String dateToString(Date sDate){
 	 */
 	public void setCodeDelay(int codeDelay) {
 		this.codeDelay = codeDelay;
+	}
+
+	public FailValidation getFailValidation() {
+		return failValidation;
+	}
+
+	public void setFailValidation(FailValidation failValidation) {
+		this.failValidation = failValidation;
 	}
 
 
