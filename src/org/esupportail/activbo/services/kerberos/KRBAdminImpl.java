@@ -44,7 +44,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#add(String, String)
 	 * 
-	 * AJOUT d'UN UTILISATEUR
+	 * 
 	 * 
 	 */
 	public void add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException{
@@ -110,7 +110,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * @throws KRBException 
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#changePasswd(String, String)
 	 * 
-	 */
+*/
 	public void changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException{
 		
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
