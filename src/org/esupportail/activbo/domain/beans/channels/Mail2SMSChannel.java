@@ -31,7 +31,7 @@ public class Mail2SMSChannel extends AbstractChannel{
 			this.validationCode.generateCode(id, codeDelay);
 			logger.debug("Insertion code pour l'utilisateur "+id+" dans la table effectuée");
 			
-			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+ id + ")");
+			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
 						if (ldapUserList.size() == 0) throw new ChannelException("Utilisateur "+id+" inconnu");
 	
 			LdapUser ldapUserRead = ldapUserList.get(0); 
@@ -88,6 +88,16 @@ public class Mail2SMSChannel extends AbstractChannel{
 	 */
 	public void setMailSMS(String mailSMS) {
 		this.mailSMS = mailSMS;
+	}
+	
+	public boolean isPossible(LdapUser ldapUser){
+		
+		String pager = ldapUser.getAttribute(attributePager);
+		
+		if(pager==null) return false;
+		
+		return true;
+		
 	}
 
 }

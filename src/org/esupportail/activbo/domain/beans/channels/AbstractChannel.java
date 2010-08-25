@@ -4,6 +4,8 @@
 package org.esupportail.activbo.domain.beans.channels;
 
 import org.esupportail.activbo.domain.beans.ValidationCode;
+import org.esupportail.activbo.services.ldap.LdapSchema;
+import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.ldap.LdapUserService;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
@@ -26,7 +28,7 @@ public abstract class AbstractChannel implements Channel{
 	
 	protected int codeDelay;
 	protected ValidationCode validationCode;
-	protected String accountDescrIdKey;
+	protected LdapSchema ldapSchema;
 	/**
 	 * {@link LdapUserService}.
 	 */
@@ -76,21 +78,18 @@ public abstract class AbstractChannel implements Channel{
 		this.validationCode = validationCode;
 	}
 
-	/**
-	 * @return the accountDescrIdKey
-	 */
-	public String getAccountDescrIdKey() {
-		return accountDescrIdKey;
+	
+
+	public LdapSchema getLdapSchema() {
+		return ldapSchema;
 	}
 
-	/**
-	 * @param accountDescrIdKey the accountDescrIdKey to set
-	 */
-	public void setAccountDescrIdKey(String accountDescrIdKey) {
-		this.accountDescrIdKey = accountDescrIdKey;
+	public void setLdapSchema(LdapSchema ldapSchema) {
+		this.ldapSchema = ldapSchema;
 	}
-	
- 
+
+	public abstract boolean isPossible(LdapUser ldapUser);
+
 
 
 }

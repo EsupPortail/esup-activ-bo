@@ -59,7 +59,7 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 			else{
 				System.out.println("Code Faux");
 				logger.warn("Code pour l'utilisateur "+id+" invalide");				
-				failValidation.incrementFail(id);
+				failValidation.setFail(id);
 			}
 		}
 		else{
@@ -100,7 +100,7 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 		
 		return code;
 				
-		}
+	}
 	
 	public String generateCode(String id){
 		return generateCode(id,codeDelay);

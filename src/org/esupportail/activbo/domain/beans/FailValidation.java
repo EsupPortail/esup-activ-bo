@@ -26,7 +26,7 @@ public class FailValidation extends HashMap<String,Integer> implements Initializ
 	 */
 	private final Logger logger = new LoggerImpl(getClass());
 	
-	
+	private BlockedUser blockedUser;
 	
 	private int nbMaxFail;
 	
@@ -35,23 +35,37 @@ public class FailValidation extends HashMap<String,Integer> implements Initializ
 		
 	}
 	
-	public void incrementFail(String id){
+	public void setFail(String id){
 		int nbFail=0;
 		if(this.containsKey(id)){ 
 			nbFail=this.get(id);
 		}
 		nbFail++;
+		System.out.println("incremente"+nbFail);
 		this.put(id,nbFail);
 	}
 	
 	public boolean verify(String id){
 		
-		int nbFail=0;
-		if(this.containsKey(id)) 
-			nbFail=this.get(id);
-		
+		if (!blockedUser.containsKey(id)){
+			
+			int nbFail;
+			if(this.containsKey(id)){ 
+				nbFail=this.get(id);
 
-		if(nbFail>nbMaxFail) {
+				if(nbFail>nbMaxFail) {
+					//System.out.println("test"+nbFail);
+					blockedUser.insertUser(id);
+					return false;
+				}
+				System.out.println("test"+nbFail);
+			}
+			else{
+				return true;
+			}
+		}
+		else{
+		
 			return false;
 		}
 		return true;
@@ -63,6 +77,14 @@ public class FailValidation extends HashMap<String,Integer> implements Initializ
 
 	public void setNbMaxFail(int nbMaxFail) {
 		this.nbMaxFail = nbMaxFail;
+	}
+
+	public BlockedUser getBlockedUser() {
+		return blockedUser;
+	}
+
+	public void setBlockedUser(BlockedUser blockedUser) {
+		this.blockedUser = blockedUser;
 	}
 	
 	

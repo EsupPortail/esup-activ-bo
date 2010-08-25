@@ -1,5 +1,7 @@
 package org.esupportail.activbo.domain.beans.channels;
 
+import org.esupportail.commons.services.ldap.LdapUser;
+
 
 /**
  * @author aanli
@@ -21,5 +23,8 @@ public interface Channel{
 	 * @return name
 	 */
 	public String getName();
+	
+	
+	public boolean isPossible(LdapUser ldapUser);
 
 }

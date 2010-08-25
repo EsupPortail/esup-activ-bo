@@ -3,8 +3,12 @@
  */
 package org.esupportail.activbo.domain.beans.channels;
 
+import java.util.List;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+
+import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.smtp.AsynchronousSmtpServiceImpl;
 
 /**
@@ -67,5 +71,11 @@ public class Mail2GestChannel extends AbstractChannel{
 	public void setMailGest(String mailGest) {
 		this.mailGest = mailGest;
 	}
+	
+	public boolean isPossible(LdapUser ldapUser){
+		return true;
+	}
+	
+	
 
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.esupportail.activbo.dao.DaoService;
+import org.esupportail.activbo.domain.tools.CleaningBlockedUser;
 import org.esupportail.activbo.domain.tools.CleaningValidationCode;
 import org.esupportail.activbo.domain.beans.FailValidation;
 import org.esupportail.activbo.domain.beans.ValidationCode;
@@ -68,12 +69,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	/**
 	 * {@link DaoService}.
 	 */
-	//ce qui servira de login?????? c'est comme ca que je le vois, c'est pour ca que j'utilise pas le ldapSchema sachant qu'on pourra prendre supannAliasLoin ou uid)
-	private String accountDescrIdKey;
+
 	
 	private LdapSchema ldapSchema;
 	
 	private String accountDescrCodeKey;	
+	
+	private String accountDescrPossibleChannelsKey;
 			
 	private ValidationCode validationCode;
 	
@@ -114,8 +116,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private WriteableLdapUserService writeableLdapUserService;
 
 		
-	private CleaningValidationCode clean;
-	
+	private CleaningValidationCode cleaningValidationCode;
+	private CleaningBlockedUser cleaningBlockedUser;
 	
 	/**
 	 * Bean constructor.
@@ -130,7 +132,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		
 		logger.info("Lancement du thread de nettoyage de la table de hashage");
-		clean.start();
+		this.cleaningBlockedUser.start();
+		this.cleaningValidationCode.start();
 		
 		Assert.notNull(this.daoService, 
 				"property daoService of class " + this.getClass().getName() + " can not be null");
@@ -367,21 +370,31 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 		LdapUser ldapUser = ldapUserList.get(0); 
 
-			//Construction du hasMap de retour
-			accountDescr.put(accountDescrIdKey, ldapUser.getAttribute(accountDescrIdKey));
-			accountDescr.put(ldapSchema.getMail(), ldapUser.getAttribute(ldapSchema.getMail()));
+		//Construction du hasMap de retour
+		accountDescr.put(ldapSchema.getLogin(), ldapUser.getAttribute(ldapSchema.getLogin()));
+		accountDescr.put(ldapSchema.getMail(), ldapUser.getAttribute(ldapSchema.getMail()));
 			
-			for (int j=0;j<attrPersoInfo.size();j++){
-				accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
-			}
+		for (int j=0;j<attrPersoInfo.size();j++){
+			accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
+		}
 			
-			//envoi d'un code si le compte n'est pas activ�
-			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())==null){
-				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey));
-				accountDescr.put(accountDescrCodeKey,code);
-				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(accountDescrIdKey)+" dans la table effectu�e");
+		//envoi d'un code si le compte n'est pas activ�
+		if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())==null){
+			String code=validationCode.generateCode(ldapUser.getAttribute(ldapSchema.getLogin()));
+			accountDescr.put(accountDescrCodeKey,code);
+			logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectu�e");
+		}
+		
+		String possibleChannels="";
+		for(Channel c:channels){
+			if(c.isPossible(ldapUser)){
+				if (possibleChannels.isEmpty()) possibleChannels+=c.getName();
+				else possibleChannels+=","+c.getName();
 			}
-						
+		}
+		
+		accountDescr.put(accountDescrPossibleChannelsKey, possibleChannels);
+		
 		return accountDescr;
 	}
 
@@ -389,8 +402,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException{
 		
 		try{
-
 			if (validationCode.verify(id,code)){/*security reasons*/
+				
 				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(),ldapSchema.getPasswordAdmin());
 				logger.info("Authentification LDAP r�ussie");
 				
@@ -419,8 +432,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			logger.debug("Exception thrown by updatePersonalInfo() : "+ e.getMessage());
 			throw new LdapProblemException("Probleme au niveau du LDAP");
 		}
-
-		
 	}
 	
 	
@@ -451,7 +462,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			if (validationCode.verify(id,code)){/*security reasons*/
 				
 				//Lecture LDAP
-				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+ id + ")");
+				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
 				
 
 				LdapUser ldapUserRead = ldapUserList.get(0); 
@@ -536,7 +547,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			this.writeableLdapUserService.defineAuthenticatedContextForUser(id, password);
 			
-			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+id+ ")");
+			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+id+ ")");
 			
 			if (ldapUserList.size() == 0) {
 				return null;
@@ -549,7 +560,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			}
 			
 			//Construction du hasMap de retour
-			accountDescr.put(accountDescrIdKey, ldapUser.getAttribute(accountDescrIdKey));
+			accountDescr.put(ldapSchema.getLogin(), ldapUser.getAttribute(ldapSchema.getLogin()));
 			accountDescr.put(ldapSchema.getMail(), ldapUser.getAttribute(ldapSchema.getMail()));
 			
 			for (int j=0;j<attrPersoInfo.size();j++){
@@ -558,13 +569,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 			//envoi d'un code si le compte n'est pas activ�
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())!=null){
-				String code=validationCode.generateCode(ldapUser.getAttribute(accountDescrIdKey));
+				String code=validationCode.generateCode(ldapUser.getAttribute(ldapSchema.getLogin()));
 				accountDescr.put(accountDescrCodeKey,code );
-				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(accountDescrIdKey)+" dans la table effectu�e");
+				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectu�e");
 			}
 			
 			//si authentification pas bonne 
-			failValidation.incrementFail(id);
+			failValidation.setFail(id);
 			
 		}catch(LdapException e){
 			logger.debug("Exception thrown by authentificateUser() : "+ e.getMessage());
@@ -580,7 +591,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     	try{
 	    	if (validationCode.verify(id,code)){/*security reasons*/
 
-	    		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+accountDescrIdKey+"="+newLogin+ ")");
+	    		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+newLogin+ ")");
 				
 				if (ldapUserList.size() == 0) {
 					throw new LdapLoginAlreadyExistsException("");
@@ -595,7 +606,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				List<String> list=new ArrayList<String>();
 				
 				list.add(newLogin);
-				ldapUser.getAttributes().put(accountDescrIdKey,list);
+				ldapUser.getAttributes().put(ldapSchema.getLogin(),list);
 				
 				kerberosAdmin.rename(id,newLogin);
 				this.finalizeLdapWriting(ldapUser);
@@ -634,18 +645,24 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		}
 		return false;
 	}
-   
-		
 	
-			
-	public CleaningValidationCode getClean() {
-		return clean;
+	public CleaningValidationCode getCleaningValidationCode() {
+		return cleaningValidationCode;
 	}
 
-	public void setClean(CleaningValidationCode clean) {
-		this.clean = clean;
+	public void setCleaningValidationCode(
+			CleaningValidationCode cleaningValidationCode) {
+		this.cleaningValidationCode = cleaningValidationCode;
 	}
-	
+
+	public CleaningBlockedUser getCleaningBlockedUser() {
+		return cleaningBlockedUser;
+	}
+
+	public void setCleaningBlockedUser(CleaningBlockedUser cleaningBlockedUser) {
+		this.cleaningBlockedUser = cleaningBlockedUser;
+	}
+
 	public ValidationCode getValidationCode() {
 		return validationCode;
 	}
@@ -659,14 +676,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		ldapUser.getAttributes().clear();
 		this.writeableLdapUserService.defineAnonymousContext();
 		logger.info("Ecriture dans le LDAP r�ussie");
-	}
-	
-	public String getAccountDescrIdKey() {
-		return accountDescrIdKey;
-	}
-
-	public void setAccountDescrIdKey(String accountDescrIdKey) {
-		this.accountDescrIdKey = accountDescrIdKey;
 	}
 
 	public String getAccountDescrCodeKey() {
@@ -730,6 +739,17 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 	public void setFailValidation(FailValidation failValidation) {
 		this.failValidation = failValidation;
+	}
+
+	
+
+	public String getAccountDescrPossibleChannelsKey() {
+		return accountDescrPossibleChannelsKey;
+	}
+
+	public void setAccountDescrPossibleChannelsKey(
+			String accountDescrPossibleChannelsKey) {
+		this.accountDescrPossibleChannelsKey = accountDescrPossibleChannelsKey;
 	}
 
 
