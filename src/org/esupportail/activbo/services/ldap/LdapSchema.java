@@ -73,6 +73,19 @@ public class LdapSchema implements InitializingBean{
 	
 	
 	private String mailPerso;
+	
+	private String login;
+	
+
+
+	public String getLogin() {
+		return login;
+	}
+
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
 
 
 	public LdapSchema(){
