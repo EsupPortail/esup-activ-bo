@@ -224,7 +224,7 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		List<String> listSmsAgreement=new ArrayList<String>();
 		listSmsAgreement.add("{SMSU}CG");
 		e.put("up1TermsOfUse", listSmsAgreement);
-
+		
 		ldapUser.setAttributes(e);
 		List<LdapUser> listLdapUser=new ArrayList<LdapUser>();
 		listLdapUser.add(0,ldapUser);
