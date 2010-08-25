@@ -15,9 +15,10 @@
 		<property name="writeableLdapUserService" ref="writeableLdapUserService" />
 		<property name="displayNameLdapAttribute" value="displayName" />
 		
-		<property name="accountDescrIdKey" value="${ldap.attribute.uid}"/>
-		
+				
 		<property name="accountDescrCodeKey" value="${account.key.code}"/>
+		
+		<property name="accountDescrPossibleChannelsKey" value="${account.key.possibleChannels}"/>
 						
 		<property name="validationCode" ref="validationCode"/>
 		
@@ -30,7 +31,9 @@
 		
 		<property name="kerberosAdmin" ref="KRBAdminService" />
 		
-		<property name="clean" ref="cleaningValidationCode" />								
+		<property name="cleaningValidationCode" ref="cleaningValidationCode" />								
+		
+		<property name="cleaningBlockedUser" ref="cleaningBlockedUser" />
 		
 		<property name="channels">
 			<list>
@@ -47,7 +50,7 @@
 		abstract="true"
 		>
 		<property name="codeDelay" value="${validation.code.delay}"/>
-		<property name="accountDescrIdKey" value="${ldap.attribute.uid}"/>
+		<property name="ldapSchema" ref="ldapSchema"/>
 		<property name="ldapUserService" ref="ldapUserService"/>
 		<property name="validationCode" ref="validationCode"/>
 	</bean>	
@@ -103,10 +106,20 @@
 	</bean>
 	
 	<bean
+		id="blockedUser"
+		class="org.esupportail.activbo.domain.beans.BlockedUser"
+		>
+		<property name="blockingTime" value="${blocked.time}"/>
+		<property name="dateFormat" value="${validation.date.format}"/>
+	</bean>
+	
+	<bean
 		id="failValidation"
 		class="org.esupportail.activbo.domain.beans.FailValidation"
 		>
 		<property name="nbMaxFail" value="${validation.code.nbMaxFail}"/>
+		<property name="blockedUser" ref="blockedUser"/>
+		
 	</bean>
 	
 

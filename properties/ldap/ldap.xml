@@ -62,6 +62,7 @@
 				<value>${ldap.attribute.password}</value>
 				<value>${ldap.attribute.mailPerso}</value>
 				<value>${ldap.attribute.smsagreement}</value>
+				<value>${ldap.attribute.uid}</value>
 				
 			</list>
 		</property>
@@ -84,6 +85,7 @@
 				<value>${ldap.attribute.password}</value>
 				<value>${ldap.attribute.mailPerso}</value>
 				<value>${ldap.attribute.smsagreement}</value>
+				<value>${ldap.attribute.uid}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -281,6 +283,7 @@
 			<property name="usernameAdmin" value="${ldap.username}"/>
 			<property name="passwordAdmin" value="${ldap.password}"/>
 			<property name="mailPerso" value="${ldap.attribute.mailPerso}"/>
+			<property name="login" value="${ldap.attribute.uid}"/>
 						
 	</bean>
 
