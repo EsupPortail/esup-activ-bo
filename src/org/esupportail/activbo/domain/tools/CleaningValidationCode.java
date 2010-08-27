@@ -22,8 +22,8 @@ public class CleaningValidationCode extends Thread implements InitializingBean{
 	
 	private final Logger logger = new LoggerImpl(getClass());
 	
-	public CleaningValidationCode(){
-
+	public void afterPropertiesSet() throws Exception {
+		start();
 	}
 	
 	public void run(){
@@ -37,18 +37,18 @@ public class CleaningValidationCode extends Thread implements InitializingBean{
 					while(it.hasNext()){
 						Map.Entry<String, HashMap<String,String>> e=it.next();
 						HashMap<String,String> hash=e.getValue();
-						logger.info("======= Utilisateur "+e.getKey()+"(Code --> "+hash.get("code")+"  ||  Date d'expiration --> "+hash.get(validationCodeDateKey)+")");
+						logger.info("Utilisateur "+e.getKey()+"(Code --> "+hash.get("code")+"  ||  Date d'expiration --> "+hash.get(validationCodeDateKey)+")");
 						
 						Date date=stringToDate(dateToString(new Date()));
 						
 						if (date.getTime()>this.stringToDate(hash.get(validationCodeDateKey)).getTime()){
-							logger.info("Expiration code, Ligne utilisateur "+e.getKey()+" supprim�e");
+							logger.debug("Expiration code, Ligne utilisateur "+e.getKey()+" supprim�e");
 							it.remove();
 						}
 					}
 				}	
 				else{
-					logger.info("La table de hashage est vide");
+					logger.debug("La table de hashage est vide");
 				}	
 				sleep(cleaningTimeInterval);	
 			}
@@ -63,11 +63,7 @@ public class CleaningValidationCode extends Thread implements InitializingBean{
 		}
 		
 	}
-
-	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-	}
-	
+		
 	
 	private String dateToString(Date sDate) throws ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat(formatDateConv);//formatDateConv);

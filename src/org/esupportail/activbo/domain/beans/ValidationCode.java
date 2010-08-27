@@ -10,8 +10,9 @@ import java.util.Random;
 
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
-
 import org.esupportail.activbo.exceptions.UserPermissionException;
+
+import org.esupportail.activbo.domain.tools.BruteForceBlock;
 
 import org.springframework.beans.factory.InitializingBean;
 
@@ -34,7 +35,7 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 
 
 	
-	private FailValidation failValidation;
+	private BruteForceBlock bruteForceBlock;
 	
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
@@ -43,23 +44,21 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 	
     public boolean verify(String id,String code) throws UserPermissionException{    	
 				
-		if (!failValidation.verify(id))
+		if (bruteForceBlock.isBlocked(id))
 			throw new UserPermissionException ("Nombre de tentative de validation de code atteint pour l'utitilisateur "+id);
 		
 		//Recuperation des donnÃ©es correspondant de l'id de l'utilisateur
 		HashMap <String,String>userData=this.get(id);
 		
 		if (userData!=null){
-			logger.debug("L'utilisateur "+id+" possède un code");
+			logger.debug("L'utilisateur "+id+" possï¿½de un code");
 			if (code.equalsIgnoreCase(userData.get(codeKey))){
-				logger.debug("Code utilisateur "+id+" valide");
-				failValidation.remove(id);
+				logger.debug("Code utilisateur "+id+" valide");				
 				return true;
 			}
-			else{
-				System.out.println("Code Faux");
+			else{			
 				logger.warn("Code pour l'utilisateur "+id+" invalide");				
-				failValidation.setFail(id);
+				bruteForceBlock.setFail(id);
 			}
 		}
 		else{
@@ -83,7 +82,7 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 		
 		
 		String code=getRandomCode();
-		logger.debug(code);
+		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);
 		
 		Calendar c = new GregorianCalendar();
 		c.add(Calendar.SECOND,codeDelay);
@@ -180,12 +179,11 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 		this.codeDelay = codeDelay;
 	}
 
-	public FailValidation getFailValidation() {
-		return failValidation;
-	}
-
-	public void setFailValidation(FailValidation failValidation) {
-		this.failValidation = failValidation;
+	/**
+	 * @param bruteForceBlock the bruteForceBlock to set
+	 */
+	public void setBruteForceBlock(BruteForceBlock bruteForceBlock) {
+		this.bruteForceBlock = bruteForceBlock;
 	}
 
 

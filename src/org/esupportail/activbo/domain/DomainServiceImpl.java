@@ -13,9 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.esupportail.activbo.dao.DaoService;
-import org.esupportail.activbo.domain.tools.CleaningBlockedUser;
+import org.esupportail.activbo.domain.tools.BruteForceBlock;
 import org.esupportail.activbo.domain.tools.CleaningValidationCode;
-import org.esupportail.activbo.domain.beans.FailValidation;
 import org.esupportail.activbo.domain.beans.ValidationCode;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
@@ -80,7 +79,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private ValidationCode validationCode;
 	
 	
-	private FailValidation failValidation;
+	private BruteForceBlock bruteForceBlock;
 	
 	/**
 	 * kerberos.ldap.method
@@ -117,7 +116,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 		
 	private CleaningValidationCode cleaningValidationCode;
-	private CleaningBlockedUser cleaningBlockedUser;
 	
 	/**
 	 * Bean constructor.
@@ -131,9 +129,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 */
 	public void afterPropertiesSet() throws Exception {
 		
-		logger.info("Lancement du thread de nettoyage de la table de hashage");
-		this.cleaningBlockedUser.start();
-		this.cleaningValidationCode.start();
+		logger.info("Lancement du thread de nettoyage de la table de hashage");				
 		
 		Assert.notNull(this.daoService, 
 				"property daoService of class " + this.getClass().getName() + " can not be null");
@@ -366,7 +362,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		ldapUserList = this.ldapUserService.getLdapUsersFromFilter(filter);									
 				
-		if (ldapUserList.size() == 0) throw new LdapProblemException("Identification �chouée : "+filter);
+		if (ldapUserList.size() == 0) throw new LdapProblemException("Identification �chouée : "+filter);
 	
 		LdapUser ldapUser = ldapUserList.get(0); 
 
@@ -405,7 +401,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			if (validationCode.verify(id,code)){/*security reasons*/
 				
 				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(),ldapSchema.getPasswordAdmin());
-				logger.info("Authentification LDAP r�ussie");
+				logger.info("Authentification LDAP r�ussie pour l'utilisateur "+id);
 				
 				LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
 				ldapUser.getAttributes().clear();
@@ -541,7 +537,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		HashMap<String, String> accountDescr=new HashMap<String,String>();
 		
 		try{
-			if (!failValidation.verify(id)){
+			if (bruteForceBlock.isBlocked(id)){
 				throw new UserPermissionException("Nombre de tentative d'authentification atteint pour l'utilisateur "+id);
 			}
 			
@@ -575,7 +571,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			}
 			
 			//si authentification pas bonne 
-			failValidation.setFail(id);
+			bruteForceBlock.setFail(id);
 			
 		}catch(LdapException e){
 			logger.debug("Exception thrown by authentificateUser() : "+ e.getMessage());
@@ -655,14 +651,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.cleaningValidationCode = cleaningValidationCode;
 	}
 
-	public CleaningBlockedUser getCleaningBlockedUser() {
-		return cleaningBlockedUser;
-	}
-
-	public void setCleaningBlockedUser(CleaningBlockedUser cleaningBlockedUser) {
-		this.cleaningBlockedUser = cleaningBlockedUser;
-	}
-
 	public ValidationCode getValidationCode() {
 		return validationCode;
 	}
@@ -732,15 +720,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public void setChannels(List<Channel> channels) {
 		this.channels = channels;
 	}
-
-	public FailValidation getFailValidation() {
-		return failValidation;
-	}
-
-	public void setFailValidation(FailValidation failValidation) {
-		this.failValidation = failValidation;
-	}
-
 	
 
 	public String getAccountDescrPossibleChannelsKey() {
@@ -750,6 +729,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public void setAccountDescrPossibleChannelsKey(
 			String accountDescrPossibleChannelsKey) {
 		this.accountDescrPossibleChannelsKey = accountDescrPossibleChannelsKey;
+	}
+
+	/**
+	 * @param bruteForceBlock the bruteForceBlock to set
+	 */
+	public void setBruteForceBlock(BruteForceBlock bruteForceBlock) {
+		this.bruteForceBlock = bruteForceBlock;
 	}
 
 

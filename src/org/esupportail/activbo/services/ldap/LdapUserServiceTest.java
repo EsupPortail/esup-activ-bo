@@ -125,15 +125,15 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("supannAliasLogin", listLogin);
 		
 		List<String> listMail=new ArrayList<String>();
-		listMail.add("Vivien.Lorente@univ-paris1.fr");
+		listMail.add("aanli@univ-paris1.fr");
 		e.put("mail", listMail);
 		
 		List<String> listPager=new ArrayList<String>();
-		listPager.add(null);
+		listPager.add("0616945407");
 		e.put("pager", listPager);
 		
 		List<String> listMailPerso=new ArrayList<String>();
-		listMailPerso.add("lorvivien@yahoo.fr");
+		listMailPerso.add("aanli@univ-paris1.fr");
 		e.put("supannMailPerso", listMailPerso);
 		
 		List<String> listSLC=new ArrayList<String>();
@@ -185,11 +185,11 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		e.put("displayName", listDisplayName);
 		
 		List<String> listMail=new ArrayList<String>();
-		listMail.add("Vivien.Lorente@univ-paris1.fr");
+		listMail.add("aanli@univ-paris1.fr@univ-paris1.fr");
 		e.put("mail", listMail);
 		
 		List<String> listPager=new ArrayList<String>();
-		listPager.add(null);
+		listPager.add("0616945407");
 		e.put("pager", listPager);
 		
 		List<String> listLogin=new ArrayList<String>();
@@ -198,7 +198,7 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
 		
 		
 		List<String> listMailPerso=new ArrayList<String>();
-		listMailPerso.add("lorvivien@yahoo.fr");
+		listMailPerso.add("anlifss@yahoo.fr");
 		e.put("supannMailPerso", listMailPerso);
 		
 		List<String> listSLC=new ArrayList<String>();
