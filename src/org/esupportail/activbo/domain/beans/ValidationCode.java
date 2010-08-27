@@ -81,8 +81,7 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 	public String generateCode(String id,int codeDelay){
 		
 		
-		String code=getRandomCode();
-		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);
+		String code=getRandomCode();		
 		
 		Calendar c = new GregorianCalendar();
 		c.add(Calendar.SECOND,codeDelay);
@@ -91,6 +90,8 @@ public class ValidationCode extends Hashtable<String,HashMap<String,String>> imp
 		
 		if(userData==null) userData= new HashMap<String,String>();	
 		else code=userData.get(codeKey);
+		
+		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);
 							
 		userData.put(codeKey,code);
 		userData.put(dateKey,this.dateToString(c.getTime()));
