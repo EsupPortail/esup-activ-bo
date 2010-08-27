@@ -17,17 +17,5 @@
 		<property name="validationCode" ref="validationCode"/>
 		
 	</bean>
-	
-	<bean
-		id="cleaningBlockedUser"
-		class="org.esupportail.activbo.domain.tools.CleaningBlockedUser"
-		>
-		
-		<property name="formatDateConv" value="${validation.date.format}"/>
-		<property name="cleaningTimeInterval" value="${access.cleaning.timeinterval}"/>
-		<property name="blockedUser" ref="blockedUser"/>
-		<property name="failValidation" ref="failValidation"/>
-		
-	</bean>
 
 </beans>
