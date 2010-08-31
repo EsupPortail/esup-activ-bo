@@ -183,6 +183,8 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		String cmd=kadmin+" rename "+oldPrincipal+" "+newPrincipal;
 		
+		if(this.exists(newPrincipal)) throw new KRBPrincipalAlreadyExistsException("The new principal "+newPrincipal+" already exists");
+		
 		Runtime runtime = Runtime.getRuntime();
 		Process process;
 		try {
