@@ -460,21 +460,16 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	
-	public boolean getCode(String id,String canal)throws LdapProblemException{
+	public void sendCode(String id,String canal)throws ChannelException{
 		//validationCode.generateCode(id);
 		//return true;
 		for(Channel c:channels)
-			if(c.getName().equalsIgnoreCase(canal))
-				try {
-					c.send(id);
-					break;
-				} catch (ChannelException e) {
-					// TODO supprimer le try catch et remplacer LdapProblemException par ChannelException 
-					e.printStackTrace();
-				}
+			if(c.getName().equalsIgnoreCase(canal)){
+				c.send(id);
+				break;
+			}	
 		//TODO supprimer le return et changer le nom de la méthode
-		return true;
-		
+				
 	}
 	
 	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
