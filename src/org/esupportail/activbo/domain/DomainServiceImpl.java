@@ -340,7 +340,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.ldapUserService = ldapUserService;
 	}
 	
-	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException{
+	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException, LdapProblemException{
 		HashMap<String,String> accountDescr=new HashMap<String,String>();
 		List<LdapUser> ldapUserList=null;
 		
@@ -354,6 +354,15 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		for(String key:keys)
 		{
 			String value=hashInfToValidate.get(key);
+			
+			//Suppression des caractères spéciaux susceptibles de permettre une injection ldap
+			value=value.replace("&","");
+			value=value.replace(")","");
+			value=value.replace("(","");
+			value=value.replace("|","");
+			value=value.replace("*","");
+			value=value.replace("=","");
+			
 			filter+="("+key+"="+value+")";
 		}
 		filter+=")";
@@ -362,7 +371,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		ldapUserList = this.ldapUserService.getLdapUsersFromFilter(filter);									
 				
-		if (ldapUserList.size() == 0) throw new LdapProblemException("Identification �chouée : "+filter);
+		if (ldapUserList.size() == 0) throw new AuthentificationException("Identification �chouée : "+filter);
 	
 		LdapUser ldapUser = ldapUserList.get(0);
 				

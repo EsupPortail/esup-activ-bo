@@ -1,6 +1,5 @@
 package org.esupportail.activbo.services.remote;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import org.esupportail.activbo.exceptions.UserPermissionException;
 
 public interface AccountManagement {
 	
-	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException;
+	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException,AuthentificationException;
 
 	public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException;
 		

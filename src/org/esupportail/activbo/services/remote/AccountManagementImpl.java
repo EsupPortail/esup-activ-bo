@@ -1,5 +1,5 @@
 package org.esupportail.activbo.services.remote;
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	}
 	
 	
-	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException{
+	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException,AuthentificationException{
 		return domainService.validateAccount(hashInfToValidate,attrPersoInfo);
 	}
 	
