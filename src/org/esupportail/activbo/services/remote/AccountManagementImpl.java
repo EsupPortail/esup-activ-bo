@@ -9,6 +9,7 @@ import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
+import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -23,12 +24,12 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	}
 	
 	
-	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException,AuthentificationException{
+	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException,AuthentificationException, LoginException{
 		return domainService.validateAccount(hashInfToValidate,attrPersoInfo);
 	}
 	
 	
-	public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException{
+	public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
 		domainService.setPassword(id,code,currentPassword);
 		
 	}
@@ -37,7 +38,7 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		return domainService.setPassword(id,oldPassword,currentPassword,attrPersoInfo);
 	}*/
 	
-	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException{
+	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
 		domainService.updatePersonalInformations(id,code,hashBeanPersoInfo);
 	}
 	
@@ -60,11 +61,11 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		return domainService.validateCode(id, code);
 	}
 	
-	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException{
+	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException{
 		domainService.changeLogin(id, code, newLogin);
 	}
 	
-	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException{
+	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
 		return domainService.authentificateUser(id, password,attrPersoInfo);
 	}
 

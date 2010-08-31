@@ -26,6 +26,7 @@ import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapLoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
+import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.activbo.services.kerberos.KRBAdmin;
 import org.esupportail.activbo.services.kerberos.KRBException;
@@ -340,10 +341,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.ldapUserService = ldapUserService;
 	}
 	
-	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException, LdapProblemException{
+	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException, LdapProblemException, LoginException{
 		HashMap<String,String> accountDescr=new HashMap<String,String>();
-		List<LdapUser> ldapUserList=null;
-		
+				
 		/**
 		 * Construction d'un filtre ldap à partir des données à valider.
 		 * Si l'application du filtre retourne une entrée, c'est que les données sont valides
@@ -369,12 +369,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		if (logger.isDebugEnabled()) 
 			logger.debug("Le filtre construit pour la validation est : "+filter);
 		
-		ldapUserList = this.ldapUserService.getLdapUsersFromFilter(filter);									
+		LdapUser ldapUser=this.getLdapUser(filter);
 				
-		if (ldapUserList.size() == 0) throw new AuthentificationException("Identification �chouée : "+filter);
-	
-		LdapUser ldapUser = ldapUserList.get(0);
-				
+		if (ldapUser==null) throw new AuthentificationException("Identification �chouée : "+filter);
+							
 		//Construction du hasMap de retour
 		accountDescr.put(ldapSchema.getLogin(), convertListToString(ldapUser.getAttributes(ldapSchema.getLogin())));
 		accountDescr.put(ldapSchema.getMail(), convertListToString(ldapUser.getAttributes(ldapSchema.getMail())));
@@ -409,17 +407,28 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		return accountDescr;
 	}
+	
+	public LdapUser getLdapUser(String filter) throws LoginException{
+		LdapUser ldapUser=null;
+		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter(filter);
+		if(ldapUserList.size() !=0)
+		{
+			ldapUser = ldapUserList.get(0);
+			if(ldapUser.getAttribute(ldapSchema.getLogin())==null) throw new LoginException("Le login pour l'utilisateur est null");
+		}
+		return ldapUser;
+	}
 
 	
-	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException{
+	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
 		
 		try{
 			if (validationCode.verify(id,code)){/*security reasons*/
 				
 				//Lecture LDAP
-				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
-				LdapUser ldapUser = ldapUserList.get(0); 
 				
+				LdapUser ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
+				 				
 				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(),ldapSchema.getPasswordAdmin());
 				
 				ldapUser.getAttributes().clear();
@@ -466,7 +475,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 	}
 	
-	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException{
+	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
 		
 		LdapUser ldapUser=null;
 		LdapUser ldapUserRead=null;
@@ -476,10 +485,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			if (validationCode.verify(id,code)){/*security reasons*/
 				
 				//Lecture LDAP
-				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
-				
-
-				ldapUserRead = ldapUserList.get(0); 
+				ldapUserRead=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");								
 				
 				String ldapUserRedirectKerb = ldapUserRead.getAttribute(ldapSchema.getPassword());
 				String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
@@ -550,7 +556,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 	}
 	
-	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException{
+	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
 		
 		HashMap<String, String> accountDescr=new HashMap<String,String>();
 		
@@ -561,13 +567,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			this.writeableLdapUserService.defineAuthenticatedContextForUser(id, password);
 			
-			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+id+ ")");
+			LdapUser ldapUser =this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
 			
-			if (ldapUserList.size() == 0) {
+			if (ldapUser == null) {
 				return null;
-			}
-	
-			LdapUser ldapUser = ldapUserList.get(0); 
+			}				
 				
 			if (logger.isDebugEnabled()) {
 					logger.debug("Validating account for : " + ldapUser);
@@ -589,7 +593,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				accountDescr.put(accountDescrCodeKey,this.convertListToString(list));
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectu�e");
 			}
-			logger.info("Accoutdescr renvoy� : "+accountDescr.toString());
+			logger.info("Accoutdescr renvoy� : "+accountDescr.toString());
 			//si authentification pas bonne 
 			bruteForceBlock.setFail(id);
 			
@@ -602,14 +606,14 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	
 	    
-    public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException{
+    public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException{
     	LdapUser ldapUser=null;
     	try{
 	    	if (validationCode.verify(id,code)){/*security reasons*/
 
-	    		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+newLogin+ ")");
+	    		ldapUser= this.getLdapUser("("+ldapSchema.getLogin()+"="+newLogin+ ")");
 				
-				if (ldapUserList.size() == 0) {
+				if (ldapUser!=null) {
 					throw new LdapLoginAlreadyExistsException("");
 				}
 	    		

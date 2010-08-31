@@ -79,21 +79,16 @@ public class ValidationCode extends HashMap<String,HashMap<String,String>> imple
     }
     
 	public String generateCode(String id,int codeDelay){
-		System.out.println("1");
-		
+			
 		String code=getRandomCode();		
 		
 		Calendar c = new GregorianCalendar();
 		c.add(Calendar.SECOND,codeDelay);
-		
-		System.out.println("2"+this.get(id));
-		HashMap<String,String> userData= this.get(id);
-		System.out.println("3");
+			
+		HashMap<String,String> userData= this.get(id);		
 		if(userData==null) userData= new HashMap<String,String>();	
 		else code=userData.get(codeKey);
-		System.out.println("4");
-		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);
-		System.out.println("5");					
+		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);							
 		userData.put(codeKey,code);
 		userData.put(dateKey,this.dateToString(c.getTime()));
 				
