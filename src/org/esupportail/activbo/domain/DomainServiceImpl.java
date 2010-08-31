@@ -565,14 +565,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			this.writeableLdapUserService.defineAuthenticatedContextForUser(ldapUser.getId(), password);
 			this.writeableLdapUserService.bindLdap(ldapUser);
 			
+			logger.debug("Authentification valide");
 			
-			if (ldapUser == null) {
-				return null;
-			}				
-				
-			if (logger.isDebugEnabled()) {
-					logger.debug("Validating account for : " + ldapUser);
-			}
 			
 			//Construction du hasMap de retour
 			accountDescr.put(ldapSchema.getLogin(), convertListToString(ldapUser.getAttributes(ldapSchema.getLogin())));
@@ -590,7 +584,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				accountDescr.put(accountDescrCodeKey,this.convertListToString(list));
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectuï¿½e");
 			}
-			logger.info("Accoutdescr renvoyï¿½ : "+accountDescr.toString());
+			logger.debug("Accoutdescr renvoyé par le BO par la methode authentificateUser : "+accountDescr.toString());
 			//si authentification pas bonne 
 			bruteForceBlock.setFail(id);
 			
@@ -598,6 +592,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			logger.debug("Exception thrown by authentificateUser() : "+ e.getMessage());
 			throw new LdapProblemException("Probleme au niveau du LDAP");
 		}
+		
 		return accountDescr;
 	}
 	
