@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.esupportail.activbo.domain.DomainService;
+import org.esupportail.activbo.domain.beans.channels.ChannelException;
 
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
@@ -42,8 +43,8 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		domainService.updatePersonalInformations(id,code,hashBeanPersoInfo);
 	}
 	
-	public boolean getCode(String id,String canal)throws LdapProblemException{
-		return domainService.getCode(id, canal);
+	public void sendCode(String id,String canal)throws ChannelException{
+		domainService.sendCode(id, canal);
 	}
 	
 	

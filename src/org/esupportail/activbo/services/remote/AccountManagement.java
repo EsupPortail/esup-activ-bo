@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
+import org.esupportail.activbo.domain.beans.channels.ChannelException;
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
@@ -22,7 +23,7 @@ public interface AccountManagement {
 		
 	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException;
 	
-	public boolean getCode(String id,String canal)throws LdapProblemException;
+	public void sendCode(String id,String canal)throws ChannelException;
 		
 	public boolean validateCode(String id,String code)throws UserPermissionException;
 	
