@@ -208,6 +208,14 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 	
 	public void defineAuthenticatedContextForUser(String userId, String password) throws LdapException{
 		DistinguishedName ldapBindUserDn = new DistinguishedName(this.dnAuth);
+		/*List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("(supannAliasLogin"+id+ ")");
+		
+		if (ldapUserList.size() == 0) {
+			throw new Exception("");
+		}
+
+		LdapUser ldapUser = ldapUserList.get(0);
+		String userId=ldapUser.getAttribute("uid");*/
 		ldapBindUserDn.add(this.idAuth, userId);
 		
 		logger.debug("Binding to LDAP with DN : "+ldapBindUserDn+" pass : "+password);
