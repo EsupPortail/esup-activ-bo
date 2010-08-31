@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.naming.Name;
 
+import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.commons.services.ldap.LdapException;
 import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.logging.Logger;
@@ -201,9 +202,16 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 		contextSource.setPassword(password);
 	}
 	
-	public void bindLdap(final LdapUser ldapUser){
-		Name dn = buildLdapUserDn(ldapUser.getId());
-		ldapTemplate.lookup(dn);
+	public void bindLdap(final LdapUser ldapUser)throws AuthentificationException{
+		try{
+			Name dn = buildLdapUserDn(ldapUser.getId());
+			ldapTemplate.lookup(dn);
+		
+		} catch (UncategorizedLdapException e) {
+			if (e.getCause() instanceof javax.naming.AuthenticationException) {
+				throw new AuthentificationException("Authentification invalide pour l'utilisateur" + ldapUser.getId());
+			}
+		} 
 	}
 	
 	public void defineAuthenticatedContext(String username, String password) throws LdapException {

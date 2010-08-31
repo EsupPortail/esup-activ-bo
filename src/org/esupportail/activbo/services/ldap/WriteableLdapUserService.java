@@ -5,6 +5,7 @@ package org.esupportail.activbo.services.ldap;
 
 import java.io.Serializable;
 
+import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.commons.services.ldap.LdapException;
 import org.esupportail.commons.services.ldap.LdapUser;
 
@@ -50,6 +51,6 @@ public interface WriteableLdapUserService extends Serializable {
 	
 	public void defineAuthenticatedContextForUser(String userId, String password) throws LdapException;
 	
-	public void bindLdap(final LdapUser ldapUser);
+	public void bindLdap(final LdapUser ldapUser)throws AuthentificationException;
 
 }

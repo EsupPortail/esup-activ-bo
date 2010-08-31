@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.naming.Name;
 
+import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.commons.services.ldap.LdapException;
 import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.logging.Logger;
@@ -274,7 +275,7 @@ public class WriteableLdapUserServiceTest implements WriteableLdapUserService, I
 	/* (non-Javadoc)
 	 * @see org.esupportail.activbo.services.ldap.WriteableLdapUserService#bindLdap(org.esupportail.commons.services.ldap.LdapUser)
 	 */
-	public void bindLdap(LdapUser ldapUser) {
+	public void bindLdap(final LdapUser ldapUser)throws AuthentificationException{
 		// TODO Auto-generated method stub
 		
 	}
