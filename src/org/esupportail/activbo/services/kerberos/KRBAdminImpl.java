@@ -193,7 +193,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			
 			process = runtime.exec(cmd);
 			//this command must be silence if not something unknown happened
-			//TODO voir si on peut reperer si le principal existe déjà et lancer une exception
+	
 			if(verboseProcess(process)) 
 				throw new KRBException("Unknown error. See log files for more information. oldPrincipal="+oldPrincipal+", newPrincipal="+newPrincipal);
 			
