@@ -217,7 +217,6 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 		LdapUser ldapUser = ldapUserList.get(0);
 		String userId=ldapUser.getAttribute("uid");*/
 		ldapBindUserDn.add(this.idAuth, userId);
-		
 		logger.debug("Binding to LDAP with DN : "+ldapBindUserDn+" pass : "+password);
 		
 		contextSource.setUserName(ldapBindUserDn.encode());
