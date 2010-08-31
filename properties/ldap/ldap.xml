@@ -14,7 +14,7 @@
 	-->
 
 	<bean id="ldapUserService"
-		class="org.esupportail.activbo.services.ldap.LdapUserServiceTest" >
+		class="org.esupportail.commons.services.ldap.SearchableLdapUserServiceImpl" >
 		<description>
 			This bean provides LDAP facilities to all the other beans.
 			It must implement interface
@@ -63,6 +63,7 @@
 				<value>${ldap.attribute.mailPerso}</value>
 				<value>${ldap.attribute.smsagreement}</value>
 				<value>${ldap.attribute.uid}</value>
+				<value>${ldap.attribute.login}</value>
 				
 			</list>
 		</property>
@@ -86,6 +87,7 @@
 				<value>${ldap.attribute.mailPerso}</value>
 				<value>${ldap.attribute.smsagreement}</value>
 				<value>${ldap.attribute.uid}</value>
+				<value>${ldap.attribute.login}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -155,7 +157,7 @@
 	</bean>
 	
 	<bean id="writeableLdapUserService"
-		class="org.esupportail.activbo.services.ldap.WriteableLdapUserServiceTest" >
+		class="org.esupportail.activbo.services.ldap.WriteableLdapUserServiceImpl" >
 		<description>
 			This bean provides LDAP write facilities to all the other beans.
 			It must implement interface
@@ -283,7 +285,7 @@
 			<property name="usernameAdmin" value="${ldap.username}"/>
 			<property name="passwordAdmin" value="${ldap.password}"/>
 			<property name="mailPerso" value="${ldap.attribute.mailPerso}"/>
-			<property name="login" value="${ldap.attribute.uid}"/>
+			<property name="login" value="${ldap.attribute.login}"/>
 						
 	</bean>
 
