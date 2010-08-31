@@ -270,5 +270,13 @@ public class WriteableLdapUserServiceTest implements WriteableLdapUserService, I
 	public void setIdAuth(final String idAuth) {
 		this.idAuth = idAuth;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.esupportail.activbo.services.ldap.WriteableLdapUserService#bindLdap(org.esupportail.commons.services.ldap.LdapUser)
+	 */
+	public void bindLdap(LdapUser ldapUser) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

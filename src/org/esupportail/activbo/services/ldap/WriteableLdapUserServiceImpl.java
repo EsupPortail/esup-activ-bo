@@ -201,6 +201,11 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 		contextSource.setPassword(password);
 	}
 	
+	public void bindLdap(final LdapUser ldapUser){
+		Name dn = buildLdapUserDn(ldapUser.getId());
+		ldapTemplate.lookup(dn);
+	}
+	
 	public void defineAuthenticatedContext(String username, String password) throws LdapException {
 		contextSource.setUserName(username);
 		contextSource.setPassword(password);
