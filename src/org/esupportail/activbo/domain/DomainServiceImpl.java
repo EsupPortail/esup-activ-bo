@@ -32,7 +32,6 @@ import org.esupportail.activbo.services.kerberos.KRBAdmin;
 import org.esupportail.activbo.services.kerberos.KRBException;
 import org.esupportail.activbo.services.kerberos.KRBIllegalArgumentException;
 import org.esupportail.activbo.services.kerberos.KRBPrincipalAlreadyExistsException;
-import org.esupportail.activbo.services.ldap.InvalidLdapAccountException;
 import org.esupportail.activbo.services.ldap.LdapSchema;
 import org.esupportail.activbo.services.ldap.WriteableLdapUserService;
 import org.esupportail.commons.exceptions.ConfigException;
@@ -433,8 +432,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				 				
 				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(),ldapSchema.getPasswordAdmin());
 				
-				ldapUser.getAttributes().clear();
-				
 				logger.debug("Parcours des informations personnelles mises � jour au niveau du FO pour insertion LDAP");
 				
 				Iterator<Map.Entry<String,String>> it=hashBeanPersoInfo.entrySet().iterator();
@@ -621,7 +618,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				logger.info("Authentification LDAP r�ussie");
 				
 				ldapUser = this.ldapUserService.getLdapUser(id);
-				ldapUser.getAttributes().clear();
+				
 				
 				List<String> list=new ArrayList<String>();
 				
@@ -668,7 +665,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     private void finalizeLdapWriting(LdapUser ldapUser){
 		logger.debug("L'ecriture dans le LDAP commence");
 		this.writeableLdapUserService.updateLdapUser(ldapUser);
-		ldapUser.getAttributes().clear();
+		
 		this.writeableLdapUserService.defineAnonymousContext();
 		logger.debug("Ecriture dans le LDAP r�ussie");
 	}
