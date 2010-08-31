@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.esupportail.activbo.domain.DomainService;
+
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
@@ -20,7 +21,8 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	public AccountManagementImpl() {
 		super();
 	}
-
+	
+	
 	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException{
 		return domainService.validateAccount(hashInfToValidate,attrPersoInfo);
 	}
