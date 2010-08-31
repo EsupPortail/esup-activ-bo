@@ -411,11 +411,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public LdapUser getLdapUser(String filter) throws LoginException{
 		LdapUser ldapUser=null;
 		List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter(filter);
-		if(ldapUserList.size() !=0)
-		{
+		
+		if(ldapUserList.size() !=0){
 			ldapUser = ldapUserList.get(0);
-			if(ldapUser.getAttribute(ldapSchema.getLogin())==null) throw new LoginException("Le login pour l'utilisateur est null");
+			if(ldapUser.getAttribute(ldapSchema.getLogin())== null) 
+				throw new LoginException("Le login pour l'utilisateur est null");
 		}
+		
 		return ldapUser;
 	}
 
