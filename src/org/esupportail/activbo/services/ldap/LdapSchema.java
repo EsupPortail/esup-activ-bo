@@ -76,6 +76,8 @@ public class LdapSchema implements InitializingBean{
 	
 	private String login;
 	
+	private String termsOfUse;
+	
 
 
 	public String getLogin() {
@@ -238,5 +240,21 @@ public class LdapSchema implements InitializingBean{
 
 	public void setBirthdateFormat(String birthdateFormat) {
 		this.birthdateFormat = birthdateFormat;
+	}
+
+
+	/**
+	 * @return the termsOfUse
+	 */
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+
+	/**
+	 * @param termsOfUse the termsOfUse to set
+	 */
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
 	}
 }
