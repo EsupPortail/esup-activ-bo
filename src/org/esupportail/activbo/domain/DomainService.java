@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
+
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;

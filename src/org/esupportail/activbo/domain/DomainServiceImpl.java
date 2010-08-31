@@ -341,7 +341,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException{
-		HashMap<String, String> accountDescr=new HashMap<String,String>();
+		HashMap<String,String> accountDescr=new HashMap<String,String>();
 		List<LdapUser> ldapUserList=null;
 		
 		/**
@@ -364,20 +364,23 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				
 		if (ldapUserList.size() == 0) throw new LdapProblemException("Identification ï¿½chouÃ©e : "+filter);
 	
-		LdapUser ldapUser = ldapUserList.get(0); 
-
+		LdapUser ldapUser = ldapUserList.get(0);
+				
 		//Construction du hasMap de retour
-		accountDescr.put(ldapSchema.getLogin(), ldapUser.getAttribute(ldapSchema.getLogin()));
-		accountDescr.put(ldapSchema.getMail(), ldapUser.getAttribute(ldapSchema.getMail()));
+		accountDescr.put(ldapSchema.getLogin(), convertListToString(ldapUser.getAttributes(ldapSchema.getLogin())));
+		accountDescr.put(ldapSchema.getMail(), convertListToString(ldapUser.getAttributes(ldapSchema.getMail())));
 			
 		for (int j=0;j<attrPersoInfo.size();j++){
-			accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
+			accountDescr.put(attrPersoInfo.get(j), convertListToString(ldapUser.getAttributes(attrPersoInfo.get(j))));
 		}
-			
+		logger.debug("OK pour la methode3");	
 		//envoi d'un code si le compte n'est pas activï¿½
 		if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())==null){
+			
 			String code=validationCode.generateCode(ldapUser.getAttribute(ldapSchema.getLogin()));
-			accountDescr.put(accountDescrCodeKey,code);
+			List<String>list=new ArrayList<String>();
+			list.add(code);
+			accountDescr.put(accountDescrCodeKey,convertListToString(list));
 			logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectuï¿½e");
 		}
 		
@@ -388,8 +391,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				else possibleChannels+=","+c.getName();
 			}
 		}
+		List<String>list=new ArrayList<String>();
+		list.add(possibleChannels);
 		
-		accountDescr.put(accountDescrPossibleChannelsKey, possibleChannels);
+		accountDescr.put(accountDescrPossibleChannelsKey, convertListToString(list));
+		
+		logger.debug(accountDescr.toString());
 		
 		return accountDescr;
 	}
@@ -400,10 +407,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		try{
 			if (validationCode.verify(id,code)){/*security reasons*/
 				
-				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(),ldapSchema.getPasswordAdmin());
-				logger.info("Authentification LDAP rï¿½ussie pour l'utilisateur "+id);
+				//Lecture LDAP
+				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
+				LdapUser ldapUser = ldapUserList.get(0); 
 				
-				LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
+				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(),ldapSchema.getPasswordAdmin());
+				
 				ldapUser.getAttributes().clear();
 				
 				logger.debug("Parcours des informations personnelles mises ï¿½ jour au niveau du FO pour insertion LDAP");
@@ -451,7 +460,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException{
 		
 		LdapUser ldapUser=null;
-		
+		LdapUser ldapUserRead=null;
 		try {
 			
 			
@@ -461,13 +470,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
 				
 
-				LdapUser ldapUserRead = ldapUserList.get(0); 
+				ldapUserRead = ldapUserList.get(0); 
 				
 				String ldapUserRedirectKerb = ldapUserRead.getAttribute(ldapSchema.getPassword());
 				String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
 				
 				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(), ldapSchema.getPasswordAdmin());
-				ldapUser = this.ldapUserService.getLdapUser(id);
+				//ldapUser = this.ldapUserService.getLdapUser(id);
 				
 				if (true){//if (!ldapUserRedirectKerb.equals(redirectKer)) {
 					logger.debug("Le compte Kerberos ne gï¿½re pas encore l'authentification");
@@ -475,7 +484,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					/* Writing of Kerberos redirection in LDAP */
 					List<String> listPasswordAttr = new ArrayList<String>();
 					listPasswordAttr.add(redirectKer);
-					ldapUser.getAttributes().put(ldapSchema.getPassword(),listPasswordAttr);
+					ldapUserRead.getAttributes().put(ldapSchema.getPassword(),listPasswordAttr);
 					if (logger.isDebugEnabled()) {
 						logger.debug("Writing Kerberos redirection in LDAP : " + redirectKer);
 					}
@@ -487,7 +496,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					Calendar cal = Calendar.getInstance();
 					String shadowLastChange = Integer.toString((int) Math.floor(cal.getTimeInMillis()/ (1000 * 3600 * 24)));
 					listShadowLastChangeAttr.add(shadowLastChange);
-					ldapUser.getAttributes().put(ldapSchema.getShadowLastChange(),listShadowLastChangeAttr);
+					ldapUserRead.getAttributes().put(ldapSchema.getShadowLastChange(),listShadowLastChangeAttr);
 					if (logger.isDebugEnabled()) {
 						logger.debug("Writing shadowLastChange in LDAP : " + shadowLastChange);
 					}
@@ -497,7 +506,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				kerberosAdmin.add(id, currentPassword);
 				logger.info("Ajout de mot de passe dans kerberos effectuï¿½e");
 
-				this.finalizeLdapWriting(ldapUser);
+				this.finalizeLdapWriting(ldapUserRead);
 							
 			
 			}else{
@@ -509,7 +518,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			try{
 				logger.info("Le compte kerberos existe dï¿½ja, Modification du password");
 				kerberosAdmin.changePasswd(id, currentPassword);
-				this.finalizeLdapWriting(ldapUser);
+				this.finalizeLdapWriting(ldapUserRead);
 			
 			} catch (KRBIllegalArgumentException ie) {
 				logger.debug("Exception thrown by setPassword() : "+ ie.getMessage());
@@ -556,20 +565,22 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			}
 			
 			//Construction du hasMap de retour
-			accountDescr.put(ldapSchema.getLogin(), ldapUser.getAttribute(ldapSchema.getLogin()));
-			accountDescr.put(ldapSchema.getMail(), ldapUser.getAttribute(ldapSchema.getMail()));
+			accountDescr.put(ldapSchema.getLogin(), convertListToString(ldapUser.getAttributes(ldapSchema.getLogin())));
+			accountDescr.put(ldapSchema.getMail(), this.convertListToString(ldapUser.getAttributes(ldapSchema.getMail())));
 			
 			for (int j=0;j<attrPersoInfo.size();j++){
-				accountDescr.put(attrPersoInfo.get(j), ldapUser.getAttribute(attrPersoInfo.get(j)));
+				accountDescr.put(attrPersoInfo.get(j), this.convertListToString(ldapUser.getAttributes(attrPersoInfo.get(j))));
 			}
 
 			//envoi d'un code si le compte n'est pas activï¿½
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())!=null){
 				String code=validationCode.generateCode(ldapUser.getAttribute(ldapSchema.getLogin()));
-				accountDescr.put(accountDescrCodeKey,code );
+				List<String>list=new ArrayList<String>();
+				list.add(code);
+				accountDescr.put(accountDescrCodeKey,this.convertListToString(list));
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectuï¿½e");
 			}
-			
+			logger.info("Accoutdescr renvoyé : "+accountDescr.toString());
 			//si authentification pas bonne 
 			bruteForceBlock.setFail(id);
 			
@@ -634,13 +645,21 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
     
     public boolean validateCode(String id,String code)throws UserPermissionException {
-		
 
-		if (validationCode.verify(id,code)){
+    	if (validationCode.verify(id,code)){
 			return true;
 		}
 		return false;
 	}
+    
+    private void finalizeLdapWriting(LdapUser ldapUser){
+		logger.debug("L'ecriture dans le LDAP commence");
+		this.writeableLdapUserService.updateLdapUser(ldapUser);
+		ldapUser.getAttributes().clear();
+		this.writeableLdapUserService.defineAnonymousContext();
+		logger.debug("Ecriture dans le LDAP rï¿½ussie");
+	}
+
 	
 	public CleaningValidationCode getCleaningValidationCode() {
 		return cleaningValidationCode;
@@ -659,13 +678,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.validationCode = validationCode;
 	}
 		
-	private void finalizeLdapWriting(LdapUser ldapUser){
-		this.writeableLdapUserService.updateLdapUser(ldapUser);
-		ldapUser.getAttributes().clear();
-		this.writeableLdapUserService.defineAnonymousContext();
-		logger.info("Ecriture dans le LDAP rï¿½ussie");
-	}
-
 	public String getAccountDescrCodeKey() {
 		return accountDescrCodeKey;
 	}
@@ -736,6 +748,18 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	 */
 	public void setBruteForceBlock(BruteForceBlock bruteForceBlock) {
 		this.bruteForceBlock = bruteForceBlock;
+	}
+	
+	public String convertListToString(List<String>listString){
+		String result="";
+		for (int i=0;i<listString.size();i++){
+			
+			if (result.isEmpty()) result+=listString.get(i);
+			else result+=","+listString.get(i);
+		}
+		
+		return result;
+		
 	}
 
 
