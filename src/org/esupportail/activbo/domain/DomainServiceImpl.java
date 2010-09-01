@@ -584,7 +584,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				accountDescr.put(accountDescrCodeKey,this.convertListToString(list));
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectuï¿½e");
 			}
-			logger.debug("Accoutdescr renvoyé par le BO par la methode authentificateUser : "+accountDescr.toString());
+			logger.debug("Accoutdescr renvoyï¿½ par le BO par la methode authentificateUser : "+accountDescr.toString());
 			//si authentification pas bonne 
 			bruteForceBlock.setFail(id);
 			
@@ -609,12 +609,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					throw new LdapLoginAlreadyExistsException("");
 				}
 	    		
-	    		this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(), ldapSchema.getPasswordAdmin());
-				logger.info("Authentification LDAP rï¿½ussie");
+	    		this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(), ldapSchema.getPasswordAdmin());				
 				
-				ldapUser = this.ldapUserService.getLdapUser(id);
-				
-				
+				ldapUser = this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
+								
 				List<String> list=new ArrayList<String>();
 				
 				list.add(newLogin);
