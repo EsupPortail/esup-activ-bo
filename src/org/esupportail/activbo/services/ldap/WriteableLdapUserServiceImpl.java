@@ -208,8 +208,9 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 			ldapTemplate.lookup(dn);
 		
 		} catch (UncategorizedLdapException e) {
+			logger.debug("Une authentification a échouée : "+e);
 			if (e.getCause() instanceof javax.naming.AuthenticationException) {
-				throw new AuthentificationException("Authentification invalide pour l'utilisateur" + ldapUser.getId());
+				throw new AuthentificationException("Authentification invalide pour l'utilisateur " + ldapUser.getId());
 			}
 		} 
 	}
