@@ -379,7 +379,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		for (int j=0;j<attrPersoInfo.size();j++){
 			accountDescr.put(attrPersoInfo.get(j), convertListToString(ldapUser.getAttributes(attrPersoInfo.get(j))));
 		}
-		logger.debug("OK pour la methode3");	
+		
 		//envoi d'un code si le compte n'est pas activ�
 		if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())==null){
 			
@@ -430,7 +430,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				
 				LdapUser ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
 				 				
-				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(),ldapSchema.getPasswordAdmin());
+				if (ldapUser==null) throw new LdapProblemException("Probleme au niveau du LDAP");
 				
 				logger.debug("Parcours des informations personnelles mises � jour au niveau du FO pour insertion LDAP");
 				
@@ -484,7 +484,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				String ldapUserRedirectKerb = ldapUserRead.getAttribute(ldapSchema.getPassword());
 				String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
 				
-				this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(), ldapSchema.getPasswordAdmin());
+				
 				//ldapUser = this.ldapUserService.getLdapUser(id);
 				
 				if (true){//if (!ldapUserRedirectKerb.equals(redirectKer)) {
@@ -608,9 +608,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				if (ldapUser!=null) {
 					throw new LdapLoginAlreadyExistsException("");
 				}
-	    		
-	    		this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(), ldapSchema.getPasswordAdmin());				
-				
+	    						
 				ldapUser = this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
 								
 				List<String> list=new ArrayList<String>();
@@ -657,8 +655,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     
     private void finalizeLdapWriting(LdapUser ldapUser){
 		logger.debug("L'ecriture dans le LDAP commence");
+		this.writeableLdapUserService.defineAuthenticatedContext(ldapSchema.getUsernameAdmin(), ldapSchema.getPasswordAdmin());
 		this.writeableLdapUserService.updateLdapUser(ldapUser);
-		
 		this.writeableLdapUserService.defineAnonymousContext();
 		logger.debug("Ecriture dans le LDAP r�ussie");
 	}
