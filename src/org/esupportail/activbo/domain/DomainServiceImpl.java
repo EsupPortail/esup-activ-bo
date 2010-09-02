@@ -524,6 +524,63 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 	}
 	
+	
+	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
+		
+		LdapUser ldapUser=null;
+		try {
+			
+			
+			if (validationCode.verify(id,code)){/*security reasons*/
+				
+				//Lecture LDAP
+				ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");								
+				
+				if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
+				
+				this.gestRedirectionKerberos(ldapUser,newLogin);
+				
+				//Ajout ou modification du mot de passe dans kerberos
+				kerberosAdmin.add(newLogin, currentPassword);
+				logger.info("Ajout du login et du mot de passe dans kerberos effectu�e");
+
+				this.finalizeLdapWriting(ldapUser);
+							
+			
+			}else{
+				throw new UserPermissionException("L'utilisateur n'a pas le droit de continuer l'activation");
+			}
+		
+		} catch (KRBPrincipalAlreadyExistsException e){
+			
+			try{
+				logger.info("Le compte kerberos existe d�ja, Modification du password");
+				kerberosAdmin.changePasswd(id, currentPassword);
+				this.finalizeLdapWriting(ldapUser);
+			
+			} catch (KRBIllegalArgumentException ie) {
+				logger.debug("Exception thrown by setPassword() : "+ ie.getMessage());
+				throw new KerberosException("Probleme au niveau de Kerberos");
+			
+			}catch(KRBException ke){
+				logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
+				throw new KerberosException("Probleme au niveau de Kerberos");
+			}
+			
+		}catch(KRBException ke){
+			logger.debug("Exception thrown by setPassword() : "+ ke.getMessage());
+			throw new KerberosException("Probleme au niveau de Kerberos");
+		
+		} catch (LdapException e) {
+			logger.debug("Exception thrown by setPassword() : "+ e.getMessage());
+			throw new LdapProblemException("Probleme au niveau du LDAP");
+		}
+
+		
+	}
+
+	
+	
 	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
 		
 		HashMap<String, String> accountDescr=new HashMap<String,String>();
