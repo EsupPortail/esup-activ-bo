@@ -484,18 +484,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
 				
 				this.gestRedirectionKerberos(ldapUser,id);
-				
-				/* Writing of shadowLastChange in LDAP */
-				List<String> listShadowLastChangeAttr = new ArrayList<String>();
-				Calendar cal = Calendar.getInstance();
-				String shadowLastChange = Integer.toString((int) Math.floor(cal.getTimeInMillis()/ (1000 * 3600 * 24)));
-				listShadowLastChangeAttr.add(shadowLastChange);
-				ldapUser.getAttributes().put(ldapSchema.getShadowLastChange(),listShadowLastChangeAttr);
-				if (logger.isDebugEnabled()) {
-					logger.debug("Writing shadowLastChange in LDAP : " + shadowLastChange);
-				}
-				
-				
+																
 				//Ajout ou modification du mot de passe dans kerberos
 				kerberosAdmin.add(id, currentPassword);
 				logger.info("Ajout de mot de passe dans kerberos effectu�e");
@@ -758,13 +747,28 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	public void gestRedirectionKerberos(LdapUser ldapUser,String id)throws LdapException{
-		String ldapUserRedirectKerb = ldapUser.getAttribute(ldapSchema.getPassword());
+		List<String> passwds= ldapUser.getAttributes(ldapSchema.getPassword());
+		String ldapUserRedirectKerb=null;
+		if(passwds.size()>0)
+			ldapUserRedirectKerb =passwds.get(0);
+		
+		//String ldapUserRedirectKerb = ldapUser.getAttribute(ldapSchema.getPassword());
 		String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
 	
 		
-		if (!ldapUserRedirectKerb.equals(redirectKer)) {
+		if (!redirectKer.equals(ldapUserRedirectKerb)) {
 			logger.debug("Le compte Kerberos ne g�re pas encore l'authentification");
 
+			/* Writing of shadowLastChange in LDAP */
+			List<String> listShadowLastChangeAttr = new ArrayList<String>();
+			Calendar cal = Calendar.getInstance();
+			String shadowLastChange = Integer.toString((int) Math.floor(cal.getTimeInMillis()/ (1000 * 3600 * 24)));
+			listShadowLastChangeAttr.add(shadowLastChange);
+			ldapUser.getAttributes().put(ldapSchema.getShadowLastChange(),listShadowLastChangeAttr);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Writing shadowLastChange in LDAP : " + shadowLastChange);
+			}
+			
 			/* Writing of Kerberos redirection in LDAP */
 			List<String> listPasswordAttr = new ArrayList<String>();
 			listPasswordAttr.add(redirectKer);
