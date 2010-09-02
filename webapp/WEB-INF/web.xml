@@ -170,6 +170,23 @@
 
 <!--END-SERVLET-ONLY-->
 
+<servlet>
+        <servlet-name>xfire</servlet-name>
+        <servlet-class>
+        org.esupportail.commons.web.servlet.XFireServlet
+        </servlet-class>
+</servlet>
+    <servlet-mapping>
+    	<servlet-name>xfire</servlet-name>
+        <url-pattern>/xfire/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>jsp</servlet-name>
+        <url-pattern>*.jspx</url-pattern>
+    </servlet-mapping>
+
+
 <!--BEGIN-PORTLET-ONLY-->
 
 	<servlet> 
