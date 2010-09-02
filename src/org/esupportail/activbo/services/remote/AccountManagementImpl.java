@@ -11,6 +11,7 @@ import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
+import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -62,7 +63,7 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 		return domainService.validateCode(id, code);
 	}
 	
-	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException{
+	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException,PrincipalNotExistsException{
 		domainService.changeLogin(id, code, newLogin);
 	}
 	
