@@ -130,6 +130,8 @@ public interface DomainService extends Serializable {
 	
 	public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException,LoginException;
 	
+	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException;
+	
 	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo) throws LdapProblemException,UserPermissionException,LoginException;
 	
 	public void sendCode(String id,String canal)throws ChannelException;
