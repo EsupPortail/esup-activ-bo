@@ -440,7 +440,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				while(it.hasNext()){
 					List<String> list=new ArrayList<String>();
 					Map.Entry<String,String> e=it.next();
-					list.add(e.getValue());
+					
+					logger.debug("Key="+e.getKey()+" Value="+e.getValue());
+					
+					list.add(e.getValue());				
+					if("".equals(e.getValue())||e.getValue()==null) list=null;
+					
 					ldapUser.getAttributes().put(e.getKey(),list);
 					i++;
 				}
@@ -458,16 +463,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	
-	public void sendCode(String id,String canal)throws ChannelException{
-		//validationCode.generateCode(id);
-		//return true;
+	public void sendCode(String id,String canal)throws ChannelException{	
 		for(Channel c:channels)
 			if(c.getName().equalsIgnoreCase(canal)){
 				c.send(id);
 				break;
-			}	
-		//TODO supprimer le return et changer le nom de la méthode
-				
+			}					
 	}
 	
 	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
@@ -476,7 +477,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		try {
 			
 			
-			if (validationCode.verify(id,code)){/*security reasons*/
+			if (validationCode.verify(id,code)){ //security reasons
 				
 				//Lecture LDAP
 				ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");								
@@ -809,6 +810,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		if(passwds.size()>0)
 			ldapUserRedirectKerb =passwds.get(0);
 		
+		logger.debug("ancien redirection : "+ldapUserRedirectKerb);
+		
 		//String ldapUserRedirectKerb = ldapUser.getAttribute(ldapSchema.getPassword());
 		String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
 	
@@ -816,7 +819,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		if (!redirectKer.equals(ldapUserRedirectKerb)) {
 			logger.debug("Le compte Kerberos ne g�re pas encore l'authentification");
 
-			/* Writing of shadowLastChange in LDAP */
+			// Writing of shadowLastChange in LDAP 
 			List<String> listShadowLastChangeAttr = new ArrayList<String>();
 			Calendar cal = Calendar.getInstance();
 			String shadowLastChange = Integer.toString((int) Math.floor(cal.getTimeInMillis()/ (1000 * 3600 * 24)));
@@ -826,7 +829,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				logger.debug("Writing shadowLastChange in LDAP : " + shadowLastChange);
 			}
 			
-			/* Writing of Kerberos redirection in LDAP */
+			//Writing of Kerberos redirection in LDAP 
 			List<String> listPasswordAttr = new ArrayList<String>();
 			listPasswordAttr.add(redirectKer);
 			ldapUser.getAttributes().put(ldapSchema.getPassword(),listPasswordAttr);
