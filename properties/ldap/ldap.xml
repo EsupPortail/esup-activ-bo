@@ -286,6 +286,7 @@
 			<property name="passwordAdmin" value="${ldap.password}"/>
 			<property name="mailPerso" value="${ldap.attribute.mailPerso}"/>
 			<property name="login" value="${ldap.attribute.login}"/>
+			<property name="termsOfUse" value="${ldap.attribute.smsagreement}"/>
 						
 	</bean>
 

@@ -8,14 +8,13 @@
 
 	<bean
 		id="cleaningValidationCode"
-		class="org.esupportail.activbo.domain.tools.CleaningValidationCode"
+		class="org.esupportail.activbo.domain.tools.CleaningValidationCode" lazy-init="true"
 		>
 		
 		<property name="formatDateConv" value="${validation.date.format}"/>
 		<property name="validationCodeDateKey" value="${validation.date.key}"/>
 		<property name="cleaningTimeInterval" value="${access.cleaning.timeinterval}"/>
-		<property name="validationCode" ref="validationCode"/>
-		
+		<property name="validationCode" ref="validationCode"/>		
 	</bean>
 
 </beans>

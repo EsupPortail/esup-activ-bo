@@ -6,6 +6,7 @@
 		properties/auth/auth.xml
 		properties/cache/cache.xml
 		properties/cache/ehcache.xml
+		properties/cleaning/cleaning.xml
 		properties/dao/hibernate/mapping/*
 		properties/dao/hibernate/hibernate-*.cfg.xml
 		properties/dao/dao.xml
@@ -19,6 +20,7 @@
 		properties/init/init.xml
 		properties/jsf/application.xml
 		properties/jsf/navigation-rules.xml
+		properties/kerberos/kerberos.xml
 		properties/ldap/ldap.xml
 		properties/logging/log4j-batch.properties
 		properties/misc/abstractBeans.xml
@@ -29,6 +31,7 @@
 		properties/web/converters.xml
 		properties/applicationContext.xml
 		properties/defaults.properties
+		properties/defaults-servlets.properties
 		src/**/*.java 
 		src/**/*.html 
     	webapp/media/**/*
