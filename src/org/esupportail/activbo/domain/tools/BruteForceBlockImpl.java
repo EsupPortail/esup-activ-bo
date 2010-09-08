@@ -21,20 +21,19 @@ import org.springframework.beans.factory.InitializingBean;
 public class BruteForceBlockImpl implements BruteForceBlock, Runnable, InitializingBean 
 {
 private final Logger logger = new LoggerImpl(getClass());
+private Thread thread;
 private HashMap<String,LoginBlocked> logins=new HashMap<String,LoginBlocked>();
 
 private int nbMaxFail; //Nbre d'essai avant de bloquer le login
 
 private int wait; //durée de blocage en seconde
 
-private long cleaningTime; //temps d'attente entre 2 passages du nettoyeur
+private long cleaningTime=1000L; //temps d'attente entre 2 passages du nettoyeur
 
 /* (non-Javadoc)
  * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
  */
-public void afterPropertiesSet() throws Exception {
-	Thread thread = new Thread(this); 
-	thread.start();
+public void afterPropertiesSet() throws Exception {	
 	
 }
 
@@ -63,6 +62,11 @@ public void setFail(String id)
 	login.date=c.getTime();
 	login.nbFail++;
 	logins.put(id, login);
+	
+	if(thread==null){
+		thread = new Thread(this); 
+		thread.start();
+	}
 }
 
 /**

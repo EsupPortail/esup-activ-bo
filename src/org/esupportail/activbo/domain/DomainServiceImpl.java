@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.esupportail.activbo.dao.DaoService;
 import org.esupportail.activbo.domain.tools.BruteForceBlock;
-import org.esupportail.activbo.domain.tools.CleaningValidationCode;
 import org.esupportail.activbo.domain.beans.ValidationCode;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
@@ -115,8 +114,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	private WriteableLdapUserService writeableLdapUserService;
 
-		
-	private CleaningValidationCode cleaningValidationCode;
 	
 	/**
 	 * Bean constructor.
@@ -701,17 +698,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.writeableLdapUserService.defineAnonymousContext();
 		logger.debug("Ecriture dans le LDAP r�ussie");
 	}
-
 	
-	public CleaningValidationCode getCleaningValidationCode() {
-		return cleaningValidationCode;
-	}
-
-	public void setCleaningValidationCode(
-			CleaningValidationCode cleaningValidationCode) {
-		this.cleaningValidationCode = cleaningValidationCode;
-	}
-
 	public ValidationCode getValidationCode() {
 		return validationCode;
 	}
