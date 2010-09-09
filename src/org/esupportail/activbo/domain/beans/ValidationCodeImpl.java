@@ -248,7 +248,7 @@ public class ValidationCodeImpl implements ValidationCode, Runnable, Initializin
 	 * @param cleaningTimeInterval the cleaningTimeInterval to set
 	 */
 	public void setCleaningTimeInterval(long cleaningTimeInterval) {
-		this.cleaningTimeInterval = cleaningTimeInterval;
+		this.cleaningTimeInterval = cleaningTimeInterval*1000;
 	}
 
 
