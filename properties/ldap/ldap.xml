@@ -64,6 +64,7 @@
 				<value>${ldap.attribute.smsagreement}</value>
 				<value>${ldap.attribute.uid}</value>
 				<value>${ldap.attribute.login}</value>
+				<value>${ldap.attribute.krbPrincipal}</value>				
 				
 			</list>
 		</property>
@@ -88,6 +89,7 @@
 				<value>${ldap.attribute.smsagreement}</value>
 				<value>${ldap.attribute.uid}</value>
 				<value>${ldap.attribute.login}</value>
+				<value>${ldap.attribute.krbPrincipal}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -204,6 +206,8 @@
 				<value>${ldap.attribute.pager}</value>
 				<value>${ldap.attribute.mailPerso}</value>
 				<value>${ldap.attribute.smsagreement}</value>
+				<value>${ldap.attribute.krbPrincipal}</value>
+				<value>${ldap.attribute.login}</value>
 			</list>
 		</property>
 	</bean>
@@ -287,6 +291,7 @@
 			<property name="mailPerso" value="${ldap.attribute.mailPerso}"/>
 			<property name="login" value="${ldap.attribute.login}"/>
 			<property name="termsOfUse" value="${ldap.attribute.smsagreement}"/>
+			<property name="krbPrincipal" value="${ldap.attribute.krbPrincipal}"/>
 						
 	</bean>
 

@@ -24,6 +24,8 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 
 	private String options="";
 	
+	private String kadminCmd;
+	
 	/**
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
@@ -31,7 +33,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		Assert.notNull(this.principalAdmin, 
 				"property principalAdmin of class " + this.getClass().getName() + " can not be null");
 		Assert.notNull(this.principalAdminKeyTab, 
-				"property principalAdminKeyTab of class " + this.getClass().getName() + " can not be null");			
+				"property principalAdminKeyTab of class " + this.getClass().getName() + " can not be null");
+		Assert.notNull(this.kadminCmd, 
+				"property kadminCmd of class " + this.getClass().getName() + " can not be null");	
 	}
 	
 	public KRBAdminImpl(){
@@ -49,7 +53,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 */
 	public void add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException{
 		
-		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
+		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
 		if( !(principal.contains(" ") || passwd.contains(" "))){
 			if(!exists(principal)){
@@ -85,7 +89,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#del(String)
 	 */
 	public void del(final String principal) throws KRBException{
-		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
+		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
 		String cmd =kadmin+" del "+principal;
 		Runtime runtime = Runtime.getRuntime();
@@ -113,7 +117,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 */
 	public void changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException{
 		
-		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
+		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
 		//eliminer les requetes par injection de code
 		if( !(principal.contains(" ") || passwd.contains(" "))){
@@ -180,7 +184,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#rename(String,String)
 	 */
 	public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException{
-		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
+		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		String cmd=kadmin+" rename "+oldPrincipal+" "+newPrincipal;
 		
 		if(this.exists(newPrincipal)) throw new KRBPrincipalAlreadyExistsException("The new principal "+newPrincipal+" already exists");
@@ -210,7 +214,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	public boolean exists(String principal) throws KRBException{
 		
 		boolean exist=false; 	
-		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
+		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
 		String cmd=kadmin+" list "+principal;
 		Runtime runtime = Runtime.getRuntime();
@@ -258,6 +262,13 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 
 	public void setOptions(String options) {
 		this.options = options;
+	}
+
+	/**
+	 * @param kadminCmd the kadminCmd to set
+	 */
+	public void setKadminCmd(String kadminCmd) {
+		this.kadminCmd = kadminCmd;
 	}
 
 }

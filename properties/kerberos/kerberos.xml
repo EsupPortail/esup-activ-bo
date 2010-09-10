@@ -36,6 +36,9 @@
 		<property name="options" value="${kerberos.options}">
 			<description>Options for add kerberos command</description>
 		</property>
+		<property name="kadminCmd" value="${kerberos.kadmin}">
+			<description>kadmin command</description>
+		</property>
 	</bean>
 	
 </beans>

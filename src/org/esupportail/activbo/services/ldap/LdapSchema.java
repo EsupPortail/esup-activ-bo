@@ -78,7 +78,7 @@ public class LdapSchema implements InitializingBean{
 	
 	private String termsOfUse;
 	
-
+	private String krbPrincipal;
 
 	public String getLogin() {
 		return login;
@@ -256,5 +256,21 @@ public class LdapSchema implements InitializingBean{
 	 */
 	public void setTermsOfUse(String termsOfUse) {
 		this.termsOfUse = termsOfUse;
+	}
+
+
+	/**
+	 * @return the krbPrincipal
+	 */
+	public String getKrbPrincipal() {
+		return krbPrincipal;
+	}
+
+
+	/**
+	 * @param krbPrincipal the krbPrincipal to set
+	 */
+	public void setKrbPrincipal(String krbPrincipal) {
+		this.krbPrincipal = krbPrincipal;
 	}
 }
