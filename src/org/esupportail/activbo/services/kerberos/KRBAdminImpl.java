@@ -212,7 +212,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		boolean exist=false; 	
 		String kadmin="kadmin -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
-		String cmd=kadmin+" get "+principal;
+		String cmd=kadmin+" list "+principal;
 		Runtime runtime = Runtime.getRuntime();
 		Process process=null;
 		try {
@@ -222,7 +222,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			process = runtime.exec(cmd);
 			new ErrorInput(process);
 			StandardInput input=new StandardInput(process,1);
-			if(input.getLines().size()>0 && input.getLines().get(0).contains("Principal: "+principal))
+			if(input.getLines().size()>0 && input.getLines().get(0).equalsIgnoreCase(principal))
 				exist=true;
 			
 		} catch (IOException e) { 

@@ -45,7 +45,7 @@ public class ErrorInput extends Thread{
 			while(i<n && (line = reader.readLine())!=null)
 			{
 				//error
-				logger.error(line);
+				logger.warn(line);
 				arrayLine.add(line);
 			}
 		}catch(final IOException ioe) {logger.error(ioe);}
@@ -68,7 +68,7 @@ public class ErrorInput extends Thread{
 			try {
 				while((line = reader.readLine()) != null) {
 					// Traitement du flux de sortie de l'application
-					logger.error(line);										
+					logger.warn(line);										
 				}
 			} finally {
 				reader.close();				
