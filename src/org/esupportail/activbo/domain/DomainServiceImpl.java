@@ -391,7 +391,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		String possibleChannels="";
 		for(Channel c:channels){
 			if(c.isPossible(ldapUser)){
-				if (possibleChannels.isEmpty()) possibleChannels+=c.getName();
+				if ("".equals(possibleChannels)) possibleChannels+=c.getName();
 				else possibleChannels+=","+c.getName();
 			}
 		}
@@ -787,7 +787,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		String result="";
 		for (int i=0;i<listString.size();i++){
 			
-			if (result.isEmpty()) result+=listString.get(i);
+			if ("".equals(result)) result+=listString.get(i);
 			else result+=","+listString.get(i);
 		}
 		
