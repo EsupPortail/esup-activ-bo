@@ -615,14 +615,18 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				accountDescr.put(accountDescrCodeKey,this.convertListToString(list));
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectu�e");
 			}
-			logger.debug("Accoutdescr renvoy� par le BO par la methode authentificateUser : "+accountDescr.toString());
-			//si authentification pas bonne 
-			bruteForceBlock.setFail(id);
+			logger.debug("Accoutdescr renvoy� par le BO par la methode authentificateUser : "+accountDescr.toString());			
 			
 		}catch(LdapException e){
 			logger.debug("Exception thrown by authentificateUser() : "+ e.getMessage());
 			throw new LdapProblemException("Probleme au niveau du LDAP");
 		}
+		catch(AuthentificationException e){
+			//si authentification pas bonne 
+			bruteForceBlock.setFail(id);
+			throw e;
+		}
+		
 		
 		return accountDescr;
 	}
@@ -793,17 +797,25 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	public void gestRedirectionKerberos(LdapUser ldapUser,String id)throws LdapException{
 		List<String> passwds= ldapUser.getAttributes(ldapSchema.getPassword());
+		
+		List<String> principals= ldapUser.getAttributes(ldapSchema.getKrbPrincipal());
+		
+		String krbPrincipal=null;
 		String ldapUserRedirectKerb=null;
 		if(passwds.size()>0)
 			ldapUserRedirectKerb =passwds.get(0);
+		
+		if(principals.size()>0)
+			krbPrincipal=principals.get(0);
 		
 		logger.debug("ancien redirection : "+ldapUserRedirectKerb);
 		
 		//String ldapUserRedirectKerb = ldapUser.getAttribute(ldapSchema.getPassword());
 		String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
+		String newPrincipal=id+"@"+krbHost;
 	
 		
-		if (!redirectKer.equals(ldapUserRedirectKerb)) {
+		if (!redirectKer.equals(ldapUserRedirectKerb) || !newPrincipal.equals(krbPrincipal)) {
 			logger.debug("Le compte Kerberos ne g�re pas encore l'authentification");
 
 			// Writing of shadowLastChange in LDAP 
@@ -814,6 +826,16 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			ldapUser.getAttributes().put(ldapSchema.getShadowLastChange(),listShadowLastChangeAttr);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Writing shadowLastChange in LDAP : " + shadowLastChange);
+			}
+			
+			//Writing of krbPrincipal in LDAP 
+			if( !"".equals(ldapSchema.getKrbPrincipal()) && ldapSchema.getKrbPrincipal()!=null ) {
+				List<String> listKrbPrincipalAttr = new ArrayList<String>();
+				listKrbPrincipalAttr.add(newPrincipal);
+				ldapUser.getAttributes().put(ldapSchema.getKrbPrincipal(),listKrbPrincipalAttr);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Writing principal in LDAP : " + newPrincipal);
+				}
 			}
 			
 			//Writing of Kerberos redirection in LDAP 
