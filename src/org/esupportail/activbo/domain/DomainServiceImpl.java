@@ -636,10 +636,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
     public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
     	LdapUser ldapUser=null;
     	try{
-	    	if (validationCode.verify(id,code)){/*security reasons*/
+	    	if (validationCode.verify(id,code)){//security reasons
 
-	    		ldapUser= this.getLdapUser("("+ldapSchema.getLogin()+"="+newLogin+ ")");
-				
+	    		//Vérifier que le login n'est pas déjà utilisé
+	    		ldapUser= this.getLdapUser("("+ldapSchema.getLogin()+"="+newLogin+ ")");				
 				if (ldapUser!=null) {
 					throw new LdapLoginAlreadyExistsException("");
 				}
