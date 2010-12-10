@@ -5,6 +5,7 @@
 package org.esupportail.activbo.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -113,8 +114,18 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	private final Logger logger = new LoggerImpl(getClass());
 	
 	private WriteableLdapUserService writeableLdapUserService;
+	
+	private String separator;
 
 	
+	public String getSeparator() {
+		return separator;
+	}
+
+	public void setSeparator(String separator) {
+		this.separator = separator;
+	}
+
 	/**
 	 * Bean constructor.
 	 */
@@ -339,8 +350,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException, LdapProblemException, LoginException{
+		
 		HashMap<String,String> accountDescr=new HashMap<String,String>();
-				
+		
 		/**
 		 * Construction d'un filtre ldap à partir des données à valider.
 		 * Si l'application du filtre retourne une entrée, c'est que les données sont valides
@@ -351,7 +363,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		for(String key:keys)
 		{
 			String value=hashInfToValidate.get(key);
-			
 			//Suppression des caractères spéciaux susceptibles de permettre une injection ldap
 			value=value.replace("&","");
 			value=value.replace(")","");
@@ -363,6 +374,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			filter+="("+key+"="+value+")";
 		}
 		filter+=")";
+		logger.debug("filter : " + filter);
+		
 		if (logger.isDebugEnabled()) 
 			logger.debug("Le filtre construit pour la validation est : "+filter);
 		
@@ -371,9 +384,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		if (ldapUser==null) throw new AuthentificationException("Identification �chouée : "+filter);
 							
 		//Construction du hasMap de retour
+		
 		accountDescr.put(ldapSchema.getLogin(), convertListToString(ldapUser.getAttributes(ldapSchema.getLogin())));
 		accountDescr.put(ldapSchema.getMail(), convertListToString(ldapUser.getAttributes(ldapSchema.getMail())));
-			
+        
 		for (int j=0;j<attrPersoInfo.size();j++){
 			accountDescr.put(attrPersoInfo.get(j), convertListToString(ldapUser.getAttributes(attrPersoInfo.get(j))));
 		}
@@ -385,6 +399,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			List<String>list=new ArrayList<String>();
 			list.add(code);
 			accountDescr.put(accountDescrCodeKey,convertListToString(list));
+			
 			logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectu�e");
 		}
 		
@@ -397,11 +412,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		}
 		List<String>list=new ArrayList<String>();
 		list.add(possibleChannels);
-		
 		accountDescr.put(accountDescrPossibleChannelsKey, convertListToString(list));
-		
-		logger.debug(accountDescr.toString());
-		
 		return accountDescr;
 	}
 	
@@ -435,18 +446,22 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				Iterator<Map.Entry<String,String>> it=hashBeanPersoInfo.entrySet().iterator();
 				int i=0;
 				while(it.hasNext()){
+					
 					List<String> list=new ArrayList<String>();
 					Map.Entry<String,String> e=it.next();
+					logger.debug("Key="+e.getKey()+" Value="+e.getValue().toString());
 					
-					logger.debug("Key="+e.getKey()+" Value="+e.getValue());
-					
-					list.add(e.getValue());				
 					if("".equals(e.getValue())||e.getValue()==null) list=null;
+					if (e.getValue().contains(getSeparator())) {
+						List<String> ldapUserMultiValue=Arrays.asList(e.getValue().split(getSeparator()));
+						ldapUser.getAttributes().put(e.getKey(),ldapUserMultiValue);
+					} else {
+						list.add(e.getValue());
+						ldapUser.getAttributes().put(e.getKey(),list);
+					}
 					
-					ldapUser.getAttributes().put(e.getKey(),list);
 					i++;
 				}
-				
 				this.finalizeLdapWriting(ldapUser);
 			}
 			else{
@@ -472,8 +487,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		LdapUser ldapUser=null;
 		try {
-			
-			
+
 			if (validationCode.verify(id,code)){ //security reasons
 				
 				//Lecture LDAP
@@ -576,8 +590,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 
 		
 	}
-
-	
 	
 	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
 		
@@ -588,7 +600,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				throw new UserPermissionException("Nombre de tentative d'authentification atteint pour l'utilisateur "+id);
 			}
 			
-			
 			LdapUser ldapUser =this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
 			
 			if (ldapUser==null) throw new AuthentificationException("Login invalide");
@@ -598,21 +609,20 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 			logger.debug("Authentification valide");
 			
-			
 			//Construction du hasMap de retour
 			accountDescr.put(ldapSchema.getLogin(), convertListToString(ldapUser.getAttributes(ldapSchema.getLogin())));
-			accountDescr.put(ldapSchema.getMail(), this.convertListToString(ldapUser.getAttributes(ldapSchema.getMail())));
+			accountDescr.put(ldapSchema.getMail(), convertListToString(ldapUser.getAttributes(ldapSchema.getMail())));
 			
 			for (int j=0;j<attrPersoInfo.size();j++){
-				accountDescr.put(attrPersoInfo.get(j), this.convertListToString(ldapUser.getAttributes(attrPersoInfo.get(j))));
+				accountDescr.put(attrPersoInfo.get(j), convertListToString(ldapUser.getAttributes(attrPersoInfo.get(j))));
 			}
 
 			//envoi d'un code si le compte n'est pas activ�
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())!=null){
 				String code=validationCode.generateCode(ldapUser.getAttribute(ldapSchema.getLogin()));
-				List<String>list=new ArrayList<String>();
+				ArrayList<String>list=new ArrayList<String>();
 				list.add(code);
-				accountDescr.put(accountDescrCodeKey,this.convertListToString(list));
+				accountDescr.put(accountDescrCodeKey,convertListToString(list));
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectu�e");
 			}
 			logger.debug("Accoutdescr renvoy� par le BO par la methode authentificateUser : "+accountDescr.toString());			
@@ -786,14 +796,12 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public String convertListToString(List<String>listString){
 		String result="";
 		for (int i=0;i<listString.size();i++){
-			
 			if ("".equals(result)) result+=listString.get(i);
 			else result+=","+listString.get(i);
 		}
-		
 		return result;
-		
 	}
+	
 	
 	public void gestRedirectionKerberos(LdapUser ldapUser,String id)throws LdapException{
 		List<String> passwds= ldapUser.getAttributes(ldapSchema.getPassword());
