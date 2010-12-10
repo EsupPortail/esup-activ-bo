@@ -212,6 +212,9 @@
 				<value>${ldap.attribute.smsagreement}</value>
 				<value>${ldap.attribute.krbPrincipal}</value>
 				<value>${ldap.attribute.login}</value>
+				<value>${ldap.attribute.eduPersonPrimaryAffiliation}</value>
+				<value>${ldap.attribute.eduPersonAffiliation}</value>
+				
 			</list>
 		</property>
 	</bean>
@@ -272,14 +275,8 @@
 		</property>
 		<aop:scoped-proxy/>
 	</bean>
-	
-	
-
-	
 	<bean id="ldapSchema"
 		class="org.esupportail.activbo.services.ldap.LdapSchema" >
-			
-			
 			<property name="displayName" value="${ldap.attribute.displayName}"/>
 			<property name="birthdate" value="${ldap.attribute.birthdate}"/>
 			<property name="birthdateFormat" value="${ldap.attribute.birthdate.format}"/>
@@ -296,8 +293,7 @@
 			<property name="login" value="${ldap.attribute.login}"/>
 			<property name="termsOfUse" value="${ldap.attribute.smsagreement}"/>
 			<property name="krbPrincipal" value="${ldap.attribute.krbPrincipal}"/>
-			<property name="eduPersonPrimaryAffiliation" value="{ldap.attribute.eduPersonPrimaryAffiliation}"/>
-			<property name="eduPersonAffiliation" value="{ldap.attribute.eduPersonAffiliation}"/>			
+			<property name="eduPersonPrimaryAffiliation" value="${ldap.attribute.eduPersonPrimaryAffiliation}"/>
+			<property name="eduPersonAffiliation" value="${ldap.attribute.eduPersonAffiliation}"/>			
 	</bean>
-
 </beans>
