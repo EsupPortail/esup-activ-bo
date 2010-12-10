@@ -30,7 +30,8 @@
 		<property name="krbLdapMethod" value="${kerberos.ldap.method}" />
 		<property name="krbHost" value="${kerberos.host}" />
 		
-		<property name="kerberosAdmin" ref="KRBAdminService" />		
+		<property name="kerberosAdmin" ref="KRBAdminService" />
+		<property name="separator" value="${sep.multiValue}" />		
 													
 		<property name="channels">
 			<list>
