@@ -79,6 +79,32 @@ public class LdapSchema implements InitializingBean{
 	private String termsOfUse;
 	
 	private String krbPrincipal;
+	
+	private String eduPersonPrimaryAffiliation;
+	
+	private String eduPersonAffiliation;
+
+	
+	public String getEduPersonAffiliation() {
+		return eduPersonAffiliation;
+	}
+
+
+	public void setEduPersonAffiliation(String eduPersonAffiliation) {
+		this.eduPersonAffiliation = eduPersonAffiliation;
+	}
+
+
+	public String getEduPersonPrimaryAffiliation() {
+		return eduPersonPrimaryAffiliation;
+	}
+
+
+	public void setEduPersonPrimaryAffiliation(String eduPersonPrimaryAffiliation) {
+		this.eduPersonPrimaryAffiliation = eduPersonPrimaryAffiliation;
+	}
+	
+
 
 	public String getLogin() {
 		return login;
