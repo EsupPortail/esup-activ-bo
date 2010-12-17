@@ -162,6 +162,9 @@
 		</property>
 	</bean>
 	
+	<!-- <bean id="writeableLdapUserService"
+		class="org.esupportail.activbo.services.ldap.WriteableLdapUserServiceImpl" >
+	 -->
 	<bean id="writeableLdapUserService"
 		class="org.esupportail.activbo.services.ldap.WriteableLdapUserServiceImpl" >
 		<description>
