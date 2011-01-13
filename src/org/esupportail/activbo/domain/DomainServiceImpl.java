@@ -449,17 +449,18 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					
 					List<String> list=new ArrayList<String>();
 					Map.Entry<String,String> e=it.next();
-					logger.debug("Key="+e.getKey()+" Value="+e.getValue().toString());
 					
-					if("".equals(e.getValue())||e.getValue()==null) list=null;
-					if (e.getValue().contains(getSeparator())) {
-						List<String> ldapUserMultiValue=Arrays.asList(e.getValue().split(getSeparator()));
-						ldapUser.getAttributes().put(e.getKey(),ldapUserMultiValue);
-					} else {
-						list.add(e.getValue());
-						ldapUser.getAttributes().put(e.getKey(),list);
-					}
+					logger.debug("Key="+e.getKey()+" Value="+e.getValue());
 					
+					if("".equals(e.getValue())||e.getValue()==null) ldapUser.getAttributes().put(e.getKey(),list);
+					else
+						if (e.getValue().contains(getSeparator())) {
+							List<String> ldapUserMultiValue=Arrays.asList(e.getValue().split(getSeparator()));
+							ldapUser.getAttributes().put(e.getKey(),ldapUserMultiValue);
+						} else {
+							list.add(e.getValue());
+							ldapUser.getAttributes().put(e.getKey(),list);
+						}					
 					i++;
 				}
 				this.finalizeLdapWriting(ldapUser);
