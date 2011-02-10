@@ -66,7 +66,8 @@
 				<value>${ldap.attribute.login}</value>
 				<value>${ldap.attribute.krbPrincipal}</value>
 				<value>${ldap.attribute.eduPersonPrimaryAffiliation}</value>
-				<value>${ldap.attribute.eduPersonAffiliation}</value>			
+				<value>${ldap.attribute.eduPersonAffiliation}</value>
+				<value>${ldap.attribute.supannListeRouge}</value>			
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -93,7 +94,7 @@
 				<value>${ldap.attribute.krbPrincipal}</value>
 				<value>${ldap.attribute.eduPersonPrimaryAffiliation}</value>
 				<value>${ldap.attribute.eduPersonAffiliation}</value>
-							
+				<value>${ldap.attribute.supannListeRouge}</value>			
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -217,7 +218,7 @@
 				<value>${ldap.attribute.login}</value>
 				<value>${ldap.attribute.eduPersonPrimaryAffiliation}</value>
 				<value>${ldap.attribute.eduPersonAffiliation}</value>
-				
+				<value>${ldap.attribute.supannListeRouge}</value>
 			</list>
 		</property>
 	</bean>
@@ -297,6 +298,7 @@
 			<property name="termsOfUse" value="${ldap.attribute.smsagreement}"/>
 			<property name="krbPrincipal" value="${ldap.attribute.krbPrincipal}"/>
 			<property name="eduPersonPrimaryAffiliation" value="${ldap.attribute.eduPersonPrimaryAffiliation}"/>
-			<property name="eduPersonAffiliation" value="${ldap.attribute.eduPersonAffiliation}"/>			
+			<property name="eduPersonAffiliation" value="${ldap.attribute.eduPersonAffiliation}"/>
+			<property name="supannListeRouge" value="${ldap.attribute.supannListeRouge}"/>			
 	</bean>
 </beans>
