@@ -83,6 +83,8 @@ public class LdapSchema implements InitializingBean{
 	private String eduPersonPrimaryAffiliation;
 	
 	private String eduPersonAffiliation;
+	
+	private String supannListeRouge;
 
 	
 	public String getEduPersonAffiliation() {
@@ -299,4 +301,22 @@ public class LdapSchema implements InitializingBean{
 	public void setKrbPrincipal(String krbPrincipal) {
 		this.krbPrincipal = krbPrincipal;
 	}
+
+
+	/**
+	 * @return the supannListeRouge
+	 */
+	public String getSupannListeRouge() {
+		return supannListeRouge;
+	}
+
+
+	/**
+	 * @param supannListeRouge the supannListeRouge to set
+	 */
+	public void setSupannListeRouge(String supannListeRouge) {
+		this.supannListeRouge = supannListeRouge;
+	}
+	
+	
 }
