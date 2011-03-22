@@ -62,7 +62,7 @@ public class EmptyDaoService implements DaoService {
 		// TODO Auto-generated method stub
 		if(versionManager==null)		{
 			versionManager = new VersionManager();
-			versionManager.setVersion("2.0.1");
+			versionManager.setVersion("2.1.1");
 		}
 		return versionManager;		
 	}
