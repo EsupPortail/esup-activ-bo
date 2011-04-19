@@ -130,9 +130,9 @@ public class ValidationCodeImpl implements ValidationCode, Runnable, Initializin
 		
 		try {
 			while(true){
-				logger.info("Boucle de nettoyage lanc�e");
+				logger.debug("Boucle de nettoyage lancée");
 				if (!validationCodes.isEmpty()){
-					logger.info("La table de hashage n'est pas vide");
+					logger.debug("La table de hashage n'est pas vide");
 					Iterator<Map.Entry<String, HashMap<String,String>>> it=validationCodes.entrySet().iterator();
 					while(it.hasNext()){
 						Map.Entry<String, HashMap<String,String>> e=it.next();
