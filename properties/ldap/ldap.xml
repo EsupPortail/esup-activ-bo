@@ -68,7 +68,16 @@
 				<value>${ldap.attribute.eduPersonPrimaryAffiliation}</value>
 				<value>${ldap.attribute.eduPersonAffiliation}</value>
 				<value>${ldap.attribute.supannListeRouge}</value>
-				<value>${ldap.attribute.supannRefId}</value>			
+				<value>${ldap.attribute.supannRefId}</value>
+				<value>${ldap.attribute.supannCivilite}</value>
+				<value>${ldap.attribute.sn}</value>
+				<value>${ldap.attribute.givenName}</value>
+				<value>${ldap.attribute.telephoneNumber}</value>
+				<value>${ldap.attribute.facsimileTelephoneNumber}</value>
+				<value>${ldap.attribute.postalAddress}</value>
+				<value>${ldap.attribute.homePostalAddress}</value>
+				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
+				<value>${ldap.attribute.employeeType}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -96,7 +105,15 @@
 				<value>${ldap.attribute.eduPersonPrimaryAffiliation}</value>
 				<value>${ldap.attribute.eduPersonAffiliation}</value>
 				<value>${ldap.attribute.supannListeRouge}</value>
-				<value>${ldap.attribute.supannRefId}</value>			
+				<value>${ldap.attribute.supannRefId}</value>
+				<value>${ldap.attribute.supannCivilite}</value>
+				<value>${ldap.attribute.sn}</value>
+				<value>${ldap.attribute.telephoneNumber}</value>
+				<value>${ldap.attribute.facsimileTelephoneNumber}</value>
+				<value>${ldap.attribute.postalAddress}</value>
+				<value>${ldap.attribute.homePostalAddress}</value>
+				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
+				<value>${ldap.attribute.employeeType}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -222,6 +239,15 @@
 				<value>${ldap.attribute.eduPersonAffiliation}</value>
 				<value>${ldap.attribute.supannListeRouge}</value>
 				<value>${ldap.attribute.supannRefId}</value>
+				<value>${ldap.attribute.supannCivilite}</value>
+				<value>${ldap.attribute.sn}</value>
+				<value>${ldap.attribute.givenName}</value>
+				<value>${ldap.attribute.telephoneNumber}</value>
+				<value>${ldap.attribute.facsimileTelephoneNumber}</value>
+				<value>${ldap.attribute.postalAddress}</value>
+				<value>${ldap.attribute.homePostalAddress}</value>
+				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
+				<value>${ldap.attribute.employeeType}</value>
 			</list>
 		</property>
 	</bean>
@@ -304,5 +330,14 @@
 			<property name="eduPersonAffiliation" value="${ldap.attribute.eduPersonAffiliation}"/>
 			<property name="supannListeRouge" value="${ldap.attribute.supannListeRouge}"/>
 			<property name="supannRefId" value="${ldap.attribute.supannRefId}"/>
+			<property name="supannCivilite" value="${ldap.attribute.supannCivilite}"/>
+		    <property name="sn" value="${ldap.attribute.sn}"/>
+		    <property name="givenName" value="${ldap.attribute.givenName}"/>
+		    <property name="telephoneNumber" value="${ldap.attribute.telephoneNumber}"/>
+		    <property name="facsimileTelephoneNumber" value="${ldap.attribute.facsimileTelephoneNumber}"/>
+		    <property name="postalAddress" value="${ldap.attribute.postalAddress}"/>
+		    <property name="homePostalAddress" value="${ldap.attribute.homePostalAddress}"/>
+		    <property name="eduPersonOrgUnitDN" value="${ldap.attribute.eduPersonOrgUnitDN}" />
+		    <property name="employeeType" value="${ldap.attribute.employeeType}"/>
 	</bean>
 </beans>
