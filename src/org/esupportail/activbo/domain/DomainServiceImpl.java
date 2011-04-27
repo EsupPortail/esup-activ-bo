@@ -412,7 +412,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		}
 		List<String>list=new ArrayList<String>();
 		list.add(possibleChannels);
-		accountDescr.put(accountDescrPossibleChannelsKey, convertListToString(list));
+		accountDescr.put(accountDescrPossibleChannelsKey, convertListToStringPossibleKey(list));
 		return accountDescr;
 	}
 	
@@ -613,6 +613,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			logger.debug("Authentification valide");
 			
 			//Construction du hasMap de retour
+			
 			accountDescr.put(ldapSchema.getLogin(), convertListToString(ldapUser.getAttributes(ldapSchema.getLogin())));
 			accountDescr.put(ldapSchema.getMail(), convertListToString(ldapUser.getAttributes(ldapSchema.getMail())));
 			
@@ -797,6 +798,18 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	}
 	
 	public String convertListToString(List<String>listString){
+		String result="";
+		String listStringValue="";
+		for (int i=0;i<listString.size();i++){
+			listStringValue=listString.get(i);
+			listStringValue=listStringValue.replace(",",getSeparator());
+			if ("".equals(result)) result+=listStringValue;
+			else result+=","+listStringValue;
+		}
+		return result;
+	}
+	
+	public String convertListToStringPossibleKey(List<String>listString) {
 		String result="";
 		for (int i=0;i<listString.size();i++){
 			if ("".equals(result)) result+=listString.get(i);
