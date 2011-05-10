@@ -78,6 +78,8 @@
 				<value>${ldap.attribute.homePostalAddress}</value>
 				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
 				<value>${ldap.attribute.employeeType}</value>
+				<value>${ldap.attribute.supannEmpId}</value>
+				<value>${ldap.attribute.mobile}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -114,6 +116,8 @@
 				<value>${ldap.attribute.homePostalAddress}</value>
 				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
 				<value>${ldap.attribute.employeeType}</value>
+				<value>${ldap.attribute.supannEmpId}</value>
+				<value>${ldap.attribute.mobile}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -248,6 +252,8 @@
 				<value>${ldap.attribute.homePostalAddress}</value>
 				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
 				<value>${ldap.attribute.employeeType}</value>
+				<value>${ldap.attribute.supannEmpId}</value>
+				<value>${ldap.attribute.mobile}</value>
 			</list>
 		</property>
 	</bean>
@@ -339,5 +345,7 @@
 		    <property name="homePostalAddress" value="${ldap.attribute.homePostalAddress}"/>
 		    <property name="eduPersonOrgUnitDN" value="${ldap.attribute.eduPersonOrgUnitDN}" />
 		    <property name="employeeType" value="${ldap.attribute.employeeType}"/>
+		    <property name="supannEmpId" value="${ldap.attribute.supannEmpId}"/>
+		    <property name="mobile" value="${ldap.attribute.mobile}"/>
 	</bean>
 </beans>
