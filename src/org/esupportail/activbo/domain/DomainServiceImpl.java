@@ -407,12 +407,13 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		for(Channel c:channels){
 			if(c.isPossible(ldapUser)){
 				if ("".equals(possibleChannels)) possibleChannels+=c.getName();
-				else possibleChannels+=","+c.getName();
+				else possibleChannels+=getSeparator()+c.getName();
 			}
 		}
 		List<String>list=new ArrayList<String>();
 		list.add(possibleChannels);
-		accountDescr.put(accountDescrPossibleChannelsKey, convertListToStringPossibleKey(list));
+		//accountDescr.put(accountDescrPossibleChannelsKey, convertListToStringPossibleKey(list));
+		accountDescr.put(accountDescrPossibleChannelsKey, convertListToString(list));
 		return accountDescr;
 	}
 	
@@ -797,7 +798,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.bruteForceBlock = bruteForceBlock;
 	}
 	
-	public String convertListToString(List<String>listString){
+	/*public String convertListToString(List<String>listString){
 		String result="";
 		String listStringValue="";
 		for (int i=0;i<listString.size();i++){
@@ -814,6 +815,16 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		for (int i=0;i<listString.size();i++){
 			if ("".equals(result)) result+=listString.get(i);
 			else result+=","+listString.get(i);
+		}
+		return result;
+	}
+	*/
+	
+	public String convertListToString(List<String>listString) {
+		String result="";
+		for (int i=0;i<listString.size();i++){
+			if ("".equals(result)) result+=listString.get(i);
+			else result+=getSeparator()+listString.get(i);
 		}
 		return result;
 	}
@@ -871,9 +882,5 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			}
 		}
 	}
-
-
-	
-	
 	
 }
