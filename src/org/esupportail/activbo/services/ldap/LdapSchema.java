@@ -102,6 +102,10 @@ public class LdapSchema implements InitializingBean{
 	
 	private String employeeType;
 	
+	private String supannEmpId;
+	
+	private String mobile;
+	
 	public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
 	}
@@ -422,7 +426,34 @@ public class LdapSchema implements InitializingBean{
 	public void setEmployeeType(String employeeType) {
 		this.employeeType = employeeType;
 	}
-	
+
+	/**
+	 * @return the supannEmpId
+	 */
+	public String getSupannEmpId() {
+		return supannEmpId;
+	}
+
+	/**
+	 * @param supannEmpId the supannEmpId to set
+	 */
+	public void setSupannEmpId(String supannEmpId) {
+		this.supannEmpId = supannEmpId;
+	}
+
+	/**
+	 * @return the mobile
+	 */
+	public String getMobile() {
+		return mobile;
+	}
+
+	/**
+	 * @param mobile the mobile to set
+	 */
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 	
 
 }
