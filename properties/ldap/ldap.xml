@@ -76,7 +76,7 @@
 				<value>${ldap.attribute.facsimileTelephoneNumber}</value>
 				<value>${ldap.attribute.postalAddress}</value>
 				<value>${ldap.attribute.homePostalAddress}</value>
-				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
+				<value>${ldap.attribute.supannEntiteAffectation}</value>
 				<value>${ldap.attribute.employeeType}</value>
 				<value>${ldap.attribute.supannEmpId}</value>
 				<value>${ldap.attribute.mobile}</value>
@@ -114,7 +114,7 @@
 				<value>${ldap.attribute.facsimileTelephoneNumber}</value>
 				<value>${ldap.attribute.postalAddress}</value>
 				<value>${ldap.attribute.homePostalAddress}</value>
-				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
+				<value>${ldap.attribute.supannEntiteAffectation}</value>
 				<value>${ldap.attribute.employeeType}</value>
 				<value>${ldap.attribute.supannEmpId}</value>
 				<value>${ldap.attribute.mobile}</value>
@@ -250,7 +250,7 @@
 				<value>${ldap.attribute.facsimileTelephoneNumber}</value>
 				<value>${ldap.attribute.postalAddress}</value>
 				<value>${ldap.attribute.homePostalAddress}</value>
-				<value>${ldap.attribute.eduPersonOrgUnitDN}</value>
+				<value>${ldap.attribute.supannEntiteAffectation}</value>
 				<value>${ldap.attribute.employeeType}</value>
 				<value>${ldap.attribute.supannEmpId}</value>
 				<value>${ldap.attribute.mobile}</value>
@@ -343,7 +343,7 @@
 		    <property name="facsimileTelephoneNumber" value="${ldap.attribute.facsimileTelephoneNumber}"/>
 		    <property name="postalAddress" value="${ldap.attribute.postalAddress}"/>
 		    <property name="homePostalAddress" value="${ldap.attribute.homePostalAddress}"/>
-		    <property name="eduPersonOrgUnitDN" value="${ldap.attribute.eduPersonOrgUnitDN}" />
+		    <property name="supannEntiteAffectation" value="${ldap.attribute.supannEntiteAffectation}" />
 		    <property name="employeeType" value="${ldap.attribute.employeeType}"/>
 		    <property name="supannEmpId" value="${ldap.attribute.supannEmpId}"/>
 		    <property name="mobile" value="${ldap.attribute.mobile}"/>

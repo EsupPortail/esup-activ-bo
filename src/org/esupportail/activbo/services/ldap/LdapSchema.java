@@ -98,7 +98,7 @@ public class LdapSchema implements InitializingBean{
 	
 	private String homePostalAddress;
 	
-	private String eduPersonOrgUnitDN;
+	private String supannEntiteAffectation;
 	
 	private String employeeType;
 	
@@ -400,17 +400,17 @@ public class LdapSchema implements InitializingBean{
 	}
 
 	/**
-	 * @return the eduPersonOrgUnitDN
+	 * @return the supannEntiteAffectation
 	 */
-	public String getEduPersonOrgUnitDN() {
-		return eduPersonOrgUnitDN;
+	public String getSupannEntiteAffectation() {
+		return supannEntiteAffectation;
 	}
 
 	/**
-	 * @param eduPersonOrgUnitDN the eduPersonOrgUnitDN to set
+	 * @param supannEntiteAffectation the supannEntiteAffectation to set
 	 */
-	public void setEduPersonOrgUnitDN(String eduPersonOrgUnitDN) {
-		this.eduPersonOrgUnitDN = eduPersonOrgUnitDN;
+	public void setSupannEntiteAffectation(String supannEntiteAffectation) {
+		this.supannEntiteAffectation = supannEntiteAffectation;
 	}
 
 	/**
