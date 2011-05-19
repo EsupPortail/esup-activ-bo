@@ -80,6 +80,7 @@
 				<value>${ldap.attribute.employeeType}</value>
 				<value>${ldap.attribute.supannEmpId}</value>
 				<value>${ldap.attribute.mobile}</value>
+				<value>${ldap.attribute.supannCodeINE}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -118,6 +119,7 @@
 				<value>${ldap.attribute.employeeType}</value>
 				<value>${ldap.attribute.supannEmpId}</value>
 				<value>${ldap.attribute.mobile}</value>
+				<value>${ldap.attribute.supannCodeINE}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -254,6 +256,7 @@
 				<value>${ldap.attribute.employeeType}</value>
 				<value>${ldap.attribute.supannEmpId}</value>
 				<value>${ldap.attribute.mobile}</value>
+				<value>${ldap.attribute.supannCodeINE}</value>
 			</list>
 		</property>
 	</bean>
@@ -347,5 +350,6 @@
 		    <property name="employeeType" value="${ldap.attribute.employeeType}"/>
 		    <property name="supannEmpId" value="${ldap.attribute.supannEmpId}"/>
 		    <property name="mobile" value="${ldap.attribute.mobile}"/>
+		    <property name="supannCodeINE" value="${ldap.attribute.supannCodeINE}"/>
 	</bean>
 </beans>
