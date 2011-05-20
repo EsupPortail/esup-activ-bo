@@ -110,6 +110,8 @@ public class LdapSchema implements InitializingBean{
 	
 	private String supannEtuId;
 	
+	private String supannEtuCursusAnnee;
+	
 	public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
 	}
@@ -486,5 +488,21 @@ public class LdapSchema implements InitializingBean{
 	public void setSupannEtuId(String supannEtuId) {
 		this.supannEtuId = supannEtuId;
 	}
+
+	/**
+	 * @return the supannEtuCursusAnnee
+	 */
+	public String getSupannEtuCursusAnnee() {
+		return supannEtuCursusAnnee;
+	}
+
+	/**
+	 * @param supannEtuCursusAnnee the supannEtuCursusAnnee to set
+	 */
+	public void setSupannEtuCursusAnnee(String supannEtuCursusAnnee) {
+		this.supannEtuCursusAnnee = supannEtuCursusAnnee;
+	}
+	
+	
 
 }
