@@ -23,6 +23,8 @@
 						
 		<property name="validationCode" ref="validationCode"/>
 		
+		<property name="validationProxyTicket" ref="validationProxyTicket"/>
+		
 		<property name="bruteForceBlock" ref="bruteForceBlock"/>
 		
 		<property name="ldapSchema" ref="ldapSchema"/>
@@ -103,7 +105,14 @@
 		<property name="cleaningTimeInterval" value="${access.cleaning.timeinterval}"/>
 		<property name="bruteForceBlock" ref="bruteForceBlock"/>
 	</bean>
- 	
+	
+	<bean
+		id="validationProxyTicket"
+		class="org.esupportail.activbo.domain.beans.ValidationProxyTicketImpl"
+		>
+	
+	</bean>
+	
 	<bean
 		id="bruteForceBlock"
 		class="org.esupportail.activbo.domain.tools.BruteForceBlockImpl" lazy-init="true"
