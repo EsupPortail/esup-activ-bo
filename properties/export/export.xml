@@ -33,6 +33,18 @@
 			<property name="domainService" ref="domainService" />
 	</bean>
 	
+	<bean id="CasAccountManagementXFire"
+		parent="abstractXFire" >
+		<property name="serviceBean" ref="CasAccountManagement" />
+		<property name="serviceClass" value="org.esupportail.activbo.services.remote.CasAccountManagement" />
+	</bean>
+	
+	<bean 
+		id="CasAccountManagement" 
+		class="org.esupportail.activbo.services.remote.CasAccountManagementImpl">
+			<property name="domainService" ref="domainService" />
+	</bean>
+	
 	
 
 

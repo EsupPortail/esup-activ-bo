@@ -16,6 +16,7 @@ import java.util.Set;
 import org.esupportail.activbo.dao.DaoService;
 import org.esupportail.activbo.domain.tools.BruteForceBlock;
 import org.esupportail.activbo.domain.beans.ValidationCode;
+import org.esupportail.activbo.domain.beans.ValidationProxyTicket;
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.VersionManager;
 import org.esupportail.activbo.domain.beans.channels.Channel;
@@ -49,6 +50,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 
 
+
 /**
  * The basic implementation of DomainService.
  * 
@@ -79,6 +81,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			
 	private ValidationCode validationCode;
 	
+	private ValidationProxyTicket validationProxyTicket;
 	
 	private BruteForceBlock bruteForceBlock;
 	
@@ -593,11 +596,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 	}
 	
-	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
+	public HashMap<String,String> getLdapInfos(String id,String password,List<String>attrPersoInfo,boolean needBind) throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
 		
 		HashMap<String, String> accountDescr=new HashMap<String,String>();
-		
-		logger.debug("id :"+id);
 		
 		try{
 			if (bruteForceBlock.isBlocked(id)){
@@ -607,9 +608,10 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			LdapUser ldapUser =this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
 			
 			if (ldapUser==null) throw new AuthentificationException("Login invalide");
-			
-			this.writeableLdapUserService.defineAuthenticatedContextForUser(ldapUser.getId(), password);
-			this.writeableLdapUserService.bindLdap(ldapUser);
+			if (needBind) {
+				this.writeableLdapUserService.defineAuthenticatedContextForUser(ldapUser.getId(), password);
+				this.writeableLdapUserService.bindLdap(ldapUser);
+			}
 			
 			logger.debug("Authentification valide");
 			
@@ -641,12 +643,39 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			bruteForceBlock.setFail(id);
 			throw e;
 		}
-		
-		
 		return accountDescr;
 	}
 	
+	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
+		
+		logger.debug("id :"+id);
+
+		boolean needBind=true;
+		return getLdapInfos(id,password,attrPersoInfo,needBind);
+	}
 	
+	public HashMap<String,String> authentificateUserWithCas(String id,String proxyticket,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+		
+		logger.debug("Id et proxyticket : "+id +","+proxyticket);
+		
+		if(!validationProxyTicket.validation(id, proxyticket))
+			throw new AuthentificationException("Authentification failed ! ");
+		
+		boolean needBind=false;
+		return getLdapInfos(id,proxyticket,attrPersoInfo,needBind);
+	}
+	
+	public HashMap<String,String> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+		
+		logger.debug("Id et accountCodeKey : "+id +","+accountCodeKey);
+		
+		if (accountCodeKey !=null)
+			if(!validationCode.verify(id, accountCodeKey))
+				throw new AuthentificationException("Authentification failed ! ");
+		
+		boolean needBind=false;
+		return getLdapInfos(id,accountCodeKey,attrPersoInfo,needBind);
+	}
 	    
     public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
     	LdapUser ldapUser=null;
@@ -725,7 +754,15 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public void setValidationCode(ValidationCode validationCode) {
 		this.validationCode = validationCode;
 	}
-		
+	
+	public ValidationProxyTicket getValidationProxyTicket() {
+		return validationProxyTicket;
+	}
+
+	public void setValidationProxyTicket(ValidationProxyTicket validationProxyTicket) {
+		this.validationProxyTicket = validationProxyTicket;
+	}
+
 	public String getAccountDescrCodeKey() {
 		return accountDescrCodeKey;
 	}
@@ -883,4 +920,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		}
 	}
 	
+	
+
 }
