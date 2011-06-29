@@ -24,7 +24,7 @@
 		<property name="validationCode" ref="validationCode"/>
 		
 		<property name="validationProxyTicket" ref="validationProxyTicket"/>
-		
+
 		<property name="bruteForceBlock" ref="bruteForceBlock"/>
 		
 		<property name="ldapSchema" ref="ldapSchema"/>
@@ -105,13 +105,22 @@
 		<property name="cleaningTimeInterval" value="${access.cleaning.timeinterval}"/>
 		<property name="bruteForceBlock" ref="bruteForceBlock"/>
 	</bean>
-	
+
 	<bean
 		id="validationProxyTicket"
 		class="org.esupportail.activbo.domain.beans.ValidationProxyTicketImpl"
 		>
-	
+		<property name="casValidateUrl" value="${cas.validateUrl}"/>
+		<property name="casTargetUrl" value="${cas.targetUrl}"/>
+		<property name="serviceTicketValidator" ref="serviceTicketValidator"/>
 	</bean>
+
+    <bean
+		id="serviceTicketValidator"
+		class="edu.yale.its.tp.cas.client.ServiceTicketValidator"
+		>
+	</bean>
+	
 	
 	<bean
 		id="bruteForceBlock"

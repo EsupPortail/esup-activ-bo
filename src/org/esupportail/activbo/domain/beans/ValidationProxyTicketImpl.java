@@ -1,13 +1,7 @@
 package org.esupportail.activbo.domain.beans;
 
-
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
-import org.xml.sax.SAXException;
 
 import edu.yale.its.tp.cas.client.ServiceTicketValidator;
 
@@ -22,44 +16,87 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 	 */
 	private final Logger logger = new LoggerImpl(getClass());
 	
+	private String casValidateUrl;
+	
+	private String casTargetUrl;
+	
+	private ServiceTicketValidator serviceTicketValidator;
 	
 	public boolean validation(String id,String proxyticket) {
 		
 		boolean returnvalue=false;
 		
-		ServiceTicketValidator sv = new ServiceTicketValidator();
-		
-		sv.setCasValidateUrl("https://cas-test.univ-paris1.fr/cas/proxyValidate");
-		sv.setServiceTicket(proxyticket);
-		sv.setService("https://busan-desktop.univ-paris1.fr:7080");
-		
+		serviceTicketValidator.setCasValidateUrl(casValidateUrl);
+		serviceTicketValidator.setServiceTicket(proxyticket);
+		serviceTicketValidator.setService(casTargetUrl);
 		
 			try {
-				sv.validate();
-				logger.debug("getresponse :"+sv.getResponse());
-				logger.debug("getuser :"+sv.getUser());
-				logger.debug("service renew :"+sv.isRenew());
+				serviceTicketValidator.validate();
+				logger.debug("getresponse :"+serviceTicketValidator.getResponse());
+				logger.debug("getuser :"+serviceTicketValidator.getUser());
+				logger.debug("service renew :"+serviceTicketValidator.isRenew());
 				
-				if (!sv.isAuthenticationSuccesful()) {
-					logger.debug("Proxyticket is "+proxyticket);
-					logger.debug("Authentification ratée");
+				if (!serviceTicketValidator.isAuthenticationSuccesful()) {
+					logger.debug("Proxyticket "+proxyticket + " Authentification ratée");
 					returnvalue=false;
 				} else {
-					logger.debug("Proxyticket is "+proxyticket);
+					logger.debug("Proxyticket "+proxyticket+" Authentification réussie");
 					logger.debug("Authentification réussie");
-					if (sv.getUser().equals(id)) returnvalue=true;
+					if (serviceTicketValidator.getUser().equals(id)) returnvalue=true;
 					else returnvalue=false;
-					logger.debug("returnvalue1 is "+returnvalue+"svgetuser,id "+sv.getUser()+","+id);
 				}
 			} catch (Exception e) {
-				returnvalue=false;
-				logger.debug("returnvalue2 is "+returnvalue);
+				e.printStackTrace();
 			}
-			logger.debug("returnvalue3 is "+returnvalue);
 			return returnvalue;
-			
-		
+	}
 
+	/**
+	 * @return the serviceTicketValidator
+	 */
+	public ServiceTicketValidator getServiceTicketValidator() {
+		return serviceTicketValidator;
+	}
+
+
+	/**
+	 * @param serviceTicketValidator the serviceTicketValidator to set
+	 */
+	public void setServiceTicketValidator(
+			ServiceTicketValidator serviceTicketValidator) {
+		this.serviceTicketValidator = serviceTicketValidator;
+	}
+
+
+	/**
+	 * @return the casValidateUrl
+	 */
+	public String getCasValidateUrl() {
+		return casValidateUrl;
+	}
+
+
+	/**
+	 * @param casValidateUrl the casValidateUrl to set
+	 */
+	public void setCasValidateUrl(String casValidateUrl) {
+		this.casValidateUrl = casValidateUrl;
+	}
+
+
+	/**
+	 * @return the casTargetUrl
+	 */
+	public String getCasTargetUrl() {
+		return casTargetUrl;
+	}
+
+
+	/**
+	 * @param casTargetUrl the casTargetUrl to set
+	 */
+	public void setCasTargetUrl(String casTargetUrl) {
+		this.casTargetUrl = casTargetUrl;
 	}
 	
 }
