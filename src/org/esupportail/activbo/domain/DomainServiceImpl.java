@@ -654,11 +654,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		return getLdapInfos(id,password,attrPersoInfo,needBind);
 	}
 	
-	public HashMap<String,String> authentificateUserWithCas(String id,String proxyticket,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+	public HashMap<String,String> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
 		
-		logger.debug("Id et proxyticket : "+id +","+proxyticket);
+		logger.debug("Id, proxyticket et targetUrl : "+id +","+proxyticket+ ", "+targetUrl);
 		
-		if(!validationProxyTicket.validation(id, proxyticket))
+		if(!validationProxyTicket.validation(id, proxyticket,targetUrl))
 			throw new AuthentificationException("Authentification failed ! ");
 		
 		boolean needBind=false;

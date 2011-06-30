@@ -22,13 +22,13 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 	
 	private ServiceTicketValidator serviceTicketValidator;
 	
-	public boolean validation(String id,String proxyticket) {
+	public boolean validation(String id,String proxyticket,String targetUrl) {
 		
 		boolean returnvalue=false;
 		
 		serviceTicketValidator.setCasValidateUrl(casValidateUrl);
 		serviceTicketValidator.setServiceTicket(proxyticket);
-		serviceTicketValidator.setService(casTargetUrl);
+		serviceTicketValidator.setService(targetUrl);
 		
 			try {
 				serviceTicketValidator.validate();
