@@ -111,8 +111,8 @@
 		class="org.esupportail.activbo.domain.beans.ValidationProxyTicketImpl"
 		>
 		<property name="casValidateUrl" value="${cas.validateUrl}"/>
-		<property name="casTargetUrl" value="${cas.targetUrl}"/>
 		<property name="serviceTicketValidator" ref="serviceTicketValidator"/>
+		<property name="limitedTargetUrl" value="${targetUrl.limited}"/>
 	</bean>
 
     <bean

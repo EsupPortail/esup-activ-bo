@@ -1,5 +1,9 @@
 package org.esupportail.activbo.domain.beans;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
 
@@ -18,7 +22,7 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 	
 	private String casValidateUrl;
 	
-	private String casTargetUrl;
+	private String limitedTargetUrl;
 	
 	private ServiceTicketValidator serviceTicketValidator;
 	
@@ -30,11 +34,13 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 		serviceTicketValidator.setServiceTicket(proxyticket);
 		serviceTicketValidator.setService(targetUrl);
 		
+		//if (isConfirmedTargetUrl(targetUrl)) {
 			try {
 				serviceTicketValidator.validate();
 				logger.debug("getresponse :"+serviceTicketValidator.getResponse());
 				logger.debug("getuser :"+serviceTicketValidator.getUser());
 				logger.debug("service renew :"+serviceTicketValidator.isRenew());
+				logger.debug("isConfirmedTargetUrl "+isConfirmedTargetUrl(targetUrl));
 				
 				if (!serviceTicketValidator.isAuthenticationSuccesful()) {
 					logger.debug("Proxyticket "+proxyticket + " Authentification ratée");
@@ -48,7 +54,19 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return returnvalue;
+		//}
+		return returnvalue;
+	}
+	
+	public boolean isConfirmedTargetUrl(String targetUrl) {
+		
+		List<String> targetLimited = Arrays.asList(limitedTargetUrl.split(","));
+		
+		for(int i=0;i<targetLimited.size();i++) 
+			if (targetUrl.contains(targetLimited.get(i).toString()))
+				return true;
+				
+		return false;
 	}
 
 	/**
@@ -83,20 +101,19 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 		this.casValidateUrl = casValidateUrl;
 	}
 
-
 	/**
-	 * @return the casTargetUrl
+	 * @return the limitedTargetUrl
 	 */
-	public String getCasTargetUrl() {
-		return casTargetUrl;
+	public String getLimitedTargetUrl() {
+		return limitedTargetUrl;
 	}
 
-
 	/**
-	 * @param casTargetUrl the casTargetUrl to set
+	 * @param limitedTargetUrl the limitedTargetUrl to set
 	 */
-	public void setCasTargetUrl(String casTargetUrl) {
-		this.casTargetUrl = casTargetUrl;
+	public void setLimitedTargetUrl(String limitedTargetUrl) {
+		this.limitedTargetUrl = limitedTargetUrl;
 	}
+
 	
 }
