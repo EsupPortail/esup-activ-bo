@@ -596,7 +596,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 	}
 	
-	public HashMap<String,String> getLdapInfos(String id,String password,List<String>attrPersoInfo,boolean needBind) throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+	private HashMap<String,String> getLdapInfos(String id,String password,List<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
 		
 		HashMap<String, String> accountDescr=new HashMap<String,String>();
 		
@@ -608,13 +608,11 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			LdapUser ldapUser =this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
 			
 			if (ldapUser==null) throw new AuthentificationException("Login invalide");
-			if (needBind) {
+			if (password!=null) {
 				this.writeableLdapUserService.defineAuthenticatedContextForUser(ldapUser.getId(), password);
 				this.writeableLdapUserService.bindLdap(ldapUser);
 			}
-			
-			logger.debug("Authentification valide");
-			
+	
 			//Construction du hasMap de retour
 			
 			accountDescr.put(ldapSchema.getLogin(), convertListToString(ldapUser.getAttributes(ldapSchema.getLogin())));
@@ -631,8 +629,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				list.add(code);
 				accountDescr.put(accountDescrCodeKey,convertListToString(list));
 				logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.getLogin())+" dans la table effectu�e");
-			}
-			logger.debug("Accoutdescr renvoy� par le BO par la methode authentificateUser : "+accountDescr.toString());			
+			}					
 			
 		}catch(LdapException e){
 			logger.debug("Exception thrown by authentificateUser() : "+ e.getMessage());
@@ -649,9 +646,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
 		
 		logger.debug("id :"+id);
-
-		boolean needBind=true;
-		return getLdapInfos(id,password,attrPersoInfo,needBind);
+		if(password==null) throw new AuthentificationException("Password must not be null !");
+		return getLdapInfos(id,password,attrPersoInfo);
 	}
 	
 	public HashMap<String,String> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
@@ -661,8 +657,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		if(!validationProxyTicket.validation(id, proxyticket,targetUrl))
 			throw new AuthentificationException("Authentification failed ! ");
 		
-		boolean needBind=false;
-		return getLdapInfos(id,proxyticket,attrPersoInfo,needBind);
+		return getLdapInfos(id,null,attrPersoInfo);
 	}
 	
 	public HashMap<String,String> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
@@ -673,8 +668,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 			if(!validationCode.verify(id, accountCodeKey))
 				throw new AuthentificationException("Authentification failed ! ");
 		
-		boolean needBind=false;
-		return getLdapInfos(id,accountCodeKey,attrPersoInfo,needBind);
+		return getLdapInfos(id,null,attrPersoInfo);
 	}
 	    
     public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
