@@ -829,28 +829,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		this.bruteForceBlock = bruteForceBlock;
 	}
 	
-	/*public String convertListToString(List<String>listString){
-		String result="";
-		String listStringValue="";
-		for (int i=0;i<listString.size();i++){
-			listStringValue=listString.get(i);
-			listStringValue=listStringValue.replace(",",getSeparator());
-			if ("".equals(result)) result+=listStringValue;
-			else result+=","+listStringValue;
-		}
-		return result;
-	}
-	
-	public String convertListToStringPossibleKey(List<String>listString) {
-		String result="";
-		for (int i=0;i<listString.size();i++){
-			if ("".equals(result)) result+=listString.get(i);
-			else result+=","+listString.get(i);
-		}
-		return result;
-	}
-	*/
-	
 	public String convertListToString(List<String>listString) {
 		String result="";
 		for (int i=0;i<listString.size();i++){
