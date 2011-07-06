@@ -664,7 +664,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		logger.debug("Id et accountCodeKey : "+id +","+accountCodeKey);
 		
-		if (accountCodeKey !=null)
 			if(!validationCode.verify(id, accountCodeKey))
 				throw new AuthentificationException("Authentification failed ! ");
 		
