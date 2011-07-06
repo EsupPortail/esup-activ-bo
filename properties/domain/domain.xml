@@ -112,7 +112,7 @@
 		>
 		<property name="casValidateUrl" value="${cas.validateUrl}"/>
 		<property name="serviceTicketValidator" ref="serviceTicketValidator"/>
-		<property name="limitedTargetUrl" value="${targetUrl.limited}"/>
+		<property name="limitedTargetUrl" value="${cas.targetUrls}"/>
 	</bean>
 
     <bean
