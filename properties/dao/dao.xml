@@ -27,10 +27,11 @@
 	</bean>
 	
 	
-	<bean
+		<bean
 		id="daoService"
-		class="org.esupportail.activbo.dao.EmptyDaoService"
-		/>
+		class="org.esupportail.activbo.dao.EmptyDaoService">
+		<property name="applicationService" ref="applicationService"/>
+	</bean>
 
 	
 </beans>
