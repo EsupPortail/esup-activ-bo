@@ -58,7 +58,7 @@ public class ValidationCodeImpl implements ValidationCode, Runnable, Initializin
 		
 		if (userData!=null){
 			logger.debug("L'utilisateur "+id+" poss�de un code");
-			if (code.equalsIgnoreCase(userData.get(codeKey))){
+			if(userData.get(codeKey).equals(code)){			
 				logger.debug("Code utilisateur "+id+" valide");				
 				return true;
 			}
