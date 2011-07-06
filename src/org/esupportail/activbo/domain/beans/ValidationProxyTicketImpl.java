@@ -34,7 +34,7 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 		serviceTicketValidator.setServiceTicket(proxyticket);
 		serviceTicketValidator.setService(targetUrl);
 		
-		//if (isConfirmedTargetUrl(targetUrl)) {
+		if (isConfirmedTargetUrl(targetUrl)) {
 			try {
 				serviceTicketValidator.validate();
 				logger.debug("getresponse :"+serviceTicketValidator.getResponse());
@@ -54,7 +54,7 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		//}
+		}
 		return returnvalue;
 	}
 	
@@ -65,7 +65,7 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 		for(int i=0;i<targetLimited.size();i++) 
 			if (targetUrl.contains(targetLimited.get(i).toString()))
 				return true;
-				
+		logger.warn("Le service "+targetUrl+" n'est pas autorisé à demander un ProxyTicket.");		
 		return false;
 	}
 
