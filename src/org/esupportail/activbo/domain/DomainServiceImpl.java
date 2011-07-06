@@ -622,7 +622,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				accountDescr.put(attrPersoInfo.get(j), convertListToString(ldapUser.getAttributes(attrPersoInfo.get(j))));
 			}
 
-			//envoi d'un code si le compte n'est pas activ�
+			//envoi d'un code si le compte est activé
 			if (ldapUser.getAttribute(ldapSchema.getShadowLastChange())!=null){
 				String code=validationCode.generateCode(ldapUser.getAttribute(ldapSchema.getLogin()));
 				ArrayList<String>list=new ArrayList<String>();
