@@ -3,13 +3,10 @@ package org.esupportail.activbo.services.remote;
 import java.util.HashMap;
 import java.util.List;
 
-
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
-
-
 
 
 public interface CasAccountManagement {
