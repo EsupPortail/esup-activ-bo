@@ -112,6 +112,8 @@ public class LdapSchema implements InitializingBean{
 	
 	private String supannEtuCursusAnnee;
 	
+	private String mailForwardingAddress;
+	
 	public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
 	}
@@ -502,6 +504,22 @@ public class LdapSchema implements InitializingBean{
 	public void setSupannEtuCursusAnnee(String supannEtuCursusAnnee) {
 		this.supannEtuCursusAnnee = supannEtuCursusAnnee;
 	}
+
+	/**
+	 * @return the mailForwardingAddress
+	 */
+	public String getMailForwardingAddress() {
+		return mailForwardingAddress;
+	}
+
+	/**
+	 * @param mailForwardingAddress the mailForwardingAddress to set
+	 */
+	public void setMailForwardingAddress(String mailForwardingAddress) {
+		this.mailForwardingAddress = mailForwardingAddress;
+	}
+	
+	
 	
 	
 
