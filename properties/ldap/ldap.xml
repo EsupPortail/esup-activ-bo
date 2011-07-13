@@ -84,6 +84,9 @@
 				<value>${ldap.attribute.supannEtuId}</value>
 				<value>${ldap.attribute.supannEtuCursusAnnee}</value>
 				<value>${ldap.attribute.mailForwardingAddress}</value>
+				<value>${ldap.attribute.info}</value>
+				<value>${ldap.attribute.roomNumber}</value>
+				<value>${ldap.attribute.up1FloorNumber}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -126,6 +129,9 @@
 				<value>${ldap.attribute.supannEtuId}</value>
 				<value>${ldap.attribute.supannEtuCursusAnnee}</value>
 				<value>${ldap.attribute.mailForwardingAddress}</value>
+				<value>${ldap.attribute.info}</value>
+				<value>${ldap.attribute.roomNumber}</value>
+				<value>${ldap.attribute.up1FloorNumber}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -266,6 +272,9 @@
 				<value>${ldap.attribute.supannEtuId}</value>
 				<value>${ldap.attribute.supannEtuCursusAnnee}</value>
 				<value>${ldap.attribute.mailForwardingAddress}</value>
+				<value>${ldap.attribute.info}</value>
+				<value>${ldap.attribute.roomNumber}</value>
+				<value>${ldap.attribute.up1FloorNumber}</value>
 			</list>
 		</property>
 	</bean>
@@ -363,5 +372,8 @@
 		    <property name="supannEtuId" value="${ldap.attribute.supannEtuId}"/>
 		    <property name="supannEtuCursusAnnee" value="${ldap.attribute.supannEtuCursusAnnee}"/>
 		    <property name="mailForwardingAddress" value="${ldap.attribute.mailForwardingAddress}"/>
+		    <property name="info" value="${ldap.attribute.info}"/>
+		    <property name="roomNumber" value="${ldap.attribute.roomNumber}"/>
+		    <property name="up1FloorNumber" value="${ldap.attribute.up1FloorNumber}"/>
 	</bean>
 </beans>

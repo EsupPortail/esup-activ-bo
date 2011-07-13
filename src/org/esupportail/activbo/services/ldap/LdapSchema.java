@@ -114,6 +114,12 @@ public class LdapSchema implements InitializingBean{
 	
 	private String mailForwardingAddress;
 	
+	private String info;
+	
+	private String roomNumber;
+	
+	private String up1FloorNumber;
+	
 	public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
 	}
@@ -517,6 +523,48 @@ public class LdapSchema implements InitializingBean{
 	 */
 	public void setMailForwardingAddress(String mailForwardingAddress) {
 		this.mailForwardingAddress = mailForwardingAddress;
+	}
+
+	/**
+	 * @return the info
+	 */
+	public String getInfo() {
+		return info;
+	}
+
+	/**
+	 * @param info the info to set
+	 */
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	/**
+	 * @return the roomNumber
+	 */
+	public String getRoomNumber() {
+		return roomNumber;
+	}
+
+	/**
+	 * @param roomNumber the roomNumber to set
+	 */
+	public void setRoomNumber(String roomNumber) {
+		this.roomNumber = roomNumber;
+	}
+
+	/**
+	 * @return the up1FloorNumber
+	 */
+	public String getUp1FloorNumber() {
+		return up1FloorNumber;
+	}
+
+	/**
+	 * @param up1FloorNumber the up1FloorNumber to set
+	 */
+	public void setUp1FloorNumber(String up1FloorNumber) {
+		this.up1FloorNumber = up1FloorNumber;
 	}
 	
 	
