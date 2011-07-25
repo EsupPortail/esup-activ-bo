@@ -120,6 +120,8 @@ public class LdapSchema implements InitializingBean{
 	
 	private String up1FloorNumber;
 	
+	private String supannAliasLogin;
+	
 	public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
 	}
@@ -566,9 +568,20 @@ public class LdapSchema implements InitializingBean{
 	public void setUp1FloorNumber(String up1FloorNumber) {
 		this.up1FloorNumber = up1FloorNumber;
 	}
-	
-	
-	
+
+	/**
+	 * @return the supannAliasLogin
+	 */
+	public String getSupannAliasLogin() {
+		return supannAliasLogin;
+	}
+
+	/**
+	 * @param supannAliasLogin the supannAliasLogin to set
+	 */
+	public void setSupannAliasLogin(String supannAliasLogin) {
+		this.supannAliasLogin = supannAliasLogin;
+	}
 	
 
 }
