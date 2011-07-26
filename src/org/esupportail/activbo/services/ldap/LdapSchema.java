@@ -122,6 +122,8 @@ public class LdapSchema implements InitializingBean{
 	
 	private String supannAliasLogin;
 	
+	private String up1AltGivenName;
+	
 	public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
 	}
@@ -582,6 +584,21 @@ public class LdapSchema implements InitializingBean{
 	public void setSupannAliasLogin(String supannAliasLogin) {
 		this.supannAliasLogin = supannAliasLogin;
 	}
+
+	/**
+	 * @return the up1AltGivenName
+	 */
+	public String getUp1AltGivenName() {
+		return up1AltGivenName;
+	}
+
+	/**
+	 * @param up1AltGivenName the up1AltGivenName to set
+	 */
+	public void setUp1AltGivenName(String up1AltGivenName) {
+		this.up1AltGivenName = up1AltGivenName;
+	}
+	
 	
 
 }
