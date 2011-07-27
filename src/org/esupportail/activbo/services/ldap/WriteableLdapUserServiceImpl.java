@@ -177,11 +177,15 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 	protected void mapToContext(final LdapUser ldapUser, final DirContextAdapter context) {
 		List<String> attributesNames = ldapUser.getAttributeNames();
 		for (String ldapAttributeName : attributesNames) {
-			List<String> listAttr = new ArrayList<String>();
-			listAttr = ldapUser.getAttributes(ldapAttributeName);
+			List<String> listAttrValue = new ArrayList<String>();
+			listAttrValue = ldapUser.getAttributes(ldapAttributeName);
+			
 			// The attribute exists
-			if (listAttr != null && listAttr.size() != 0) {
-				context.setAttributeValues(ldapAttributeName, listAttr.toArray());
+			if (!listAttrValue.contains("null") && listAttrValue != null && listAttrValue.size() != 0 ) {
+				context.setAttributeValues(ldapAttributeName, listAttrValue.toArray());
+			}
+			else  {
+				context.setAttributeValues(ldapAttributeName, null); 
 			}
 		}
 	}

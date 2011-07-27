@@ -442,7 +442,9 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				//Lecture LDAP
 				
 				LdapUser ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
-				 				
+				
+				ldapUser.getAttributes().clear(); 
+				
 				if (ldapUser==null) throw new LdapProblemException("Probleme au niveau du LDAP");
 				
 				logger.debug("Parcours des informations personnelles mises � jour au niveau du FO pour insertion LDAP");
@@ -455,7 +457,6 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 					Map.Entry<String,String> e=it.next();
 					
 					logger.debug("Key="+e.getKey()+" Value="+e.getValue());
-					
 					if("".equals(e.getValue())||e.getValue()==null) ldapUser.getAttributes().put(e.getKey(),list);
 					else
 						if (e.getValue().contains(getSeparator())) {
@@ -467,6 +468,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 						}					
 					i++;
 				}
+				
 				this.finalizeLdapWriting(ldapUser);
 			}
 			else{
