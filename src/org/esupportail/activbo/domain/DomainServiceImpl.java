@@ -606,7 +606,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				throw new UserPermissionException("Nombre de tentative d'authentification atteint pour l'utilisateur "+id);
 			}
 			
-			LdapUser ldapUser =this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
+			LdapUser ldapUser =this.getLdapUser("("+ldapSchema.getUid()+"="+ id + ")");
 			
 			if (ldapUser==null) throw new AuthentificationException("Login invalide");
 			if (password!=null) {
