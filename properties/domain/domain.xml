@@ -119,6 +119,7 @@
 		id="serviceTicketValidator"
 		class="edu.yale.its.tp.cas.client.ServiceTicketValidator"
 		>
+		<property name="renew" value="true"/>
 	</bean>
 	
 	
