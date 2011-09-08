@@ -120,7 +120,22 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 	
 	private String separator;
 
+	private String casID;
 	
+	/**
+	 * @return the casID
+	 */
+	public String getCasID() {
+		return casID;
+	}
+
+	/**
+	 * @param casID the casID to set
+	 */
+	public void setCasID(String casID) {
+		this.casID = casID;
+	}
+
 	public String getSeparator() {
 		return separator;
 	}
@@ -606,7 +621,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 				throw new UserPermissionException("Nombre de tentative d'authentification atteint pour l'utilisateur "+id);
 			}
 			
-			LdapUser ldapUser =this.getLdapUser("("+ldapSchema.getUid()+"="+ id + ")");
+			LdapUser ldapUser =this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
 			
 			if (ldapUser==null) throw new AuthentificationException("Login invalide");
 			if (password!=null) {
@@ -658,17 +673,30 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		if(!validationProxyTicket.validation(id, proxyticket,targetUrl))
 			throw new AuthentificationException("Authentification failed ! ");
 		
-		return getLdapInfos(id,null,attrPersoInfo);
+		
+		
+		LdapUser ldapUser =this.getLdapUser("("+casID+"="+ id + ")");
+        String login=id;
+        if(ldapUser!=null)
+            login=ldapUser.getAttribute(ldapSchema.getLogin()); 
+        
+        return getLdapInfos(login,null,attrPersoInfo);
 	}
 	
 	public HashMap<String,String> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
 		
 		logger.debug("Id et accountCodeKey : "+id +","+accountCodeKey);
 		
-			if(!validationCode.verify(id, accountCodeKey))
-				throw new AuthentificationException("Authentification failed ! ");
+		if(!validationCode.verify(id, accountCodeKey))
+			throw new AuthentificationException("Authentification failed ! ");
 		
-		return getLdapInfos(id,null,attrPersoInfo);
+		LdapUser ldapUser =this.getLdapUser("("+casID+"="+ id + ")");
+        String login=id;
+        if(ldapUser!=null)
+            login=ldapUser.getAttribute(ldapSchema.getLogin()); 
+			
+		
+		return getLdapInfos(login,null,attrPersoInfo);
 	}
 	    
     public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{

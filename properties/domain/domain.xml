@@ -34,6 +34,8 @@
 		
 		<property name="kerberosAdmin" ref="KRBAdminService" />
 		<property name="separator" value="${sep.multiValue}" />		
+		
+		<property name="casID" value="${cas.attributeID}" /> 
 													
 		<property name="channels">
 			<list>
