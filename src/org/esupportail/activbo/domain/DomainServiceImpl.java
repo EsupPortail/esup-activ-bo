@@ -690,13 +690,7 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		if(!validationCode.verify(id, accountCodeKey))
 			throw new AuthentificationException("Authentification failed ! ");
 		
-		LdapUser ldapUser =this.getLdapUser("("+casID+"="+ id + ")");
-        String login=id;
-        if(ldapUser!=null)
-            login=ldapUser.getAttribute(ldapSchema.getLogin()); 
-			
-		
-		return getLdapInfos(login,null,attrPersoInfo);
+		return getLdapInfos(id,null,attrPersoInfo);
 	}
 	    
     public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
