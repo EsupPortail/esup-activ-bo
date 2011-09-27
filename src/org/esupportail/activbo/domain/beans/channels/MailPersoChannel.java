@@ -18,6 +18,7 @@ import org.esupportail.commons.services.smtp.AsynchronousSmtpServiceImpl;
 public class MailPersoChannel extends AbstractChannel{
 
 	private String attributeMailPerso;
+	private String attributeDisplayName;
 	private AsynchronousSmtpServiceImpl smtpService;
 	private String mailCodeSubject;
 	private String mailCodeBody;
@@ -38,6 +39,8 @@ public class MailPersoChannel extends AbstractChannel{
 			LdapUser ldapUserRead = ldapUserList.get(0); 
 			
 			String mailPerso = ldapUserRead.getAttribute(attributeMailPerso);
+			String displayName = ldapUserRead.getAttribute(attributeDisplayName);
+			String newSubject = this.mailCodeSubject.replace("{0}", displayName);
 			
 			if(mailPerso==null) throw new ChannelException("Utilisateur "+id+" n'a pas de mail perso");
 									
@@ -48,11 +51,11 @@ public class MailPersoChannel extends AbstractChannel{
 				throw new ChannelException("Probleme de création de InternetAddress "+mailPerso);
 			}
 			
-			String mailBody=this.mailCodeBody;
-			mailBody=mailBody.replace("{0}", validationCode.getCode(id));
-			mailBody=mailBody.replace("{1}", validationCode.getDate(id));
+			String mailBody=this.mailCodeBody.replace("{0}", displayName);
+			mailBody=mailBody.replace("{1}", validationCode.getCode(id));
+			mailBody=mailBody.replace("{2}", validationCode.getDate(id));
 			
-			smtpService.send(mail,this.mailCodeSubject,mailBody,"");
+			smtpService.send(mail,newSubject,mailBody,"");
 			
 			logger.debug("Envoi du code à l'adresse mail "+mailPerso);										
 	}
@@ -81,6 +84,20 @@ public class MailPersoChannel extends AbstractChannel{
 		this.mailCodeBody = mailCodeBody;
 	}
 	
+	
+	
+	/**
+	 * @return the attributeDisplayName
+	 */
+	public String getAttributeDisplayName() {
+		return attributeDisplayName;
+	}
+	/**
+	 * @param attributeDisplayName the attributeDisplayName to set
+	 */
+	public void setAttributeDisplayName(String attributeDisplayName) {
+		this.attributeDisplayName = attributeDisplayName;
+	}
 	@Override
 	public boolean isPossible(LdapUser ldapUser){
 				

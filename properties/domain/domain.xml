@@ -67,6 +67,7 @@
 
 		<property name="smtpService" ref="smtpService"/>
 		<property name="attributeMailPerso" value="${ldap.attribute.mailPerso}"/>
+		<property name="attributeDisplayName" value="${ldap.attribute.displayName}"/>
 		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
 		<property name="mailCodeBody" value="${channel.persomail.body.fr}"/>
 	</bean>	
