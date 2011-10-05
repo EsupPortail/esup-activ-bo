@@ -39,6 +39,7 @@
 													
 		<property name="channels">
 			<list>
+				<ref bean="codeChannel"/>
 				<ref bean="mail2GestChannel"/>
 				<ref bean="mailPersoChannel"/>				
 				<ref bean="mail2SMSChannel"/>			
@@ -95,7 +96,11 @@
 		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
 		<property name="mailCodeBody" value="${channel.sms.body.fr}"/>
 	</bean>	
- 		
+ 	<bean
+		id="codeChannel"
+		class="org.esupportail.activbo.domain.beans.channels.CodeChannel">
+		<property name="name" value="${channel.code.name}"/>		
+	</bean>		
 	<bean
 		id="validationCode"
 		class="org.esupportail.activbo.domain.beans.ValidationCodeImpl"
