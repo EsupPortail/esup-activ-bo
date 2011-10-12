@@ -83,6 +83,7 @@
 		<property name="mailGest" value="${channel.gestmail.mail}"/>
 		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
 		<property name="mailCodeBody" value="${channel.gestmail.body.fr}"/>
+		<property name="attributeDisplayName" value="${ldap.attribute.displayName}"/>
 	</bean>	
 	<bean
 		id="mail2SMSChannel"
