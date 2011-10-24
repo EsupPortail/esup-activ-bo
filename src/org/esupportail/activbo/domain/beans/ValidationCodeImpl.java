@@ -77,11 +77,15 @@ public class ValidationCodeImpl implements ValidationCode, Runnable, Initializin
     
     public String getCode(String id)
     {
-    	return validationCodes.get(id).get(codeKey);    	
+    	if(validationCodes.get(id)!=null)
+    		return validationCodes.get(id).get(codeKey);
+    	else return null;
     }
     public String getDate(String id)
     {
-    	return validationCodes.get(id).get(dateKey);
+    	if(validationCodes.get(id)!=null)
+    		return validationCodes.get(id).get(dateKey);
+    	else return null;
     }
     
 	public String generateCode(String id,int codeDelay){
