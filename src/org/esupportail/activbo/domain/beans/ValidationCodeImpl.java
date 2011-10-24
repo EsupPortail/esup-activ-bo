@@ -86,17 +86,27 @@ public class ValidationCodeImpl implements ValidationCode, Runnable, Initializin
     
 	public String generateCode(String id,int codeDelay){
 			
-		String code=getRandomCode();		
+		String code=getRandomCode();			
 		
 		Calendar c = new GregorianCalendar();
 		c.add(Calendar.SECOND,codeDelay);
+		Date date=c.getTime();
 			
 		HashMap<String,String> userData= validationCodes.get(id);		
 		if(userData==null) userData= new HashMap<String,String>();	
-		else code=userData.get(codeKey);
+		else 
+			{
+				code=userData.get(codeKey);
+				try {
+					date=this.stringToDate(getDate(id));
+				} catch (ParseException e) {
+					logger.error(e.getMessage());
+				}
+			}
+		if(c.getTime().getTime()>date.getTime()) date=c.getTime();
 		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);							
 		userData.put(codeKey,code);
-		userData.put(dateKey,this.dateToString(c.getTime()));
+		userData.put(dateKey,this.dateToString(date));
 				
 		validationCodes.put(id, userData);
 		
