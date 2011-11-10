@@ -41,6 +41,7 @@
 			<list>
 				<ref bean="codeChannel"/>
 				<ref bean="mail2GestChannel"/>
+				<ref bean="mail2GestEtuChannel"/>
 				<ref bean="mailPersoChannel"/>				
 				<ref bean="mail2SMSChannel"/>			
 			</list>
@@ -84,6 +85,37 @@
 		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
 		<property name="mailCodeBody" value="${channel.gestmail.body.fr}"/>
 		<property name="attributeDisplayName" value="${ldap.attribute.displayName}"/>
+		<property name="deny">
+			<map>
+		    	<entry key="eduPersonAffiliation">
+  		      		<list>  		      					        		
+		        		<value>student</value>
+		    		</list>
+		    	</entry>
+		  </map>
+		</property>
+	</bean>	
+	<bean
+		id="mail2GestEtuChannel"
+		class="org.esupportail.activbo.domain.beans.channels.Mail2GestChannel"
+		parent="abstractChannel"
+		>
+		<property name="name" value="${channel.gestmailetu.name}"/>	
+		<property name="codeDelay" value="${validation.code.delay.third}"/>
+		<property name="smtpService" ref="smtpService"/>
+		<property name="mailGest" value="${channel.gestmailetu.mail}"/>
+		<property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
+		<property name="mailCodeBody" value="${channel.gestmailetu.body.fr}"/>
+		<property name="attributeDisplayName" value="${ldap.attribute.displayName}"/>
+		<property name="access">
+			<map>
+		    	<entry key="eduPersonAffiliation">
+  		      		<list>  		      					        		
+		        		<value>student</value>		        
+		    		</list>
+		    	</entry>
+		  </map>
+		</property>
 	</bean>	
 	<bean
 		id="mail2SMSChannel"
