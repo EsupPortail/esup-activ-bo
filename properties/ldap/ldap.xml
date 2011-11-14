@@ -54,6 +54,7 @@
 			<list>
 				<value>${ldap.attribute.displayName}</value>
 				<value>${ldap.attribute.employeeId}</value>
+				<value>${ldap.attribute.description}</value>
 				<value>${ldap.attribute.birthdate}</value>
 				<value>${ldap.attribute.birthname}</value>
 				<value>${ldap.attribute.mail}</value>
@@ -102,6 +103,7 @@
 				<value>cn</value>
 				<value>${ldap.attribute.displayName}</value>
 				<value>${ldap.attribute.employeeId}</value>
+				<value>${ldap.attribute.description}</value>
 				<value>${ldap.attribute.birthdate}</value>
 				<value>${ldap.attribute.birthname}</value>
 				<value>${ldap.attribute.mail}</value>
@@ -252,6 +254,7 @@
 				<value>cn</value>
 				<value>${ldap.attribute.password}</value>
 				<value>${ldap.attribute.shadowLastChange}</value>
+				<value>${ldap.attribute.description}</value>
 				<value>${ldap.attribute.pager}</value>
 				<value>${ldap.attribute.mailPerso}</value>
 				<value>${ldap.attribute.smsagreement}</value>
