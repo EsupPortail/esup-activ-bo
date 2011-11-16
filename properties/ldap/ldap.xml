@@ -90,6 +90,8 @@
 				<value>${ldap.attribute.up1FloorNumber}</value>
 				<value>${ldap.attribute.supannAliasLogin}</value>
 				<value>${ldap.attribute.up1AltGivenName}</value>
+				<value>${ldap.attribute.supannEtuAnneeInscription}</value>
+				<value>${ldap.attribute.supannEtuEtape}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -138,6 +140,8 @@
 				<value>${ldap.attribute.up1FloorNumber}</value>
 				<value>${ldap.attribute.supannAliasLogin}</value>
 				<value>${ldap.attribute.up1AltGivenName}</value>
+				<value>${ldap.attribute.supannEtuAnneeInscription}</value>
+				<value>${ldap.attribute.supannEtuEtape}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -284,6 +288,8 @@
 				<value>${ldap.attribute.up1FloorNumber}</value>
 				<value>${ldap.attribute.supannAliasLogin}</value>
 				<value>${ldap.attribute.up1AltGivenName}</value>
+				<value>${ldap.attribute.supannEtuAnneeInscription}</value>
+				<value>${ldap.attribute.supannEtuEtape}</value>
 			</list>
 		</property>
 	</bean>
