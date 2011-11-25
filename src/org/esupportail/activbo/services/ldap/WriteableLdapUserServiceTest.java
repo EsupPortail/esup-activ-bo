@@ -279,5 +279,13 @@ public class WriteableLdapUserServiceTest implements WriteableLdapUserService, I
 		// TODO Auto-generated method stub
 		
 	}
+
+	/* (non-Javadoc)
+	 * @see org.esupportail.activbo.services.ldap.WriteableLdapUserService#invalidateLdapCache()
+	 */
+	public void invalidateLdapCache() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

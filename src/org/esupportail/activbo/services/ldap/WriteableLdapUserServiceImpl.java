@@ -5,6 +5,7 @@ package org.esupportail.activbo.services.ldap;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.sf.ehcache.CacheManager;
 
 import javax.naming.Name;
 
@@ -72,6 +73,9 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 	 */
 	private List<String> attributes;
 	
+	private CacheManager cacheManager;
+
+	
 	/**
 	 * Bean constructor.
 	 */
@@ -135,7 +139,7 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 			throw new LdapAttributesModificationException(
 					"Couldn't get modification items for '" + dn + "'", e);
 		}
-		
+		invalidateLdapCache();		
 	}
 	
 	/** Create an LDAP user using Spring LdapContextSource.
@@ -339,5 +343,15 @@ public class WriteableLdapUserServiceImpl implements WriteableLdapUserService, I
 	public void setIdAuth(final String idAuth) {
 		this.idAuth = idAuth;
 	}
+	
+	public void invalidateLdapCache() {
+		net.sf.ehcache.Cache cache = cacheManager.getCache(org.esupportail.commons.services.ldap.CachingLdapEntityServiceImpl.class.getName());
+		cache.removeAll();		
+	}
+		
+	public void setCacheManager(final CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
+	}
+
 	
 }

@@ -295,6 +295,7 @@
 				<value>${ldap.attribute.supannEtablissement}</value>
 			</list>
 		</property>
+		<property name="cacheManager" ref="cacheManager" />		
 	</bean>
 	
 	<bean id="writeableLdapTemplate" class="org.springframework.ldap.LdapTemplate" >

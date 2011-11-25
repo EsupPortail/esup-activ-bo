@@ -453,9 +453,8 @@ public class DomainServiceImpl implements DomainService, InitializingBean {
 		
 		try{
 			if (validationCode.verify(id,code)){/*security reasons*/
-				
-				//Lecture LDAP
-				
+				this.writeableLdapUserService.invalidateLdapCache();
+				//Lecture LDAP				
 				LdapUser ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
 												
 				if (ldapUser==null) throw new LdapProblemException("Probleme au niveau du LDAP");

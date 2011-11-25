@@ -52,5 +52,6 @@ public interface WriteableLdapUserService extends Serializable {
 	public void defineAuthenticatedContextForUser(String userId, String password) throws LdapException;
 	
 	public void bindLdap(final LdapUser ldapUser)throws AuthentificationException;
-
+	
+	public void invalidateLdapCache();
 }
