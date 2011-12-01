@@ -93,6 +93,7 @@
 				<value>${ldap.attribute.supannEtuAnneeInscription}</value>
 				<value>${ldap.attribute.supannEtuEtape}</value>
 				<value>${ldap.attribute.supannEtablissement}</value>
+				<value>${ldap.attribute.departmentNumber}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -144,6 +145,7 @@
 				<value>${ldap.attribute.supannEtuAnneeInscription}</value>
 				<value>${ldap.attribute.supannEtuEtape}</value>
 				<value>${ldap.attribute.supannEtablissement}</value>
+				<value>${ldap.attribute.departmentNumber}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
