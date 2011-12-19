@@ -14,7 +14,7 @@
 	-->
 
 	<bean id="KRBAdminService"
-		class="org.esupportail.activbo.services.kerberos.KRBAdminTest" >
+		class="org.esupportail.activbo.services.kerberos.KRBAdminMock" >
 		<description>
 			Bean de test pour l'administration d'un serveur Kerberos
 		</description>		

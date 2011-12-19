@@ -8,7 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author aanli
  *
  */
-public class KRBAdminTest implements KRBAdmin,InitializingBean {
+public class KRBAdminMock implements KRBAdmin,InitializingBean {
 	
 	
 	/** 
