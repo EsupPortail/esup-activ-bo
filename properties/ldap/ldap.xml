@@ -95,6 +95,7 @@
 				<value>${ldap.attribute.supannEtablissement}</value>
 				<value>${ldap.attribute.departmentNumber}</value>
 				<value>${ldap.attribute.supannAutreTelephone}</value>
+				<value>${ldap.attribute.supannRoleGenerique}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
