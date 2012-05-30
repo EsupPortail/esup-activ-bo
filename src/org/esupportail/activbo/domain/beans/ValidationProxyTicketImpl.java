@@ -6,7 +6,7 @@ import java.util.List;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
 
-import edu.yale.its.tp.cas.client.ServiceTicketValidator;
+import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 
 public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 	
@@ -20,70 +20,47 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 	private final Logger logger = new LoggerImpl(getClass());
 	
 	private String casValidateUrl;
+	private String allowedProxies;
 	
-	private String limitedTargetUrl;
-	
-	private ServiceTicketValidator serviceTicketValidator;
+	private ProxyTicketValidator proxyTicketValidator;
 	
 	public boolean validation(String id,String proxyticket,String targetUrl) {
+			
+		proxyTicketValidator.setCasValidateUrl(casValidateUrl);
+		proxyTicketValidator.setServiceTicket(proxyticket);
+		proxyTicketValidator.setService(targetUrl);
 		
-		boolean returnvalue=false;
-		
-		serviceTicketValidator.setCasValidateUrl(casValidateUrl);
-		serviceTicketValidator.setServiceTicket(proxyticket);
-		serviceTicketValidator.setService(targetUrl);
-		
-		if (isConfirmedTargetUrl(targetUrl)) {
-			try {
-				serviceTicketValidator.validate();
-				logger.debug("getresponse :"+serviceTicketValidator.getResponse());
-				logger.debug("getuser :"+serviceTicketValidator.getUser());
-				logger.debug("service renew :"+serviceTicketValidator.isRenew());
-				logger.debug("isConfirmedTargetUrl "+isConfirmedTargetUrl(targetUrl));
-				
-				if (!serviceTicketValidator.isAuthenticationSuccesful()) {
-					logger.debug("Proxyticket "+proxyticket + " Authentification ratée");
-					returnvalue=false;
-				} else {
-					logger.debug("Proxyticket "+proxyticket+" Authentification réussie");
-					logger.debug("Authentification réussie");
-					if (serviceTicketValidator.getUser().equals(id)) returnvalue=true;
-					else returnvalue=false;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		try {
+			proxyTicketValidator.validate();
+			logger.debug("getresponse :"+proxyTicketValidator.getResponse());
+			logger.debug("getuser :"+proxyTicketValidator.getUser());
+			logger.debug("service renew :"+proxyTicketValidator.isRenew());
+			logger.debug("Proxyticket: "+proxyticket); 
+			
+			if (proxyTicketValidator.isAuthenticationSuccesful() &&
+				proxyTicketValidator.getUser().equals(id) &&
+				isProxyAllowed(proxyTicketValidator.getProxyList()))
+				{
+					logger.debug("Authentification réussie");					
+					return true;
+				} 									
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return returnvalue;
+		logger.debug("Authentification ratée");
+		logger.debug("isAuthenticationSuccesful: "+proxyTicketValidator.isAuthenticationSuccesful());
+		return false;		
 	}
 	
-	public boolean isConfirmedTargetUrl(String targetUrl) {
-		
-		List<String> targetLimited = Arrays.asList(limitedTargetUrl.split(","));
-		
-		for(int i=0;i<targetLimited.size();i++) 
-			if (targetUrl.contains(targetLimited.get(i).toString()))
+	private boolean isProxyAllowed(List<String> proxies) {		
+		List<String> allowedProxyList = Arrays.asList(allowedProxies.split(","));
+		for(String p:proxies) 
+			if (allowedProxyList.contains(p))
 				return true;
-		logger.warn("Le service "+targetUrl+" n'est pas autorisé à demander un ProxyTicket.");		
+		logger.warn("Pas de proxy autorisé à accéder au service");
+		logger.warn("Proxies: "+proxies.toString());
 		return false;
 	}
-
-	/**
-	 * @return the serviceTicketValidator
-	 */
-	public ServiceTicketValidator getServiceTicketValidator() {
-		return serviceTicketValidator;
-	}
-
-
-	/**
-	 * @param serviceTicketValidator the serviceTicketValidator to set
-	 */
-	public void setServiceTicketValidator(
-			ServiceTicketValidator serviceTicketValidator) {
-		this.serviceTicketValidator = serviceTicketValidator;
-	}
-
 
 	/**
 	 * @return the casValidateUrl
@@ -100,18 +77,33 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 		this.casValidateUrl = casValidateUrl;
 	}
 
+
 	/**
-	 * @return the limitedTargetUrl
+	 * @return the proxyTicketValidator
 	 */
-	public String getLimitedTargetUrl() {
-		return limitedTargetUrl;
+	public ProxyTicketValidator getProxyTicketValidator() {
+		return proxyTicketValidator;
 	}
 
 	/**
-	 * @param limitedTargetUrl the limitedTargetUrl to set
+	 * @param proxyTicketValidator the proxyTicketValidator to set
 	 */
-	public void setLimitedTargetUrl(String limitedTargetUrl) {
-		this.limitedTargetUrl = limitedTargetUrl;
+	public void setProxyTicketValidator(ProxyTicketValidator proxyTicketValidator) {
+		this.proxyTicketValidator = proxyTicketValidator;
+	}
+
+	/**
+	 * @return the allowedProxies
+	 */
+	public String getAllowedProxies() {
+		return allowedProxies;
+	}
+
+	/**
+	 * @param allowedProxies the allowedProxies to set
+	 */
+	public void setAllowedProxies(String allowedProxies) {
+		this.allowedProxies = allowedProxies;
 	}
 
 	

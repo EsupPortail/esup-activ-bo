@@ -152,13 +152,13 @@
 		class="org.esupportail.activbo.domain.beans.ValidationProxyTicketImpl"
 		>
 		<property name="casValidateUrl" value="${cas.validateUrl}"/>
-		<property name="serviceTicketValidator" ref="serviceTicketValidator"/>
-		<property name="limitedTargetUrl" value="${cas.targetUrls}"/>
+		<property name="proxyTicketValidator" ref="proxyTicketValidator"/>
+		<property name="allowedProxies" value="${cas.allowedProxies}"/>
 	</bean>
 
     <bean
-		id="serviceTicketValidator"
-		class="edu.yale.its.tp.cas.client.ServiceTicketValidator"
+		id="proxyTicketValidator"
+		class="edu.yale.its.tp.cas.client.ProxyTicketValidator"
 		>
 	</bean>
 	
