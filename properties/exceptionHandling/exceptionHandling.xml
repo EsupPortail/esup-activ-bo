@@ -36,6 +36,7 @@
 		<property name="noEmailExceptions" >
 			<list>
 				<value>org.esupportail.commons.services.ldap.LdapConnectionException</value>
+				<value>org.esupportail.activbo.exceptions.UserPermissionException</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager" />
