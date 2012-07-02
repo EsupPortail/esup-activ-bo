@@ -37,6 +37,7 @@
 			<list>
 				<value>org.esupportail.commons.services.ldap.LdapConnectionException</value>
 				<value>org.esupportail.activbo.exceptions.UserPermissionException</value>
+				<value>org.esupportail.activbo.exceptions.AuthentificationException</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager" />
