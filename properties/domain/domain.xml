@@ -8,7 +8,7 @@
 
 	<bean
 		id="domainService"
-		class="org.esupportail.activbo.domain.DomainServiceImpl"
+		class="org.esupportail.activbo.domain.${authentication.type}Impl"
 		>
 		
 		<property name="daoService" ref="daoService" />
