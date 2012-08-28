@@ -18,7 +18,7 @@ import org.esupportail.commons.services.logging.LoggerImpl;
 
 public class LdapImpl extends DomainServiceImpl {
 
-	/**Cette classe permet d'utiliser que l'implémentation LDAP
+	/**Cette classe permet d'utiliser que l'implï¿½mentation LDAP
 	 * 
 	 */
 	private static final long serialVersionUID = -920391586782473692L;
@@ -36,6 +36,7 @@ public class LdapImpl extends DomainServiceImpl {
 			list.add(encryptPassword(currentPassword));
 			ldapUser.getAttributes().put(getLdapSchema().getPassword(), list);
 			listShadowLastChangeAttr(ldapUser);
+			finalizeLdapWriting(ldapUser);
 	}
 	
 	//
@@ -51,6 +52,7 @@ public class LdapImpl extends DomainServiceImpl {
 			list.add(ldapUser.getAttribute(getLdapSchema().getPassword()));
 			ldapUser.getAttributes().put(getLdapSchema().getPassword(),list);
 			listShadowLastChangeAttr(ldapUser);
+			finalizeLdapWriting(ldapUser);
 	}
 	
 	//
@@ -65,23 +67,11 @@ public class LdapImpl extends DomainServiceImpl {
 		   ldapUser.getAttributes().put(getLdapSchema().getPassword(),list);
 		   
 		   listShadowLastChangeAttr(ldapUser);
+		   finalizeLdapWriting(ldapUser);
 			   
 		   }catch(Exception  e){exceptions (e);}
 	}
 	
-	
-	private void listShadowLastChangeAttr(LdapUser ldapUser){
-		// Ecrire l'attribut shadowLastChange dans LDAP
-		List<String> listShadowLastChangeAttr = new ArrayList<String>();
-		Calendar cal = Calendar.getInstance();
-		String shadowLastChange = Integer.toString((int) Math.floor(cal.getTimeInMillis() / (1000 * 3600 * 24)));
-		listShadowLastChangeAttr.add(shadowLastChange);
-		ldapUser.getAttributes().put(getLdapSchema().getShadowLastChange(),listShadowLastChangeAttr);
-		if (logger.isDebugEnabled()) {logger.debug("Writing shadowLastChange in LDAP : "+ shadowLastChange );}
-		
-		 this.finalizeLdapWriting(ldapUser);
-		
-	}
 	private String encryptPassword(String passWord) {
 		/*
 		 * If we look at phpldapadmin SSHA encryption algorithm in :

@@ -756,14 +756,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 			logger.debug("Le compte Kerberos ne gï¿½re pas encore l'authentification");
 
 			// Writing of shadowLastChange in LDAP 
-			List<String> listShadowLastChangeAttr = new ArrayList<String>();
-			Calendar cal = Calendar.getInstance();
-			String shadowLastChange = Integer.toString((int) Math.floor(cal.getTimeInMillis()/ (1000 * 3600 * 24)));
-			listShadowLastChangeAttr.add(shadowLastChange);
-			ldapUser.getAttributes().put(ldapSchema.getShadowLastChange(),listShadowLastChangeAttr);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Writing shadowLastChange in LDAP : " + shadowLastChange);
-			}
+			listShadowLastChangeAttr(ldapUser);
 			
 			//Writing of krbPrincipal in LDAP 
 			if( !"".equals(ldapSchema.getKrbPrincipal()) && ldapSchema.getKrbPrincipal()!=null ) {
@@ -785,13 +778,23 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 		}
 	}
 	
+	protected void listShadowLastChangeAttr(LdapUser ldapUser){
+		// Ecrire l'attribut shadowLastChange dans LDAP
+		List<String> listShadowLastChangeAttr = new ArrayList<String>();
+		Calendar cal = Calendar.getInstance();
+		String shadowLastChange = Integer.toString((int) Math.floor(cal.getTimeInMillis() / (1000 * 3600 * 24)));
+		listShadowLastChangeAttr.add(shadowLastChange);
+		ldapUser.getAttributes().put(getLdapSchema().getShadowLastChange(),listShadowLastChangeAttr);
+		if (logger.isDebugEnabled()) {logger.debug("Writing shadowLastChange in LDAP : "+ shadowLastChange );}				
+	}
+	
 	/**
 	 * But : Gestion des exceptions
 	*        
 	 */
 	
 	public void exceptions(Exception exception) throws LdapProblemException,KerberosException, LoginException{
-		logger.debug("Dans méthode exceptions",exception);
+		logger.debug("Dans mï¿½thode exceptions",exception);
 		if 		(exception instanceof LdapException)throw new LdapProblemException("Probleme au niveau du LDAP");
 		else if (exception instanceof KRBException) throw new KerberosException("Probleme au niveau de Kerberos");
 		else if (exception instanceof KRBIllegalArgumentException) throw new KerberosException("Probleme au niveau de Kerberos");
