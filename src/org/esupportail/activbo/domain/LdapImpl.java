@@ -30,7 +30,8 @@ public class LdapImpl extends DomainServiceImpl {
 	//
 	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
 		
-		LdapUser ldapUser=this.getLdapUserPassword(id, code, currentPassword);		
+		LdapUser ldapUser=this.getLdapUserPassword(id, code, currentPassword);	
+		ldapUser.getAttributes().clear();
 			// changement de mot de passe
 			List<String> list=new ArrayList<String>();			
 			list.add(encryptPassword(currentPassword));
@@ -43,6 +44,7 @@ public class LdapImpl extends DomainServiceImpl {
 	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
 		
 		LdapUser ldapUser=this.getLdapUserPassword(id, code, newLogin, currentPassword);
+		ldapUser.getAttributes().clear();
 			// changement de mot de passe
 			List<String> list=new ArrayList<String>();
 			

@@ -16,7 +16,7 @@ import org.esupportail.commons.services.logging.LoggerImpl;
 
 public class KerbLdapImpl extends DomainServiceImpl {
 
-	/**Cette classe permet d'utiliser l'implémentation LDAP et Kerberos
+	/**Cette classe permet d'utiliser l'implï¿½mentation LDAP et Kerberos
 	 * 
 	 */
 	private static final long serialVersionUID = 8874960057301525796L;
@@ -28,6 +28,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 	//
 	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
 		LdapUser ldapUser=this.getLdapUserPassword(id, code, currentPassword);
+		ldapUser.getAttributes().clear();
 		
 		try {
 			this.gestRedirectionKerberos(ldapUser,id);
@@ -52,6 +53,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
 		
 		LdapUser ldapUser=this.getLdapUserPassword(id, code, newLogin, currentPassword);
+		ldapUser.getAttributes().clear();
 		 try {
 			   ldapUser = this.getLdapUser("("+getLdapSchema().getLogin()+"="+ id + ")");
 				this.gestRedirectionKerberos(ldapUser,newLogin);
@@ -78,6 +80,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
 	 
 	   LdapUser ldapUser=this.getLdapUserLogin(id, code, newLogin);
+	   ldapUser.getAttributes().clear();
 	   try {
 			this.gestRedirectionKerberos(ldapUser,newLogin);
 			if (!kerberosAdmin.exists(id))	throw new PrincipalNotExistsException("");//lever exception puis lancer setpassword au niveau du FO
