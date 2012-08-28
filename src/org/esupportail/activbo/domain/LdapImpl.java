@@ -58,15 +58,11 @@ public class LdapImpl extends DomainServiceImpl {
 	//
 	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
 	    LdapUser ldapUser=getLdapUserLogin(id, code, newLogin);
+	    ldapUser.getAttributes().clear();
 	   try {
 		    List<String> list=new ArrayList<String>();
 		   list.add(newLogin);
-		   ldapUser.getAttributes().put(getLdapSchema().getLogin(),list);
-		   
-		   list.add(ldapUser.getAttribute(getLdapSchema().getPassword()));
-		   ldapUser.getAttributes().put(getLdapSchema().getPassword(),list);
-		   
-		   listShadowLastChangeAttr(ldapUser);
+		   ldapUser.getAttributes().put(getLdapSchema().getLogin(),list);		   
 		   finalizeLdapWriting(ldapUser);
 			   
 		   }catch(Exception  e){exceptions (e);}
