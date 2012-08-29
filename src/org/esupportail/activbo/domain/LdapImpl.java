@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.acegisecurity.providers.ldap.authenticator.LdapShaPasswordEncoder;
 import org.esupportail.activbo.exceptions.KerberosException;
+import org.esupportail.activbo.exceptions.LdapLoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
@@ -28,23 +29,24 @@ public class LdapImpl extends DomainServiceImpl {
 	public LdapImpl() {	}
 	
 	//
-	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		
-		LdapUser ldapUser=this.getLdapUserPassword(id, code, currentPassword);	
-		ldapUser.getAttributes().clear();
+	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{		
+		LdapUser ldapUser=null;
+		try {
+			ldapUser=this.getLdapUser(id, code);
 			// changement de mot de passe
 			List<String> list=new ArrayList<String>();			
 			list.add(encryptPassword(currentPassword));
 			ldapUser.getAttributes().put(getLdapSchema().getPassword(), list);
 			listShadowLastChangeAttr(ldapUser);
 			finalizeLdapWriting(ldapUser);
+		  } catch(Exception  e){exceptions (e);}
 	}
 	
 	//
 	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		
-		LdapUser ldapUser=this.getLdapUserPassword(id, code, newLogin, currentPassword);
-		ldapUser.getAttributes().clear();
+		LdapUser ldapUser=null;
+		try {
+			ldapUser=this.getLdapUser(id, code);
 			// changement de mot de passe
 			List<String> list=new ArrayList<String>();
 			
@@ -56,13 +58,17 @@ public class LdapImpl extends DomainServiceImpl {
 			ldapUser.getAttributes().put(getLdapSchema().getPassword(),list);
 			listShadowLastChangeAttr(ldapUser);
 			finalizeLdapWriting(ldapUser);
+		   } catch(Exception  e){exceptions (e);}
 	}
 	
 	//
 	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
-	    LdapUser ldapUser=getLdapUserLogin(id, code, newLogin);
-	    ldapUser.getAttributes().clear();
-	   try {
+		LdapUser ldapUser=null;
+		try {
+			 LdapUser ldapUserNewLogin= this.getLdapUser("("+getLdapSchema().getLogin()+"="+newLogin+ ")");				
+			 if (ldapUserNewLogin!=null) {throw new LdapLoginAlreadyExistsException("newLogin = "+newLogin);	}
+				
+			ldapUser=this.getLdapUser(id, code);
 		    List<String> list=new ArrayList<String>();
 		   list.add(newLogin);
 		   ldapUser.getAttributes().put(getLdapSchema().getLogin(),list);		   

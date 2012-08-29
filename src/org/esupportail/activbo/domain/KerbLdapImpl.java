@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.esupportail.activbo.exceptions.KerberosException;
+import org.esupportail.activbo.exceptions.LdapLoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
@@ -40,10 +41,9 @@ public class KerbLdapImpl extends DomainServiceImpl {
 
 	//
 	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		LdapUser ldapUser=this.getLdapUserPassword(id, code, currentPassword);
-		ldapUser.getAttributes().clear();
-		
+		LdapUser ldapUser=null;		
 		try {
+			ldapUser=this.getLdapUser(id, code);
 			this.gestRedirectionKerberos(ldapUser,id);
 			//Ajout ou modification du mot de passe dans kerberos
 			kerberosAdmin.add(id, currentPassword);
@@ -63,11 +63,10 @@ public class KerbLdapImpl extends DomainServiceImpl {
 	}
 	
 	//
-	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		
-		LdapUser ldapUser=this.getLdapUserPassword(id, code, newLogin, currentPassword);
-		ldapUser.getAttributes().clear();
-		 try {
+	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{				
+		LdapUser ldapUser=null; 
+		try {
+			   ldapUser=this.getLdapUser(id, code);
 				this.gestRedirectionKerberos(ldapUser,newLogin);
 				kerberosAdmin.add(id, currentPassword);
 				logger.info("Ajout de mot de passe dans kerberos effectu�e");
@@ -90,10 +89,12 @@ public class KerbLdapImpl extends DomainServiceImpl {
 	
 	//
 	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
-	 
-	   LdapUser ldapUser=this.getLdapUserLogin(id, code, newLogin);
-	   ldapUser.getAttributes().clear();
+	   LdapUser ldapUser=null;
 	   try {
+		    LdapUser ldapUserNewLogin= this.getLdapUser("("+getLdapSchema().getLogin()+"="+newLogin+ ")");				
+			if (ldapUserNewLogin!=null) {throw new LdapLoginAlreadyExistsException("newLogin = "+newLogin);	}
+			
+		    ldapUser=this.getLdapUser(id, code);   
 			this.gestRedirectionKerberos(ldapUser,newLogin);
 			if (!kerberosAdmin.exists(id))	throw new PrincipalNotExistsException("");//lever exception puis lancer setpassword au niveau du FO
 			// le compte kerb existe

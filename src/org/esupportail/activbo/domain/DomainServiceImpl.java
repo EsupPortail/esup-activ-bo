@@ -432,19 +432,24 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 		
 		return ldapUser;
 	}
+	
+	public LdapUser getLdapUser(String id,String code) throws UserPermissionException,LdapProblemException,LoginException{
+		if (!validationCode.verify(id,code)) throw new UserPermissionException("Code invalide L'utilisateur id="+id+" n'a pas le droit de continuer la procédure");
+		
+		LdapUser ldapUser = this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");	
+		if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
+		ldapUser.getAttributes().clear(); 
+		return ldapUser;
+	}
 
 	
 	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
 		
 		try{
-			if (validationCode.verify(id,code)){/*security reasons*/
 				this.writeableLdapUserService.invalidateLdapCache();
 				//Lecture LDAP				
-				LdapUser ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
+				LdapUser ldapUser=this.getLdapUser(id,code);
 												
-				if (ldapUser==null) throw new LdapProblemException("Probleme au niveau du LDAP");
-				ldapUser.getAttributes().clear(); 
-				
 				logger.debug("Parcours des informations personnelles mises � jour au niveau du FO pour insertion LDAP");
 				
 				Iterator<Map.Entry<String,String>> it=hashBeanPersoInfo.entrySet().iterator();
@@ -467,11 +472,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 					i++;
 				}
 				
-				this.finalizeLdapWriting(ldapUser);
-			}
-			else{
-				throw new UserPermissionException("L'utilisateur n'a pas le droit de continuer l'activation");
-			}
+				this.finalizeLdapWriting(ldapUser);			
 		
 		} catch (LdapException e) {
 			logger.debug("Exception thrown by updatePersonalInfo() : "+ e.getMessage());
@@ -486,53 +487,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 				c.send(id);
 				break;
 			}					
-	}
-	
-	public LdapUser getLdapUserPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		LdapUser ldapUser=null;
-		
-			if (validationCode.verify(id,code)){ //security reasons
-				//Lecture LDAP
-				ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");		
-				if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
-				
-			}else throw new UserPermissionException("L'utilisateur n'a pas le droit de continuer l'activation");
-		
-		return ldapUser;
-	}
-	
-	
-	public LdapUser getLdapUserPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		
-		LdapUser ldapUser=null;
-		try {
-			if (validationCode.verify(id,code)){/*security reasons*/
-				
-				//Lecture LDAP
-				ldapUser=this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");		
-				if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
-			}else throw new UserPermissionException("L'utilisateur n'a pas le droit de continuer l'activation");
-		
-		}catch(Exception  e){exceptions (e);}
-		return ldapUser;
-	}
-	
-	public LdapUser getLdapUserLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException, PrincipalNotExistsException{
-	    	LdapUser ldapUser=null;
-	    	try{
-		    	if (validationCode.verify(id,code)){//security reasons
-
-		    		//Vérifier que le login n'est pas déjà utilisé
-		    		ldapUser= this.getLdapUser("("+ldapSchema.getLogin()+"="+newLogin+ ")");				
-					if (ldapUser!=null) {throw new LdapLoginAlreadyExistsException("");	}
-		    						
-					ldapUser = this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");	
-					if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
-		    	}
-		    	else throw new UserPermissionException("L'utilisateur n'a pas le droit de continuer l'activation");
-	    	} catch(Exception  e){exceptions (e);}
-	    	return ldapUser;
-	        	
 	}
 	
 	private HashMap<String,String> getLdapInfos(String id,String password,List<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
@@ -722,11 +676,12 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	*        
 	 */
 	
-	public void exceptions(Exception exception) throws LdapProblemException,KerberosException, LoginException{
+	public void exceptions(Exception exception) throws LdapProblemException,KerberosException, LoginException, UserPermissionException{
 		logger.debug("Dans m�thode exceptions",exception);
 		if 		(exception instanceof LdapException)throw new LdapProblemException("Probleme au niveau du LDAP");
 		else if (exception instanceof KRBException) throw new KerberosException("Probleme au niveau de Kerberos");
 		else if (exception instanceof KRBIllegalArgumentException) throw new KerberosException("Probleme au niveau de Kerberos");
+		else if (exception instanceof UserPermissionException) throw (UserPermissionException)exception;
 		else if (exception instanceof RuntimeException) throw (RuntimeException)(exception);
 		else logger.error("Erreur inattendue");
 		
