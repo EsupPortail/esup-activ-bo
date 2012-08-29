@@ -30,7 +30,6 @@ import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
-import org.esupportail.activbo.services.kerberos.KRBAdmin;
 import org.esupportail.activbo.services.kerberos.KRBException;
 import org.esupportail.activbo.services.kerberos.KRBIllegalArgumentException;
 import org.esupportail.activbo.services.ldap.LdapSchema;
@@ -84,23 +83,12 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	
 	private BruteForceBlock bruteForceBlock;
 	
-	/**
-	 * kerberos.ldap.method
-	 * kerberos.host
-	 */
-	private String krbLdapMethod,krbHost;
-	
 	private DaoService daoService;
 
 	/**
 	 * {@link LdapUserService}.
 	 */
 	private LdapUserService ldapUserService;
-	
-	/**
-	 * {@link KerberosAdmin}
-	 */
-	protected KRBAdmin kerberosAdmin;
 	
 
 	/**
@@ -362,10 +350,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	 */
 	public void setLdapUserService(final LdapUserService ldapUserService) {
 		this.ldapUserService = ldapUserService;
-	}
-	
-	public void setKerberosAdmin(KRBAdmin kerberosAdmin) {
-		this.kerberosAdmin = kerberosAdmin;
 	}
 
 	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException, LdapProblemException, LoginException{
@@ -689,20 +673,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 			WriteableLdapUserService writeableLdapUserService) {
 			this.writeableLdapUserService = writeableLdapUserService;
 	}
-		
-	/**
-	 * @param krbLdapMethod
-	 */
-	public final void setKrbLdapMethod(String krbLdapMethod) {
-		this.krbLdapMethod = krbLdapMethod;
-	}
-
-	/**
-	 * @param krbHost
-	 */
-	public final void setKrbHost(String krbHost) {
-		this.krbHost = krbHost;
-	}
 
 	/**
 	 * @param channels the channels to set
@@ -735,48 +705,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 			else result+=getSeparator()+listString.get(i);
 		}
 		return result;
-	}
-	
-	
-	public void gestRedirectionKerberos(LdapUser ldapUser,String id)throws LdapException{
-		List<String> passwds	= ldapUser.getAttributes(ldapSchema.getPassword());
-		List<String> principals	= ldapUser.getAttributes(ldapSchema.getKrbPrincipal());
-		
-		String krbPrincipal=null;
-		String ldapUserRedirectKerb=null;
-		if(passwds.size()>0) ldapUserRedirectKerb =passwds.get(0);
-		
-		if(principals.size()>0)	krbPrincipal=principals.get(0);
-		
-		logger.debug("ancien redirection : "+ldapUserRedirectKerb);
-		String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
-		String newPrincipal=id+"@"+krbHost;
-		
-		if (!redirectKer.equals(ldapUserRedirectKerb) || !newPrincipal.equals(krbPrincipal)) {
-			logger.debug("Le compte Kerberos ne g�re pas encore l'authentification");
-
-			// Writing of shadowLastChange in LDAP 
-			listShadowLastChangeAttr(ldapUser);
-			
-			//Writing of krbPrincipal in LDAP 
-			if( !"".equals(ldapSchema.getKrbPrincipal()) && ldapSchema.getKrbPrincipal()!=null ) {
-				List<String> listKrbPrincipalAttr = new ArrayList<String>();
-				listKrbPrincipalAttr.add(newPrincipal);
-				ldapUser.getAttributes().put(ldapSchema.getKrbPrincipal(),listKrbPrincipalAttr);
-				if (logger.isDebugEnabled()) {
-					logger.debug("Writing principal in LDAP : " + newPrincipal);
-				}
-			}
-			
-			//Writing of Kerberos redirection in LDAP 
-			List<String> listPasswordAttr = new ArrayList<String>();
-			listPasswordAttr.add(redirectKer);
-			ldapUser.getAttributes().put(ldapSchema.getPassword(),listPasswordAttr);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Writing Kerberos redirection in LDAP : " + redirectKer);
-			}
-		}
-	}
+	}	
 	
 	protected void listShadowLastChangeAttr(LdapUser ldapUser){
 		// Ecrire l'attribut shadowLastChange dans LDAP

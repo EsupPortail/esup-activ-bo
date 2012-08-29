@@ -6,10 +6,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
 	>
 
-	<bean
-		id="domainService"
-		class="org.esupportail.activbo.domain.${authentication.type}Impl"
-		>
+	<bean id="abstractDomainService"
+			class="org.esupportail.activbo.domain.${authentication.type}Impl">
 		
 		<property name="daoService" ref="daoService" />
 		<property name="ldapUserService" ref="ldapUserService" /> 
@@ -28,11 +26,7 @@
 		<property name="bruteForceBlock" ref="bruteForceBlock"/>
 		
 		<property name="ldapSchema" ref="ldapSchema"/>
-		
-		<property name="krbLdapMethod" value="${kerberos.ldap.method}" />
-		<property name="krbHost" value="${kerberos.host}" />
-		
-		<property name="kerberosAdmin" ref="KRBAdminService" />
+				
 		<property name="separator" value="${sep.multiValue}" />		
 		
 		<property name="casID" value="${cas.attributeID}" /> 

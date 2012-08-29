@@ -27,6 +27,7 @@
 	<import resource="cache/cache.xml" />
 	<import resource="dao/dao.xml" />
  	<import resource="domain/domain.xml" />
+ 	<import resource="domain/domain${authentication.type}.xml" />
 	<import resource="deepLinking/deepLinking.xml" />
 	<import resource="exceptionHandling/exceptionHandling.xml" />
 	<import resource="export/export.xml"/>
