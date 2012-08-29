@@ -50,7 +50,8 @@ public class LdapImpl extends DomainServiceImpl {
 			
 			list.add(newLogin);
 			ldapUser.getAttributes().put(getLdapSchema().getLogin(), list);
-		
+			
+			list=new ArrayList<String>();
 			list.add(ldapUser.getAttribute(getLdapSchema().getPassword()));
 			ldapUser.getAttributes().put(getLdapSchema().getPassword(),list);
 			listShadowLastChangeAttr(ldapUser);
