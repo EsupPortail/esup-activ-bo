@@ -68,7 +68,6 @@ public class KerbLdapImpl extends DomainServiceImpl {
 		LdapUser ldapUser=this.getLdapUserPassword(id, code, newLogin, currentPassword);
 		ldapUser.getAttributes().clear();
 		 try {
-			   ldapUser = this.getLdapUser("("+getLdapSchema().getLogin()+"="+ id + ")");
 				this.gestRedirectionKerberos(ldapUser,newLogin);
 				kerberosAdmin.add(id, currentPassword);
 				logger.info("Ajout de mot de passe dans kerberos effectu�e");
