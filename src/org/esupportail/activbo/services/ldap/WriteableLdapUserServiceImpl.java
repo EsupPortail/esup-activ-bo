@@ -9,6 +9,7 @@ import net.sf.ehcache.CacheManager;
 
 import javax.naming.Name;
 
+import org.apache.commons.codec.binary.Base64;
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.commons.services.ldap.LdapException;
 import org.esupportail.commons.services.ldap.LdapUser;
@@ -61,12 +62,25 @@ public class WriteableLdapUserServiceImpl extends org.esupportail.commons.servic
 	protected void mapToContext(final LdapUser ldapUser, final DirContextAdapter context) {
 		List<String> attributesNames = ldapUser.getAttributeNames();
 		for (String ldapAttributeName : attributesNames) {
-			List<String> listAttrValue = new ArrayList<String>();
+			List<String> listAttrValue = new ArrayList<String>();			
 			listAttrValue = ldapUser.getAttributes(ldapAttributeName);
+			
+			List<Object> obj = new ArrayList<Object>();
+			byte[] bytetVal = null;
 			
 			// The attribute exists
 			if (!listAttrValue.contains("null") && listAttrValue != null && listAttrValue.size() != 0 ) {
-				context.setAttributeValues(ldapAttributeName, listAttrValue.toArray());
+				for (String listVal : listAttrValue) 
+				// Si insertion de l'attribut jpegphoto dans LDAP
+				// Décoder la photo qui a été encodée lors de la saisie dans le formulaire accountDataChange
+				 if (listVal.contains("encodeBase64")){
+					 listVal=listVal.substring(12);
+					 bytetVal = listVal.getBytes();
+					 obj.add(Base64.decodeBase64(bytetVal));
+					 context.setAttributeValues(ldapAttributeName, obj.toArray());
+				 }
+				// insertion autres attributs que jpegphoto
+				 else context.setAttributeValues(ldapAttributeName, listAttrValue.toArray());
 			}
 			else  {
 				context.setAttributeValues(ldapAttributeName, null); 

@@ -124,6 +124,8 @@ public class LdapSchema implements InitializingBean{
 	
 	private String up1AltGivenName;
 	
+	private byte[] jpegPhoto;
+	
 	public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
 	}
@@ -598,7 +600,17 @@ public class LdapSchema implements InitializingBean{
 	public void setUp1AltGivenName(String up1AltGivenName) {
 		this.up1AltGivenName = up1AltGivenName;
 	}
+
+	public byte[] getJpegPhoto() {
+		return jpegPhoto;
+	}
+
+	public void setJpegPhoto(byte[] jpegPhoto) {
+		this.jpegPhoto = jpegPhoto;
+	}
+
 	
+
 	
 
 }

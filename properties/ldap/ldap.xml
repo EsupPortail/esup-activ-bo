@@ -97,7 +97,8 @@
 				<value>${ldap.attribute.supannAutreTelephone}</value>
 				<value>${ldap.attribute.supannRoleGenerique}</value>
 				<value>${ldap.attribute.up1RoomAccess}</value>
-			</list>
+				<value>${ldap.attribute.jpegPhoto}</value>
+				</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
 			<description>The LDAP attribute to search for.</description>
@@ -150,6 +151,7 @@
 				<value>${ldap.attribute.supannEtablissement}</value>
 				<value>${ldap.attribute.departmentNumber}</value>
 				<value>${ldap.attribute.supannAutreTelephone}</value>	
+				<value>${ldap.attribute.jpegPhoto}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -300,6 +302,7 @@
 				<value>${ldap.attribute.supannEtuEtape}</value>
 				<value>${ldap.attribute.supannEtablissement}</value>
 				<value>${ldap.attribute.supannAutreTelephone}</value>
+				<value>${ldap.attribute.jpegPhoto}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager" />		
@@ -403,5 +406,6 @@
 		    <property name="up1FloorNumber" value="${ldap.attribute.up1FloorNumber}"/>
 		    <property name="supannAliasLogin" value="${ldap.attribute.supannAliasLogin}"/>
 		    <property name="up1AltGivenName" value="${ldap.attribute.up1AltGivenName}"/>		
+		    <property name="jpegPhoto" value="${ldap.attribute.jpegPhoto}"/>
 	</bean>
 </beans>
