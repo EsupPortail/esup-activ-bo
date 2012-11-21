@@ -11,7 +11,7 @@
 		properties/dao/hibernate/hibernate-*.cfg.xml
 		properties/dao/dao.xml
 		properties/deepLinking/deepLinking.xml
-		properties/domain/domain.xml
+		properties/domain/*.xml
 		properties/exceptionHandling/exceptionHandling.xml
 		properties/export/export.xml
 		properties/i18n/i18n.xml
