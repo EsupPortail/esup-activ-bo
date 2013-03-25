@@ -6,8 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Random;
 
 import org.esupportail.commons.services.logging.Logger;
@@ -18,7 +16,7 @@ import org.esupportail.activbo.domain.tools.BruteForceBlock;
 
 import org.springframework.beans.factory.InitializingBean;
 
-public class ValidationCodeImpl implements ValidationCode, Runnable, InitializingBean{
+public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 	
 	/**
 	 * 
@@ -115,8 +113,9 @@ public class ValidationCodeImpl implements ValidationCode, Runnable, Initializin
 		validationCodes.put(id, userData);
 		
 		if(thread==null){
-			thread=new Thread(this);
-			thread.run();
+			ValidationCodeCleanning cleaning = new ValidationCodeCleanning(this);
+			thread = new Thread(cleaning);
+			thread.start();
 		}
 		
 		return code;
@@ -139,50 +138,13 @@ public class ValidationCodeImpl implements ValidationCode, Runnable, Initializin
 		return code;
 	}
 	
-	
-	public void run(){
-		
-		try {
-			while(true){
-				logger.debug("Boucle de nettoyage lancée");
-				if (!validationCodes.isEmpty()){
-					logger.debug("La table de hashage n'est pas vide");
-					Iterator<Map.Entry<String, HashMap<String,String>>> it=validationCodes.entrySet().iterator();
-					while(it.hasNext()){
-						Map.Entry<String, HashMap<String,String>> e=it.next();
-						HashMap<String,String> hash=e.getValue();
-						logger.info("Utilisateur "+e.getKey()+"(Code --> "+hash.get(codeKey)+"  ||  Date d'expiration --> "+hash.get(dateKey)+")");
-						
-						Date date=new Date();
-						
-						if (date.getTime()>this.stringToDate(hash.get(dateKey)).getTime()){
-							logger.debug("Expiration code, Ligne utilisateur "+e.getKey()+" supprim�e");
-							it.remove();
-						}
-					}
-				}	
-				else{
-					logger.debug("La table de hashage est vide");
-				}	
-				Thread.sleep(cleaningTimeInterval);	
-			}
-		
-		} catch (InterruptedException e) {		
-			e.printStackTrace();
-		}
-		catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-	}
-
 	private String dateToString(Date sDate){
 		
 	    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 	    return sdf.format(sDate);
 	}
 	
-	private Date stringToDate(String sDate) throws ParseException{
+	public Date stringToDate(String sDate) throws ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         return sdf.parse(sDate);
     }
@@ -264,6 +226,16 @@ public class ValidationCodeImpl implements ValidationCode, Runnable, Initializin
 	public void setCleaningTimeInterval(long cleaningTimeInterval) {
 		this.cleaningTimeInterval = cleaningTimeInterval*1000;
 	}
+	
+	public HashMap<String, HashMap<String, String>> getValidationCodes() {
+		return validationCodes;
+	}
+
+	public void setValidationCodes(
+			HashMap<String, HashMap<String, String>> validationCodes) {
+		this.validationCodes = validationCodes;
+	}
+
 
 
 }
