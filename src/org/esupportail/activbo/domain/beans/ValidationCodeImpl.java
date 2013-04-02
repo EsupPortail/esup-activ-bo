@@ -1,5 +1,6 @@
 package org.esupportail.activbo.domain.beans;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,9 +28,9 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 	 */
 	private final Logger logger = new LoggerImpl(getClass());
 	
-	private  HashMap<String,HashMap<String,String>> validationCodes=new HashMap<String,HashMap<String,String>>();
+	protected  HashMap<String,HashMap<String,String>> validationCodes=new HashMap<String,HashMap<String,String>>();
 	
-	private Thread thread;
+	protected Thread thread;
 	
 	private String codeKey;
 	private int codeDelay;
@@ -111,15 +112,20 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 		userData.put(dateKey,this.dateToString(date));
 				
 		validationCodes.put(id, userData);
-		
+		validationCodeCleanning();
+		return code;
+				
+	}
+	
+	
+	
+	public void validationCodeCleanning(){
 		if(thread==null){
 			ValidationCodeCleanning cleaning = new ValidationCodeCleanning(this);
 			thread = new Thread(cleaning);
 			thread.start();
 		}
 		
-		return code;
-				
 	}
 	
 	public String generateCode(String id){
@@ -144,7 +150,7 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 	    return sdf.format(sDate);
 	}
 	
-	public Date stringToDate(String sDate) throws ParseException{
+	protected Date stringToDate(String sDate) throws ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         return sdf.parse(sDate);
     }
@@ -236,6 +242,5 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 		this.validationCodes = validationCodes;
 	}
 
-
-
+	
 }

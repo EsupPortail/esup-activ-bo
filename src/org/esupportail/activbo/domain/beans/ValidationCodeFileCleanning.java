@@ -8,12 +8,13 @@ import java.util.Map;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
 
-public class ValidationCodeCleanning implements Runnable {
+public class ValidationCodeFileCleanning implements Runnable {
 	
 	private final Logger logger = new LoggerImpl(getClass());
+	ValidationCodeFileImpl codeFile= new ValidationCodeFileImpl();
 	ValidationCodeImpl vc;
 	
-	ValidationCodeCleanning(ValidationCodeImpl validationCodeImpl){
+	ValidationCodeFileCleanning(ValidationCodeImpl validationCodeImpl){
 		this.vc=validationCodeImpl;
 	}
 	
@@ -37,12 +38,14 @@ public class ValidationCodeCleanning implements Runnable {
 						if (date.getTime()>vc.stringToDate(hash.get(vc.getDateKey())).getTime()){
 							logger.debug("Expiration code, Ligne utilisateur "+e.getKey()+" supprim�e");
 							it.remove();
+							codeFile.writeMap("userData.txt", vc.validationCodes);
 						}
 					}
 				}	
 				else{
 					logger.debug("La table de hashage est vide");
 				}
+				
 				Thread.sleep(vc.getCleaningTimeInterval());	
 			}
 		
