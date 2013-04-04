@@ -16,7 +16,6 @@ import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
 
 public class ValidationCodeFileImpl extends ValidationCodeImpl  {
-	private String filename="userData.txt";
 	private final Logger logger = new LoggerImpl(getClass());
 	
 	
@@ -28,7 +27,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		validationCodes=readMap(filename);
+		validationCodes=readMap(getCodeFileName());
 		logger.debug("validationCodes:"+validationCodes.size());
 	}
 	
@@ -48,7 +47,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 				if ( (date.getTime()>stringToDate(hash.get(getDateKey())).getTime()&& hash.get(getCode(id))!=null) || (hash.get(getCode(id))==null &&hash.get(getDate(id))==null))	{code=super.generateCode(id, codeDelay);}
 			}
 			try {
-				this.writeMap(filename,validationCodes);
+				this.writeMap(getCodeFileName(),validationCodes);
 			} catch (IOException e) {
 			e.printStackTrace();
 			}
@@ -108,18 +107,4 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	 	    }
      return map;
      }
-
-
-	public String getFilename() {
-		return filename;
-	}
-
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}  
-    
-    
-    
-
 }

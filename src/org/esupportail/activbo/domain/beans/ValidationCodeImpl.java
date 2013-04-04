@@ -41,7 +41,8 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 	private long cleaningTimeInterval;
 	
 	private BruteForceBlock bruteForceBlock;
-	
+	private String codeFileName;
+
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -241,6 +242,16 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 			HashMap<String, HashMap<String, String>> validationCodes) {
 		this.validationCodes = validationCodes;
 	}
+
+	public String getCodeFileName() {
+		return codeFileName;
+	}
+
+	public void setCodeFileName(String codeFileName) {
+		this.codeFileName = codeFileName;
+	}
+
+	
 
 	
 }

@@ -38,7 +38,7 @@ public class ValidationCodeFileCleanning implements Runnable {
 						if (date.getTime()>vc.stringToDate(hash.get(vc.getDateKey())).getTime()){
 							logger.debug("Expiration code, Ligne utilisateur "+e.getKey()+" supprim�e");
 							it.remove();
-							codeFile.writeMap("userData.txt", vc.validationCodes);
+							codeFile.writeMap(vc.getCodeFileName(), vc.validationCodes);
 						}
 					}
 				}	
