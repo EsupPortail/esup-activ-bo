@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,7 +16,8 @@ import org.esupportail.commons.services.logging.LoggerImpl;
 
 public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	private final Logger logger = new LoggerImpl(getClass());
-	
+	private String codeFileName;
+
 	
 	// construteur
 	ValidationCodeFileImpl(){
@@ -34,25 +34,12 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	@Override
 	public String generateCode(String id, int codeDelay) {
 		String code = null;
-		Iterator<Map.Entry<String, HashMap<String,String>>> it=validationCodes.entrySet().iterator();
-		
-		if (validationCodes.size()==0)code=super.generateCode(id, codeDelay);
-		else
+		code=super.generateCode(id, codeDelay);
 		try {
-			while(it.hasNext()){
-				Map.Entry<String, HashMap<String,String>> e=it.next();
-				HashMap<String,String> hash=e.getValue();
-				Date date=new Date();
-				// Ne générer le code que lorsque : le code n'est plus valide pour l'utilisateur connecté ou utilisateur ne possédant pas encore de code
-				if ( (date.getTime()>stringToDate(hash.get(getDateKey())).getTime()&& hash.get(getCode(id))!=null) || (hash.get(getCode(id))==null &&hash.get(getDate(id))==null))	{code=super.generateCode(id, codeDelay);}
-			}
-			try {
-				this.writeMap(getCodeFileName(),validationCodes);
-			} catch (IOException e) {
+			this.writeMap(getCodeFileName(),validationCodes);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			}
-		} catch (Exception e) {
-			logger.error(e);
 		}
 				
 		return code;
@@ -60,13 +47,17 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	}
 	
 	@Override
-	public void validationCodeCleanning() {
-		if(thread==null){
-			ValidationCodeFileCleanning cleaning = new ValidationCodeFileCleanning(this);
-			thread = new Thread(cleaning);
-			thread.start();
+	public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>> it)
+	{
+		it.remove();
+		try {
+			writeMap(getCodeFileName(), validationCodes);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
+	
 	
 	 /**
      * Serialisation d'un HashMap dans un fichier
@@ -107,4 +98,14 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	 	    }
      return map;
      }
+
+ 	public String getCodeFileName() {
+		return codeFileName;
+	}
+
+
+	public void setCodeFileName(String codeFileName) {
+		this.codeFileName = codeFileName;
+	}
+    
 }

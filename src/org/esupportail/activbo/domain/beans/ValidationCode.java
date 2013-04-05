@@ -1,5 +1,9 @@
 package org.esupportail.activbo.domain.beans;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.esupportail.activbo.exceptions.UserPermissionException;
 
 public interface ValidationCode{
@@ -16,5 +20,7 @@ public interface ValidationCode{
 	public String generateCode(String id,int codeDelay);
 			
 	public String generateCode(String id);
+	
+	public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>>it);
 	
 }

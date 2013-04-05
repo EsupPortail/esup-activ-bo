@@ -1,12 +1,13 @@
 package org.esupportail.activbo.domain.beans;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 import org.esupportail.commons.services.logging.Logger;
@@ -41,8 +42,7 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 	private long cleaningTimeInterval;
 	
 	private BruteForceBlock bruteForceBlock;
-	private String codeFileName;
-
+	
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -120,7 +120,7 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 	
 	
 	
-	public void validationCodeCleanning(){
+	private void validationCodeCleanning(){
 		if(thread==null){
 			ValidationCodeCleanning cleaning = new ValidationCodeCleanning(this);
 			thread = new Thread(cleaning);
@@ -242,16 +242,10 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 			HashMap<String, HashMap<String, String>> validationCodes) {
 		this.validationCodes = validationCodes;
 	}
-
-	public String getCodeFileName() {
-		return codeFileName;
-	}
-
-	public void setCodeFileName(String codeFileName) {
-		this.codeFileName = codeFileName;
-	}
-
 	
-
+	public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>> it)
+	{
+		it.remove();
+	}
 	
 }
