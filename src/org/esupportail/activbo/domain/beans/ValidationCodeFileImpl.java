@@ -37,10 +37,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 		code=super.generateCode(id, codeDelay);
 		try {
 			this.writeMap(getCodeFileName(),validationCodes);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (IOException e) {logger.error(e.getMessage(), e);}
 				
 		return code;
 		
@@ -52,10 +49,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 		it.remove();
 		try {
 			writeMap(getCodeFileName(), validationCodes);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (IOException e) {logger.error(e.getMessage(), e);}
 	}
 	
 	
@@ -73,10 +67,8 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
  	        oos.writeObject(map);
 	    	oos.close();
 	
- 	    } catch (FileNotFoundException e) {
- 	    	e.printStackTrace();
- 	 		} catch (IOException e) {
- 	 			e.printStackTrace(); }
+ 	    } catch (FileNotFoundException e) {logger.error(e.getMessage(), e);} 
+ 	      catch (IOException e) {logger.error(e.getMessage(), e); }
      
     }
     /**
@@ -84,19 +76,18 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
      * @param filename chemin du fichier
      */
     public HashMap<String,HashMap<String,String>> readMap(String fileName) throws IOException, ClassNotFoundException {  
-    	HashMap<String,HashMap<String,String>> map=new HashMap<String,HashMap<String,String>>();
- 	    try {
- 	       	    FileInputStream fis = new FileInputStream(fileName);
+		HashMap<String,HashMap<String,String>> map=new HashMap<String,HashMap<String,String>>();
+	    try {
+	       	    FileInputStream fis = new FileInputStream(fileName);
 	    	    ObjectInputStream ois = new ObjectInputStream(fis);
 	    	    map = (HashMap<String,HashMap<String,String>> ) ois.readObject();
 	    	    ois.close();
-
-	 	 } catch (FileNotFoundException e) {
-	 		 e.printStackTrace();
-	 		 }catch (IOException e) {e.printStackTrace();
-	 		 }catch (ClassNotFoundException e) {e.printStackTrace();
-	 	    }
-     return map;
+	
+	   } 
+	  catch (FileNotFoundException e) {logger.debug("Si le fichier n'exsite pas, il va être créé automatiquement");}
+	  catch (IOException e) {logger.error(e.getMessage(), e);}
+	  catch (ClassNotFoundException e) {logger.error(e.getMessage(), e);}
+	  return map;
      }
 
  	public String getCodeFileName() {
