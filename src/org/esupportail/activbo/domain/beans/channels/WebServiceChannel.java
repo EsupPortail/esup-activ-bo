@@ -27,7 +27,6 @@ public class WebServiceChannel extends AbstractChannel{
 
 	private String attributePager;
 	private String urlWS;
-	private String phoneNumber;
 	private String action;
 	private String usernameCredentials;
 	private String passwordCredentials;
@@ -60,7 +59,7 @@ public class WebServiceChannel extends AbstractChannel{
 		    								 new UsernamePasswordCredentials(this.usernameCredentials, this.passwordCredentials));
 
 	        map.put("action", this.action);
-	        map.put("phoneNumber", this.phoneNumber);
+	        map.put("phoneNumber", pager);
 	        map.put("message", mailBody);
 		    String cooked_url = cook_url(this.urlWS, map);
 		    try {
@@ -126,16 +125,6 @@ public class WebServiceChannel extends AbstractChannel{
 
 	public void setUrlWS(String urlWS) {
 		this.urlWS = urlWS;
-	}
-
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
 	}
 
 

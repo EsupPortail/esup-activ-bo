@@ -133,7 +133,6 @@
 		<property name="name" value="${channel.sms.name}"/>
 		<property name="attributePager" value="${ldap.attribute.pager}"/>
 		<property name="urlWS" value="${channel.ws.url}"/>
-		<property name="phoneNumber" value="${channel.ws.phoneNumber}"/>
 		<property name="action" value="${channel.ws.action}"/>
 		<property name="usernameCredentials" value="${channel.ws.usernameCredentials}"/>
 		<property name="passwordCredentials" value="${channel.ws.passwordCredentials}"/>		
