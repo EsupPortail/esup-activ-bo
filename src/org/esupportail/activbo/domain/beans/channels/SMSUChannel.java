@@ -23,14 +23,13 @@ import org.esupportail.commons.services.ldap.LdapUser;
  * @author csar
  *
  */
-public class WebServiceChannel extends AbstractChannel{
+public class SMSUChannel extends AbstractChannel{
 
 	private String attributePager;
 	private String urlWS;
-	private String action;
 	private String usernameCredentials;
 	private String passwordCredentials;
-	private String mailCodeBody;
+	private String messageBody;
 	
 	/* (non-Javadoc)
 	 * @see org.esupportail.activbo.domain.beans.channels.AbstractChannel#send(java.lang.String)
@@ -51,16 +50,16 @@ public class WebServiceChannel extends AbstractChannel{
 			if(pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
 									
 			
-			String mailBody=this.mailCodeBody;
-			mailBody=mailBody.replace("{0}", validationCode.getCode(id));
+			String message=this.messageBody;
+			message=message.replace("{0}", validationCode.getCode(id));
 			Map<String, String> map = new HashMap<String,String>();
 			HttpClient client = new HttpClient();
 		    client.getState().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM),
 		    								 new UsernamePasswordCredentials(this.usernameCredentials, this.passwordCredentials));
 
-	        map.put("action", this.action);
+	        map.put("action", "SendSms");
 	        map.put("phoneNumber", pager);
-	        map.put("message", mailBody);
+	        map.put("message", message);
 		    String cooked_url = cook_url(this.urlWS, map);
 		    try {
 				requestGET(client, cooked_url);
@@ -69,7 +68,7 @@ public class WebServiceChannel extends AbstractChannel{
 			
 			
 			
-			logger.debug("Envoi du code par sms via mail2sms au numéro portable "+pager);										
+			logger.debug("Envoi du code par sms au numéro portable "+pager);										
 	}
 	
 
@@ -127,17 +126,6 @@ public class WebServiceChannel extends AbstractChannel{
 		this.urlWS = urlWS;
 	}
 
-
-	public String getAction() {
-		return action;
-	}
-
-
-	public void setAction(String action) {
-		this.action = action;
-	}
-
-
 	public String getUsernameCredentials() {
 		return usernameCredentials;
 	}
@@ -159,10 +147,10 @@ public class WebServiceChannel extends AbstractChannel{
 
 
 	/**
-	 * @param mailCodeBody the mailCodeBody to set
+	 * @param messageBody the messageBody to set
 	 */
-	public void setMailCodeBody(String mailCodeBody) {
-		this.mailCodeBody = mailCodeBody;
+	public void setMessageBody(String messageBody) {
+		this.messageBody = messageBody;
 	}
 
 	/**

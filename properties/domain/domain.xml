@@ -38,7 +38,7 @@
 				<ref bean="mail2GestEtuChannel"/>
 				<ref bean="mailPersoChannel"/>				
 				<!-- ref bean="mail2SMSChannel"/> -->
-				<ref bean="webserviceChannel"/>						
+				<ref bean="smsuChannel"/>						
 			</list>
 		</property>		
 	</bean>
@@ -126,17 +126,16 @@
 		<property name="mailCodeBody" value="${channel.sms.body.fr}"/>
 	</bean -->	
 	<bean
-		id="webserviceChannel"
-		class="org.esupportail.activbo.domain.beans.channels.WebServiceChannel"
+		id="smsuChannel"
+		class="org.esupportail.activbo.domain.beans.channels.SMSUChannel"
 		parent="abstractChannel"
 		>
 		<property name="name" value="${channel.sms.name}"/>
 		<property name="attributePager" value="${ldap.attribute.pager}"/>
-		<property name="urlWS" value="${channel.ws.url}"/>
-		<property name="action" value="${channel.ws.action}"/>
-		<property name="usernameCredentials" value="${channel.ws.usernameCredentials}"/>
-		<property name="passwordCredentials" value="${channel.ws.passwordCredentials}"/>		
-		<property name="mailCodeBody" value="${channel.ws.body.fr}"/>	
+		<property name="urlWS" value="${channel.sms.urlWS}"/>	
+		<property name="usernameCredentials" value="${channel.sms.usernameCredentials}"/>
+		<property name="passwordCredentials" value="${channel.sms.passwordCredentials}"/>		
+		<property name="messageBody" value="${channel.sms.messageBody.fr}"/>	
 		
 		
 	</bean>	
