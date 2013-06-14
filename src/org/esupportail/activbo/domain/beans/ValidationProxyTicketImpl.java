@@ -56,9 +56,10 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
 		List<String> allowedProxyList = Arrays.asList(allowedProxies.split(","));
 		for(String p:proxies) 
 			if (allowedProxyList.contains(p))
-				return true;
-		logger.warn("Pas de proxy autorisé à accéder au service");
-		logger.warn("Proxies: "+proxies.toString());
+				return true;		
+		logger.warn("Les proxies ci-après ne sont pas authorisés à accéder au BO : "+proxies.toString());
+		logger.warn("Vous pouvez les ajouter sur properties/config.properties, cas.allowedProxies");
+		logger.warn("Les proxies actuellement autorisés : "+allowedProxyList.toString());
 		return false;
 	}
 
