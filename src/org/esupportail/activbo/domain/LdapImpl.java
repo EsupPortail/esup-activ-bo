@@ -43,21 +43,14 @@ public class LdapImpl extends DomainServiceImpl {
 	}
 	
 	//
-	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		LdapUser ldapUser=null;
+	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{		
 		try {
-			ldapUser=this.getLdapUser(id, code);
-			// changement de mot de passe
-			List<String> list=new ArrayList<String>();
-			
-			list.add(newLogin);
-			ldapUser.getAttributes().put(getLdapSchema().getLogin(), list);
-			
-			list=new ArrayList<String>();
-			list.add(ldapUser.getAttribute(getLdapSchema().getPassword()));
-			ldapUser.getAttributes().put(getLdapSchema().getPassword(),list);
-			listShadowLastChangeAttr(ldapUser);
-			finalizeLdapWriting(ldapUser);
+			// modification login
+			this.changeLogin(id, code, newLogin);
+			 
+			//changement de mot de passe
+			this.setPassword(id, code, currentPassword);
+						
 		   } catch(Exception  e){exceptions (e);}
 	}
 	
