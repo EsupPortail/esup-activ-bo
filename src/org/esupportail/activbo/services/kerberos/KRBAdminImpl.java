@@ -213,10 +213,10 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 */
 	public boolean exists(String principal) throws KRBException{
 		
-		boolean exist=false; 	
+		boolean exist=true; 	
 		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
 		
-		String cmd=kadmin+" list "+principal;
+		String cmd=kadmin+" list -s "+principal;
 		Runtime runtime = Runtime.getRuntime();
 		Process process=null;
 		try {
@@ -224,10 +224,10 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			logger.debug(cmd);
 			
 			process = runtime.exec(cmd);
-			new ErrorInput(process);
-			StandardInput input=new StandardInput(process,1);
-			if(input.getLines().size()>0 && input.getLines().get(0).equalsIgnoreCase(principal))
-				exist=true;
+			ErrorInput errorIn=new ErrorInput(process,1);
+			new StandardInput(process);
+			 if(errorIn.getLines().size()>0 && errorIn.getLines().get(0).contains("Principal does not exist"))
+                  exist=false;
 			
 		} catch (IOException e) { 
 			logger.error(e);
