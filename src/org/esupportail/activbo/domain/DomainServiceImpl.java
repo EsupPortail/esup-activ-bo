@@ -141,7 +141,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	 */
 	public void afterPropertiesSet() throws Exception {
 		
-		logger.info("Lancement du thread de nettoyage de la table de hashage");				
+		logger.debug("Lancement du thread de nettoyage de la table de hashage"+this.getClass());				
 		
 		Assert.notNull(this.daoService, 
 				"property daoService of class " + this.getClass().getName() + " can not be null");
@@ -460,6 +460,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 					Map.Entry<String,String> e=it.next();
 					
 					logger.debug("Key="+e.getKey()+" Value="+e.getValue());
+					logger.info("Champs: "+e.getKey()+" Valeur: "+e.getValue()+" id: "+id);
 					if("".equals(e.getValue())||e.getValue()==null) ldapUser.getAttributes().put(e.getKey(),list);
 					else
 						if (e.getValue().contains(getSeparator())) {
