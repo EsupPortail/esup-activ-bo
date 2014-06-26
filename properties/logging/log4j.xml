@@ -5,17 +5,29 @@
 	<!-- Appender console -->
 	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d %-5p %c - %m%n" />
+		<param name="ConversionPattern" value="%d %-5p %c - %m%n" />
 		</layout>
 	</appender>
 	
-	<!-- Appender file: les messages de type info de la classe  org.esupportail.activbo.domain.LdapImpl seront envoyés dans le fichier fileLog -->
-	<appender name="fileAppender" class="org.apache.log4j.FileAppender" >
+	
+	<!--Appender file: esup-activ-bo.log  -->
+	<appender name="fileAppenderEsup-activ-bo" class="org.apache.log4j.FileAppender" >
+		<param name="file" value="/home/csar/ESUP Projets/esup-activ/developpement/esup-activ-bo.log"/>
+		<param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="3" />
+		<layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p %c - %m%n" />
+        </layout>
+	</appender>
+	
+	
+	<!-- Appender file: les messages de type info de la classe  org.esupportail.activbo.domain.LdapImpl seront envoyés dans le fichier modifiedDataFile.log -->
+	<appender name="fileAppenderModifiedDataFile" class="org.apache.log4j.FileAppender" >
 		<param name="file" value="${log.file.modifiedData}"/>
 		<param name="MaxFileSize" value="${log.file.modifiedData.maxFileSize}" />
         <param name="MaxBackupIndex" value="${log.file.modifiedData.maxBackupIndex}" />
 		<layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d %-5p %c - %m%n" />
+             <param name="ConversionPattern" value="%d %-5p %c - %m%n" />
         </layout>
 		<filter class="org.apache.log4j.varia.LevelMatchFilter">
 			<param name="levelToMatch" value="INFO" />
@@ -25,62 +37,72 @@
 	<!-- Les messages de niveau "debug" et + des classes org.esupportail.activbo.domain.LdapImpl&org.esupportail.activbo.domain.KerbLdapImpl seront également afficher à la console  -->
 	<logger name="org.esupportail.activbo.domain.LdapImpl">
 	    <level value="DEBUG" />		
-		<appender-ref ref="fileAppender" />
+		<appender-ref ref="fileAppenderModifiedDataFile" />
 	</logger>
 	<logger name="org.esupportail.activbo.domain.KerbLdapImpl">
 	    <level value="DEBUG" />		
-		<appender-ref ref="fileAppender" />
+		<appender-ref ref="fileAppenderModifiedDataFile" />
 	</logger>
-	
 	
 	
 	<logger name="org.esupportail" additivity="false">
 	    <level value="INFO" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger> 
 	
 	<logger name="org.hibernate" additivity="false">
 	    <level value="WARN" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>
 	<logger name="net.sf.ehcache" additivity="false">
 	    <level value="INFO" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>
 	
 	<logger name="org.springframework" additivity="false">
 	    <level value="INFO" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>	
 	<logger name="org.springframework.aop.framework" additivity="false">
 	    <level value="WARN" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>
 	<logger name="org.springframework.beans.factory.xml" additivity="false">
 	    <level value="WARN" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>
 	<logger name="org.springframework.core.CollectionFactory" additivity="false">
 	    <level value="WARN" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>
 	<logger name="org.springframework.orm" additivity="false">
 	    <level value="WARN" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>
 	<logger name="org.springframework.jdbc" additivity="false">
 	    <level value="WARN" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger> 
 	
 	<logger name="org.esupportail.commons.services.exceptionHandling.CachingEmailExceptionServiceImpl" additivity="false">
 	    <level value="WARN" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>
 	
 	<logger name="org.esupportail.activbo" additivity="false">
 	    <level value="DEBUG" />		
 		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppenderEsup-activ-bo" />
 	</logger>
 	
 	<root>

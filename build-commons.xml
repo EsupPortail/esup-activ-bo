@@ -827,12 +827,12 @@
 		<copy todir="${build.classes}/properties" overwrite="true" >
 			<fileset dir="${props.dir}" 
 				includes="applicationContext.xml dao/hibernate/hibernate-*.cfg.xml logging/log4j*.properties jsf/application.xml misc/application.xml cache/ehcache.xml" 
-				excludes="logging/log4j.properties" />
+				excludes="logging/log4j.xml" />
 			<filterchain>
 				<expandproperties/>
 			</filterchain>
 		</copy>
-		<copy file="${props.dir}/logging/log4j.properties" todir="${build.classes}" overwrite="true" >
+		<copy file="${props.dir}/logging/log4j.xml" todir="${build.classes}" overwrite="true" >
 			<filterchain>
 				<expandproperties/>
 			</filterchain>
