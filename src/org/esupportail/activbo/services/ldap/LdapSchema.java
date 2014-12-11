@@ -127,6 +127,9 @@ public class LdapSchema implements InitializingBean{
 	private byte[] jpegPhoto;
 	
 	private String mailDeliveryOption;
+	
+	private String labeledURI;
+	
 		
 	public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
@@ -617,6 +620,14 @@ public class LdapSchema implements InitializingBean{
 
 	public void setMailDeliveryOption(String mailDeliveryOption) {
 		this.mailDeliveryOption = mailDeliveryOption;
+	}
+
+	public String getLabeledURI() {
+		return labeledURI;
+	}
+
+	public void setLabeledURI(String labeledURI) {
+		this.labeledURI = labeledURI;
 	}
 	
 

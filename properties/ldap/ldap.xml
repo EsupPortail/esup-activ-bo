@@ -99,7 +99,8 @@
 				<value>${ldap.attribute.up1RoomAccess}</value>
 				<value>${ldap.attribute.jpegPhoto}</value>
 				<value>${ldap.attribute.mailDeliveryOption}</value>
-				</list>
+				<value>${ldap.attribute.labeledURI}</value>				
+			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
 			<description>The LDAP attribute to search for.</description>
@@ -410,5 +411,6 @@
 		    <property name="up1AltGivenName" value="${ldap.attribute.up1AltGivenName}"/>		
 		    <property name="jpegPhoto" value="${ldap.attribute.jpegPhoto}"/>
 		    <property name="mailDeliveryOption" value="${ldap.attribute.mailDeliveryOption}"/>
+		    <property name="labeledURI" value="${ldap.attribute.labeledURI}"/>
 	</bean>
 </beans>
