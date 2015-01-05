@@ -10,16 +10,15 @@
 	</appender>
 	
 	
-	<!--Appender file: esup-activ-bo.log  -->
-	<appender name="fileAppenderEsup-activ-bo" class="org.apache.log4j.FileAppender" >
-		<param name="file" value="${log.file}"/>
-		<param name="MaxFileSize" value="${log.maxFileSize}" />
-        <param name="MaxBackupIndex" value="${log.maxBackupIndex}" />
+	<!-- Rotation tous les mois -->
+	<appender name="fileAppenderEsup-activ-bo" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="${log.file}" />
+			<!-- a paramétrer -->
+		<param name="DatePattern" value="${log.DatePattern}" />
 		<layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="${log.pattern}" />
-        </layout>
+		<param name="ConversionPattern" value="${log.pattern}" />
+		</layout>
 	</appender>
-	
 	
 	<!-- Appender file: les messages de type info de la classe  org.esupportail.activbo.domain.LdapImpl seront envoyés dans le fichier esup-activ-bo-modifiedDataFile.log -->
 	<appender name="fileAppenderModifiedData" class="org.apache.log4j.FileAppender" >
