@@ -23,6 +23,7 @@
 		properties/kerberos/kerberos.xml
 		properties/ldap/ldap.xml
 		properties/logging/log4j-batch.properties
+		properties/logging/log4j.xml		
 		properties/misc/abstractBeans.xml
 		properties/misc/application.xml
 		properties/smtp/smtp.xml
