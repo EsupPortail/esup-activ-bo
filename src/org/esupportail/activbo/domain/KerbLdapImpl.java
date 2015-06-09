@@ -53,7 +53,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 		catch (KRBPrincipalAlreadyExistsException e){
 			
 			try{
-				logger.info("Le compte kerberos existe d�ja, Modification du password");
+				logger.info("Le compte kerberos de l'utilisateur "+id+" existe d�ja, Modification du password");
 				kerberosAdmin.changePasswd(id, currentPassword);
 				this.finalizeLdapWriting(ldapUser);
 			
@@ -78,7 +78,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 				this.finalizeLdapWriting(ldapUser);
 		 } catch (KRBPrincipalAlreadyExistsException e){
 			try{
-				logger.info("Le compte kerberos existe d�ja, Modification du password");
+				logger.info("Le compte kerberos de l'utilisateur "+id+" existe d�ja, Modification du password");
 				kerberosAdmin.changePasswd(id, currentPassword);
 				this.finalizeLdapWriting(ldapUser);
 			
