@@ -9,7 +9,7 @@
 	</fail>
 
 	<property name="commons.version" value="1.3.9" />
-	<property name="commons.repository.path-prefix" value="https://subversion.cru.fr/esup-commons/tags/${commons.version}/esup-commons" />
+	<property name="commons.repository.path-prefix" value="https://subversion.renater.fr/esup-commons/tags/${commons.version}/esup-commons" />
 	<property name="commons.repository.path-suffix" value="" />
 	<property name="commons.repository.libs" value="
 		activation-1.0.2.jar
@@ -88,22 +88,22 @@
 	<property name="commons.repository.quick-start-libs" value="
 		mysql-connector-java-3.1.12-bin.jar
 		" />
-	
+
 	<import file="${basedir}/build-commons-missing-targets.xml" optional="true" />
-	
+
 	<target name="commons-error" >
 		<fail message="do not use build-commons.xml, use build.xml!" />
 	</target>
 
 	<property name="devel" value="false" />
-	
+
 	<property name="tomcat.version" value="5.5.17"/>
 	<property name="ant-contrib.version" value="1.0"/>
 	<property name="utils.dir" value="${basedir}/utils"/>
-	<taskdef 
-		resource="net/sf/antcontrib/antlib.xml" 
+	<taskdef
+		resource="net/sf/antcontrib/antlib.xml"
 		classpath="${utils.dir}/ant/ant-contrib-${ant-contrib.version}.jar"/>
-	
+
 	<property name="webapp.dir" value="${basedir}/webapp"/>
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="lib.dir" value="${webapp.dir}/WEB-INF/lib"/>
@@ -132,7 +132,7 @@
 						<available file="${basedir}/build-devel.properties"/>
  					</not>
 					<then>
-						<fail message="${basedir}/build-devel.properties not found." />	
+						<fail message="${basedir}/build-devel.properties not found." />
 					</then>
 				</if>
 				<property file="${basedir}/build-devel.properties" />
@@ -143,7 +143,7 @@
 				<available file="${basedir}/build.properties"/>
 			</not>
 			<then>
-				<fail message="${basedir}/build.properties not found." />	
+				<fail message="${basedir}/build.properties not found." />
 			</then>
 		</if>
 		<property file="${basedir}/build.properties" />
@@ -427,7 +427,7 @@
 				</not>
 			</and>
 			<then>
-				<fail message="${portlet.config} not found." />	
+				<fail message="${portlet.config} not found." />
 			</then>
 		</if>
 	</target>
@@ -438,7 +438,7 @@
 				<available file="${log4j.batch-config}"/>
 			</not>
 			<then>
-				<fail message="${log4j.batch-config} not found." />	
+				<fail message="${log4j.batch-config} not found." />
 			</then>
 		</if>
 	</target>
@@ -477,7 +477,7 @@
 					<ispropertytrue property="quick-start" />
 					<then>
 						<echo>${tomcat.bootstrap} not found, installing a new instance...</echo>
-						<unzip src="${utils.dir}/tomcat/apache-tomcat-${tomcat.version}.zip"  
+						<unzip src="${utils.dir}/tomcat/apache-tomcat-${tomcat.version}.zip"
 							dest="${basedir}" />
 						<echo>Removing useless applications in ${tomcat.home}/webapps...</echo>
 						<delete dir="${tomcat.home}/webapps/balancer" />
@@ -489,7 +489,7 @@
 						<echo>done.</echo>
 					</then>
 					<else>
-						<fail message="${tomcat.bootstrap} not found, please check your tomcat installation" />	
+						<fail message="${tomcat.bootstrap} not found, please check your tomcat installation" />
 					</else>
 				</if>
 			</then>
@@ -508,25 +508,25 @@
 				<if>
 					<ispropertytrue property="ajp.use" />
 					<then>
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--BEGIN-AJP-ONLY--&gt;" value="" /> 
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--END-AJP-ONLY--&gt;" value="" /> 
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--BEGIN-AJP-ONLY--&gt;" value="" />
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--END-AJP-ONLY--&gt;" value="" />
 					</then>
 					<else>
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--BEGIN-AJP-ONLY--&gt;" value="&lt;!--BEGIN-AJP-ONLY" /> 
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--END-AJP-ONLY--&gt;" value="END-AJP-ONLY--&gt;" /> 
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--BEGIN-AJP-ONLY--&gt;" value="&lt;!--BEGIN-AJP-ONLY" />
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--END-AJP-ONLY--&gt;" value="END-AJP-ONLY--&gt;" />
 					</else>
 				</if>
 				<if>
 					<ispropertytrue property="lambdaProbe.use" />
 					<then>
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--BEGIN-LAMBDA-PROBE-ONLY--&gt;" value="" /> 
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--END-LAMBDA-PROBE-ONLY--&gt;" value="" /> 
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--BEGIN-LAMBDA-PROBE-ONLY--&gt;" value="" />
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--END-LAMBDA-PROBE-ONLY--&gt;" value="" />
 						<if>
 							<not>
 								<available file="${tomcat.home}/probe.war" />
@@ -542,10 +542,10 @@
 						</copy>
 					</then>
 					<else>
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--BEGIN-LAMBDA-PROBE-ONLY--&gt;" value="&lt;!--BEGIN-LAMBDA-PROBE-ONLY" /> 
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--END-LAMBDA-PROBE-ONLY--&gt;" value="END-LAMBDA-PROBE-ONLY--&gt;" /> 
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--BEGIN-LAMBDA-PROBE-ONLY--&gt;" value="&lt;!--BEGIN-LAMBDA-PROBE-ONLY" />
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--END-LAMBDA-PROBE-ONLY--&gt;" value="END-LAMBDA-PROBE-ONLY--&gt;" />
 						<if>
 							<available file="${tomcat.home}/probe.war" />
 							<then>
@@ -558,10 +558,10 @@
 				<if>
 					<ispropertytrue property="jmxRemote.use" />
 					<then>
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--BEGIN-JMX-REMOTE-ONLY--&gt;" value="" /> 
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--END-JMX-REMOTE-ONLY--&gt;" value="" /> 
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--BEGIN-JMX-REMOTE-ONLY--&gt;" value="" />
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--END-JMX-REMOTE-ONLY--&gt;" value="" />
 						<copy todir="${tomcat.home}/conf" file="${utils.dir}/tomcat/jmxRemote.password">
 							<filterchain>
 								<expandproperties/>
@@ -575,10 +575,10 @@
 						</copy>
 					</then>
 					<else>
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--BEGIN-JMX-REMOTE-ONLY--&gt;" value="&lt;!--BEGIN-JMX-REMOTE-ONLY" /> 
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--END-JMX-REMOTE-ONLY--&gt;" value="END-JMX-REMOTE-ONLY--&gt;" /> 
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--BEGIN-JMX-REMOTE-ONLY--&gt;" value="&lt;!--BEGIN-JMX-REMOTE-ONLY" />
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--END-JMX-REMOTE-ONLY--&gt;" value="END-JMX-REMOTE-ONLY--&gt;" />
 						<delete file="${tomcat.home}/conf/jmxRemote.password" />
 						<delete file="${tomcat.home}/conf/jmxRemote.access" />
 					</else>
@@ -586,16 +586,16 @@
 				<if>
 					<ispropertytrue property="hibernate.useJndi" />
 					<then>
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--BEGIN-JNDI-ONLY--&gt;" value="" /> 
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--END-JNDI-ONLY--&gt;" value="" /> 
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--BEGIN-JNDI-ONLY--&gt;" value="" />
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--END-JNDI-ONLY--&gt;" value="" />
 					</then>
 					<else>
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--BEGIN-JNDI-ONLY--&gt;" value="&lt;!--BEGIN-JNDI-ONLY" /> 
-						<replace file="${tomcat.home}/conf/server.xml" 
-							token="&lt;!--END-JNDI-ONLY--&gt;" value="END-JNDI-ONLY--&gt;" /> 
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--BEGIN-JNDI-ONLY--&gt;" value="&lt;!--BEGIN-JNDI-ONLY" />
+						<replace file="${tomcat.home}/conf/server.xml"
+							token="&lt;!--END-JNDI-ONLY--&gt;" value="END-JNDI-ONLY--&gt;" />
 					</else>
 				</if>
 			</then>
@@ -605,7 +605,7 @@
 				<available file="${tomcat.bootstrap}"/>
 			</not>
 			<then>
-				<fail message="${tomcat.bootstrap} not found, please check your tomcat installation" />	
+				<fail message="${tomcat.bootstrap} not found, please check your tomcat installation" />
 			</then>
 		</if>
 		<if>
@@ -614,7 +614,7 @@
 			</not>
 			<then>
 				<property name="tomcat.keystore" value="${utils.dir}/cas/cru-root.keystore"/>
-				<echo message="Property tomcat.keystore not set, using default (${tomcat.keystore})" />	
+				<echo message="Property tomcat.keystore not set, using default (${tomcat.keystore})" />
 			</then>
 		</if>
 	</target>
@@ -642,7 +642,7 @@
 									</not>
 									<then>
 										<echo>downloading @{lib}...</echo>
-										<get src="${commons.repository.path-prefix}/utils/lib/@{lib}${commons.repository.path-suffix}" 
+										<get src="${commons.repository.path-prefix}/utils/lib/@{lib}${commons.repository.path-suffix}"
 											dest="${utils.dir}/lib/@{lib}" verbose="off" />
 									</then>
 									<else>
@@ -668,7 +668,7 @@
 									</not>
 									<then>
 										<echo>downloading @{lib}...</echo>
-										<get src="${commons.repository.path-prefix}/webapp/WEB-INF/lib/@{lib}${commons.repository.path-suffix}" 
+										<get src="${commons.repository.path-prefix}/webapp/WEB-INF/lib/@{lib}${commons.repository.path-suffix}"
 											dest="${lib.dir}/@{lib}" verbose="off" />
 									</then>
 									<else>
@@ -699,7 +699,7 @@
 											</not>
 											<then>
 												<echo>downloading @{file}...</echo>
-												<get src="${commons.repository.path-prefix}/utils/tomcat/@{file}${commons.repository.path-suffix}" 
+												<get src="${commons.repository.path-prefix}/utils/tomcat/@{file}${commons.repository.path-suffix}"
 													dest="${utils.dir}/tomcat/@{file}" verbose="off" />
 											</then>
 											<else>
@@ -725,7 +725,7 @@
 											</not>
 											<then>
 												<echo>downloading @{lib}...</echo>
-												<get src="${commons.repository.path-prefix}/utils/tomcat/quick-start-lib/@{lib}${commons.repository.path-suffix}" 
+												<get src="${commons.repository.path-prefix}/utils/tomcat/quick-start-lib/@{lib}${commons.repository.path-suffix}"
 													dest="${utils.dir}/tomcat/quick-start-lib/@{lib}" verbose="off" />
 											</then>
 											<else>
@@ -754,7 +754,7 @@
 									</not>
 									<then>
 										<echo>downloading @{lib}...</echo>
-										<get src="${app.repository.path-prefix}/webapp/WEB-INF/lib/@{lib}${app.repository.path-suffix}" 
+										<get src="${app.repository.path-prefix}/webapp/WEB-INF/lib/@{lib}${app.repository.path-suffix}"
 											dest="${lib.dir}/@{lib}" verbose="off" />
 									</then>
 									<else>
@@ -770,12 +770,12 @@
 			</then>
 		</if>
 	</target>
-	
+
 	<target name="commons-prepare" depends="commons-download-files" >
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.classes}" />
 	</target>
-	
+
 	<target name="commons-compile-shared" depends="read-commons-properties" >
 		<copy todir="${build.dir}/WEB-INF/lib" >
 			<fileset dir="${webapp.dir}/WEB-INF/lib"/>
@@ -787,23 +787,23 @@
 		<if>
 			<ispropertytrue property="devel" />
 			<then>
-				<javac 
-					srcdir="${commons.src.dir}" 
-					destdir="${build.classes}" 
-					debug="${compile.debug}" 
-					nowarn="${compile.nowarn}" 
-					deprecation="${compile.deprecation}" 
+				<javac
+					srcdir="${commons.src.dir}"
+					destdir="${build.classes}"
+					debug="${compile.debug}"
+					nowarn="${compile.nowarn}"
+					deprecation="${compile.deprecation}"
 					optimize="${compile.optimize}" >
 					<classpath refid="compile.classpath" />
 				</javac>
 			</then>
 		</if>
-		<javac 
-			srcdir="${src.dir}" 
-			destdir="${build.classes}" 
-			debug="${compile.debug}" 
-			nowarn="${compile.nowarn}" 
-			deprecation="${compile.deprecation}" 
+		<javac
+			srcdir="${src.dir}"
+			destdir="${build.classes}"
+			debug="${compile.debug}"
+			nowarn="${compile.nowarn}"
+			deprecation="${compile.deprecation}"
 			optimize="${compile.optimize}">
 			<classpath refid="compile.classpath" />
 		</javac>
@@ -825,8 +825,8 @@
 			<fileset dir="${props.dir}" excludes="applicationContext.xml dao/hibernate/hibernate-*.cfg.xml logging/log4j*.properties jsf/application.xml misc/application.xml cache/ehcache.xml" />
 		</copy>
 		<copy todir="${build.classes}/properties" overwrite="true" >
-			<fileset dir="${props.dir}" 
-				includes="applicationContext.xml dao/hibernate/hibernate-*.cfg.xml logging/log4j*.properties jsf/application.xml misc/application.xml cache/ehcache.xml" 
+			<fileset dir="${props.dir}"
+				includes="applicationContext.xml dao/hibernate/hibernate-*.cfg.xml logging/log4j*.properties jsf/application.xml misc/application.xml cache/ehcache.xml"
 				excludes="logging/log4j.xml" />
 			<filterchain>
 				<expandproperties/>
@@ -837,26 +837,26 @@
 				<expandproperties/>
 			</filterchain>
 		</copy>
-		<copy file="${props.dir}/i18n/bundles/Messages_en.properties" 
-			tofile="${build.classes}/properties/i18n/bundles/Messages.properties" 
+		<copy file="${props.dir}/i18n/bundles/Messages_en.properties"
+			tofile="${build.classes}/properties/i18n/bundles/Messages.properties"
 			overwrite="true" />
 		<if>
 			<ispropertytrue property="devel" />
 			<then>
-				<copy file="${commons.props.dir}/i18n/bundles/Commons_en.properties" 
-					tofile="${build.classes}/properties/i18n/bundles/Commons.properties" 
+				<copy file="${commons.props.dir}/i18n/bundles/Commons_en.properties"
+					tofile="${build.classes}/properties/i18n/bundles/Commons.properties"
 					overwrite="true" />
 			</then>
 			<else>
-				<copy file="${props.dir}/i18n/bundles/Commons_en.properties" 
-					tofile="${build.classes}/properties/i18n/bundles/Commons.properties" 
+				<copy file="${props.dir}/i18n/bundles/Commons_en.properties"
+					tofile="${build.classes}/properties/i18n/bundles/Commons.properties"
 					overwrite="true" />
 			</else>
 		</if>
 	</target>
-	
+
 	<target name="commons-compile-batch" depends="read-commons-properties" />
-		
+
 	<target name="commons-compile-web" depends="read-commons-properties" >
 		<copy todir="${build.dir}/WEB-INF" overwrite="true" file="${webapp.dir}/WEB-INF/web.xml" >
 			<filterchain>
@@ -866,24 +866,24 @@
 		<if>
 			<equals arg1="${deploy.type}" arg2="servlet" />
 			<then>
-				<replace file="${build.dir}/WEB-INF/web.xml" 
-					token="&lt;!--BEGIN-PORTLET-ONLY--&gt;" value="&lt;!--BEGIN-PORTLET-ONLY" /> 
-				<replace file="${build.dir}/WEB-INF/web.xml" 
-					token="&lt;!--END-PORTLET-ONLY--&gt;" value="END-PORTLET-ONLY--&gt;" /> 
-				<replace file="${build.dir}/WEB-INF/web.xml" 
-					token="&lt;!--BEGIN-SERVLET-ONLY--&gt;" value="" /> 
-				<replace file="${build.dir}/WEB-INF/web.xml" 
-					token="&lt;!--END-SERVLET-ONLY--&gt;" value="" /> 
+				<replace file="${build.dir}/WEB-INF/web.xml"
+					token="&lt;!--BEGIN-PORTLET-ONLY--&gt;" value="&lt;!--BEGIN-PORTLET-ONLY" />
+				<replace file="${build.dir}/WEB-INF/web.xml"
+					token="&lt;!--END-PORTLET-ONLY--&gt;" value="END-PORTLET-ONLY--&gt;" />
+				<replace file="${build.dir}/WEB-INF/web.xml"
+					token="&lt;!--BEGIN-SERVLET-ONLY--&gt;" value="" />
+				<replace file="${build.dir}/WEB-INF/web.xml"
+					token="&lt;!--END-SERVLET-ONLY--&gt;" value="" />
 			</then>
 			<else>
-				<replace file="${build.dir}/WEB-INF/web.xml" 
-					token="&lt;!--BEGIN-SERVLET-ONLY--&gt;" value="&lt;!--BEGIN-SERVLET-ONLY" /> 
-				<replace file="${build.dir}/WEB-INF/web.xml" 
-					token="&lt;!--END-SERVLET-ONLY--&gt;" value="END-SERVLET-ONLY--&gt;" /> 
-				<replace file="${build.dir}/WEB-INF/web.xml" 
-					token="&lt;!--BEGIN-PORTLET-ONLY--&gt;" value="" /> 
-				<replace file="${build.dir}/WEB-INF/web.xml" 
-					token="&lt;!--END-PORTLET-ONLY--&gt;" value="" /> 
+				<replace file="${build.dir}/WEB-INF/web.xml"
+					token="&lt;!--BEGIN-SERVLET-ONLY--&gt;" value="&lt;!--BEGIN-SERVLET-ONLY" />
+				<replace file="${build.dir}/WEB-INF/web.xml"
+					token="&lt;!--END-SERVLET-ONLY--&gt;" value="END-SERVLET-ONLY--&gt;" />
+				<replace file="${build.dir}/WEB-INF/web.xml"
+					token="&lt;!--BEGIN-PORTLET-ONLY--&gt;" value="" />
+				<replace file="${build.dir}/WEB-INF/web.xml"
+					token="&lt;!--END-PORTLET-ONLY--&gt;" value="" />
 			</else>
 		</if>
 		<copy todir="${build.dir}" overwrite="true" >
@@ -900,14 +900,14 @@
 			</else>
 		</if>
 	</target>
-	
+
 	<target name="commons-deploy" depends="read-commons-properties" >
 		<if>
 			<not>
 				<isset property="deploy.home" />
 			</not>
 			<then>
-				<fail message="Please set property deploy.home in build.properties" />	
+				<fail message="Please set property deploy.home in build.properties" />
 			</then>
 		</if>
 		<mkdir dir="${deploy.home}" />
@@ -1003,74 +1003,74 @@
 			<fileset dir="${recover.basedir}" includes="${recover.files}" />
 		</copy>
 	</target>
-	
-	<target name="compile-batch" > 
-		<fail message="target compile-batch should be defined in build.xml" />
-	</target>	
 
-	<target name="test-ldap" depends="compile-batch,commons-check-batch-config" description="test the LDAP connection"> 
+	<target name="compile-batch" >
+		<fail message="target compile-batch should be defined in build.xml" />
+	</target>
+
+	<target name="test-ldap" depends="compile-batch,commons-check-batch-config" description="test the LDAP connection">
 		<java fork="true" dir="${build.dir}" classname="org.esupportail.commons.batch.Batch">
 			<classpath refid="batch.classpath" />
 			<sysproperty key="log4j.configuration" value="file:${log4j.batch-config}" />
 			<arg value="test-ldap"/>
 	    </java>
-	</target>	
+	</target>
 
-	<target name="test-smtp" depends="compile-batch,commons-check-batch-config" description="test the SMTP connection"> 
+	<target name="test-smtp" depends="compile-batch,commons-check-batch-config" description="test the SMTP connection">
 		<java fork="true" dir="${build.dir}" classname="org.esupportail.commons.batch.Batch">
 			<classpath refid="batch.classpath" />
 			<sysproperty key="log4j.configuration" value="file:${log4j.batch-config}" />
 			<arg value="test-smtp"/>
 	    </java>
-	</target>	
+	</target>
 
-	<target name="test-portal" depends="compile-batch,commons-check-batch-config" description="test the portal connection"> 
+	<target name="test-portal" depends="compile-batch,commons-check-batch-config" description="test the portal connection">
 		<java fork="true" dir="${build.dir}" classname="org.esupportail.commons.batch.Batch">
 			<classpath refid="batch.classpath" />
 			<sysproperty key="log4j.configuration" value="file:${log4j.batch-config}" />
 			<arg value="test-portal"/>
 	    </java>
-	</target>	
+	</target>
 
-	<target name="test-database" depends="compile-batch,commons-check-batch-config" description="test the database connection"> 
+	<target name="test-database" depends="compile-batch,commons-check-batch-config" description="test the database connection">
 		<java fork="true" dir="${build.dir}" classname="org.esupportail.commons.batch.Batch">
 			<classpath refid="batch.classpath" />
 			<sysproperty key="log4j.configuration" value="file:${log4j.batch-config}" />
 			<arg value="test-database"/>
 	    </java>
-	</target>	
+	</target>
 
-	<target name="commons-init-data" > 
+	<target name="commons-init-data" >
 		<java fork="true" dir="${build.dir}" classname="org.esupportail.commons.services.application.VersionningUtils">
 			<classpath refid="batch.classpath" />
 			<sysproperty key="log4j.configuration" value="file:${log4j.batch-config}" />
 			<arg value="init"/>
 	    </java>
-	</target>	
+	</target>
 
-	<target name="commons-upgrade" > 
+	<target name="commons-upgrade" >
 		<java fork="true" dir="${build.dir}" classname="org.esupportail.commons.services.application.VersionningUtils">
 			<classpath refid="batch.classpath" />
 			<sysproperty key="log4j.configuration" value="file:${log4j.batch-config}" />
 			<arg value="upgrade"/>
 	    </java>
-	</target>	
+	</target>
 
-	<target name="commons-check-version" > 
+	<target name="commons-check-version" >
 		<java fork="true" dir="${build.dir}" classname="org.esupportail.commons.services.application.VersionningUtils">
 			<classpath refid="batch.classpath" />
 			<sysproperty key="log4j.configuration" value="file:${log4j.batch-config}" />
 			<arg value="check-version"/>
 	    </java>
-	</target>	
+	</target>
 
-	<target name="test-beans" depends="compile-batch,commons-check-batch-config" description="test all the beans"> 
+	<target name="test-beans" depends="compile-batch,commons-check-batch-config" description="test all the beans">
 		<java fork="true" dir="${build.dir}" classname="${batch-class}">
 			<classpath refid="batch.classpath" />
 			<sysproperty key="log4j.configuration" value="file:${log4j.batch-config}" />
 			<arg value="test-beans"/>
 	    </java>
-	</target>	
+	</target>
 
 	<target name="commons-start-tomcat" depends="check-tomcat" >
 		<echo message="Starting Tomcat..."/>
@@ -1120,14 +1120,14 @@
 				<if>
 					<ispropertytrue property="jmxRemote.use" />
 					<then>
-						<java 
-							fork="true" 
+						<java
+							fork="true"
 							dir="${tomcat.home}"
 							classname="org.apache.catalina.startup.Bootstrap">
 							<classpath>
 								<pathelement path="${tomcat.bootstrap}"/>
 							</classpath>
-							<sysproperty key="catalina.home" value="${tomcat.home}"/> 
+							<sysproperty key="catalina.home" value="${tomcat.home}"/>
 							<sysproperty key="java.net.preferIPv4Stack" value="true" />
 							<jvmarg value="${jvmarg.trustStore}" />
 							<jvmarg value="${jvmarg.debug}" />
@@ -1144,14 +1144,14 @@
 						</java>
 					</then>
 					<else>
-						<java 
-							fork="true" 
+						<java
+							fork="true"
 							dir="${tomcat.home}"
 							classname="org.apache.catalina.startup.Bootstrap">
 							<classpath>
 								<pathelement path="${tomcat.bootstrap}"/>
 							</classpath>
-							<sysproperty key="catalina.home" value="${tomcat.home}"/> 
+							<sysproperty key="catalina.home" value="${tomcat.home}"/>
 							<sysproperty key="java.net.preferIPv4Stack" value="true" />
 							<jvmarg value="${jvmarg.trustStore}" />
 							<jvmarg value="${jvmarg.debug}" />
@@ -1167,14 +1167,14 @@
 				<if>
 					<ispropertytrue property="jmxRemote.use" />
 					<then>
-						<java 
-							fork="true" 
+						<java
+							fork="true"
 							dir="${tomcat.home}"
 							classname="org.apache.catalina.startup.Bootstrap">
 							<classpath>
 								<pathelement path="${tomcat.bootstrap}"/>
 							</classpath>
-							<sysproperty key="catalina.home" value="${tomcat.home}"/> 
+							<sysproperty key="catalina.home" value="${tomcat.home}"/>
 							<sysproperty key="java.net.preferIPv4Stack" value="true" />
 							<jvmarg value="${jvmarg.trustStore}" />
 							<jvmarg value="${jvmarg.jmxRemote}" />
@@ -1189,14 +1189,14 @@
 						</java>
 					</then>
 					<else>
-						<java 
-							fork="true" 
+						<java
+							fork="true"
 							dir="${tomcat.home}"
 							classname="org.apache.catalina.startup.Bootstrap">
 							<classpath>
 								<pathelement path="${tomcat.bootstrap}"/>
 							</classpath>
-							<sysproperty key="catalina.home" value="${tomcat.home}"/> 
+							<sysproperty key="catalina.home" value="${tomcat.home}"/>
 							<sysproperty key="java.net.preferIPv4Stack" value="true" />
 							<jvmarg value="${jvmarg.trustStore}" />
 				            <jvmarg value="-Xmx${memory.xmx}" />
@@ -1211,18 +1211,16 @@
 
 	<target name="commons-stop-tomcat" depends="check-tomcat" >
 		<echo message="Stopping Tomcat..."/>
-		<java 
-			fork="true" 
+		<java
+			fork="true"
 			dir="${tomcat.home}"
 			classname="org.apache.catalina.startup.Bootstrap">
 			<classpath>
 				<pathelement path="${tomcat.bootstrap}"/>
 			</classpath>
-			<sysproperty key="catalina.home" value="${tomcat.home}"/> 
+			<sysproperty key="catalina.home" value="${tomcat.home}"/>
 			<arg value="stop"/>
 		</java>
 	</target>
 
 </project>
-
-
