@@ -217,7 +217,8 @@
 			</description>
 			<map>
 				<entry key="com.sun.jndi.ldap.connect.timeout"
-					value="5000" />
+					value="15000" />
+				<entry key="java.naming.ldap.derefAliases" value="never"/>
 			</map>
 		</property>
 	</bean>
@@ -363,6 +364,7 @@
 				<entry key="com.sun.jndi.ldap.connect.timeout"
 					value="5000" />
 				<entry key="com.sun.jndi.ldap.connect.pool.debug" value="fine"/>
+				<entry key="java.naming.ldap.derefAliases" value="never"/>
 			</map>
 		</property>
 		<aop:scoped-proxy/>
