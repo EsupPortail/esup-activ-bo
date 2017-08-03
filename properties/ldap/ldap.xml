@@ -100,6 +100,7 @@
 				<value>${ldap.attribute.jpegPhoto}</value>
 				<value>${ldap.attribute.mailDeliveryOption}</value>
 				<value>${ldap.attribute.labeledURI}</value>				
+        <value>${ldap.attribute.eduPersonEntitlement}</value>
 			</list>
 		</property>
 		<property name="searchAttribute" value="${ldap.attribute.cn}">
@@ -154,6 +155,7 @@
 				<value>${ldap.attribute.departmentNumber}</value>
 				<value>${ldap.attribute.supannAutreTelephone}</value>	
 				<value>${ldap.attribute.jpegPhoto}</value>
+				<value>${ldap.attribute.eduPersonEntitlement}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager">
@@ -307,6 +309,7 @@
 				<value>${ldap.attribute.supannAutreTelephone}</value>
 				<value>${ldap.attribute.jpegPhoto}</value>
 				<value>${ldap.attribute.mailDeliveryOption}</value>
+				<value>${ldap.attribute.eduPersonEntitlement}</value>
 			</list>
 		</property>
 		<property name="cacheManager" ref="cacheManager" />		
@@ -414,5 +417,6 @@
 		    <property name="jpegPhoto" value="${ldap.attribute.jpegPhoto}"/>
 		    <property name="mailDeliveryOption" value="${ldap.attribute.mailDeliveryOption}"/>
 		    <property name="labeledURI" value="${ldap.attribute.labeledURI}"/>
+		    <property name="eduPersonEntitlement" value="${ldap.attribute.eduPersonEntitlement}"/>
 	</bean>
 </beans>

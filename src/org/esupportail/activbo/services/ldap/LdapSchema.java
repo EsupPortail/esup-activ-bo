@@ -130,8 +130,9 @@ public class LdapSchema implements InitializingBean{
 	
 	private String labeledURI;
 	
-		
-	public String getEduPersonAffiliation() {
+	private String eduPersonEntitlement;
+	
+    public String getEduPersonAffiliation() {
 		return eduPersonAffiliation;
 	}
 
@@ -629,6 +630,14 @@ public class LdapSchema implements InitializingBean{
 	public void setLabeledURI(String labeledURI) {
 		this.labeledURI = labeledURI;
 	}
+
+  public String getEduPersonEntitlement() {
+    return eduPersonEntitlement;
+  }
+
+  public void setEduPersonEntitlement(String eduPersonEntitlement) {
+    this.eduPersonEntitlement = eduPersonEntitlement;
+  }
 	
 
 }
