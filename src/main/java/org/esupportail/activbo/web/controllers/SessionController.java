@@ -121,9 +121,6 @@ public class SessionController extends AbstractDomainAwareBean {
 	 * @throws IOException 
 	 */
 	public String logout() throws IOException {
-		if (ContextUtils.isPortlet()) {
-			throw new UnsupportedOperationException("logout() should not be called in portlet mode.");
-		}
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext externalContext = facesContext.getExternalContext();
 		HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();

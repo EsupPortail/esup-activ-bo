@@ -17,7 +17,6 @@
 	  <property name="locations" > 
 	      <list>
 	      	<value>classpath:/properties/defaults.properties</value>
-            <value>classpath:/properties/defaults-${deploy.type}.properties</value>
 	      	<value>classpath:/properties/config.properties</value>
 	      </list>
 	  </property>
