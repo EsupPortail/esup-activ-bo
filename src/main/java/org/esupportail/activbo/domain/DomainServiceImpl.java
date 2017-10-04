@@ -13,12 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.esupportail.activbo.dao.DaoService;
 import org.esupportail.activbo.domain.tools.BruteForceBlock;
 import org.esupportail.activbo.domain.beans.ValidationCode;
 import org.esupportail.activbo.domain.beans.ValidationProxyTicket;
 import org.esupportail.activbo.domain.beans.User;
-import org.esupportail.activbo.domain.beans.VersionManager;
 import org.esupportail.activbo.domain.beans.channels.Channel;
 import org.esupportail.activbo.domain.beans.channels.ChannelException;
 
@@ -66,11 +64,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	 */
 	private List<Channel> channels;
 	
-	/**
-	 * {@link DaoService}.
-	 */
-
-	
 	private LdapSchema ldapSchema;
 	
 	private String accountDescrCodeKey;	
@@ -82,8 +75,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	private ValidationProxyTicket validationProxyTicket;
 	
 	private BruteForceBlock bruteForceBlock;
-	
-	private DaoService daoService;
 
 	/**
 	 * {@link LdapUserService}.
@@ -143,8 +134,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 		
 		logger.debug("Lancement du thread de nettoyage de la table de hashage"+this.getClass());				
 		
-		Assert.notNull(this.daoService, 
-				"property daoService of class " + this.getClass().getName() + " can not be null");
 		Assert.notNull(this.ldapUserService, 
 				"property ldapUserService of class " + this.getClass().getName() + " can not be null");
 		Assert.notNull(this.channels, 
@@ -187,68 +176,15 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	}
 
 	/**
-	 * @see org.esupportail.activbo.domain.DomainService#updateUserInfo(org.esupportail.activbo.domain.beans.User)
-	 */
-	public void updateUserInfo(final User user) {
-		if (setUserInfo(user, ldapUserService.getLdapUser(user.getId()))) {
-			updateUser(user);
-		}
-	}
-
-	/**
 	 * If the user is not found in the database, try to create it from a LDAP search.
 	 * @see org.esupportail.activbo.domain.DomainService#getUser(java.lang.String)
 	 */
 	public User getUser(final String id) throws UserNotFoundException {
-		User user = daoService.getUser(id);
-		if (user == null) {
 			LdapUser ldapUser = this.ldapUserService.getLdapUser(id);
-			user = new User();
+			User user = new User();
 			user.setId(ldapUser.getId());
 			setUserInfo(user, ldapUser);
-			daoService.addUser(user);
-			logger.info("user '" + user.getId() + "' has been added to the database");
-		}
 		return user;
-	}
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#getUsers()
-	 */
-	public List<User> getUsers() {
-		return this.daoService.getUsers();
-	}
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#updateUser(org.esupportail.activbo.domain.beans.User)
-	 */
-	public void updateUser(final User user) {
-		this.daoService.updateUser(user);
-	}
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#addAdmin(org.esupportail.activbo.domain.beans.User)
-	 */
-	public void addAdmin(
-			final User user) {
-		user.setAdmin(true);
-		updateUser(user);
-	}
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#deleteAdmin(org.esupportail.activbo.domain.beans.User)
-	 */
-	public void deleteAdmin(
-			final User user) {
-		user.setAdmin(false);
-		updateUser(user);
-	}
-	
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#getAdminPaginator()
-	 */
-	public Paginator<User> getAdminPaginator() {
-		return this.daoService.getAdminPaginator();
 	}
 
 	/**
@@ -259,91 +195,8 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	}
 
 	//////////////////////////////////////////////////////////////
-	// VersionManager
-	//////////////////////////////////////////////////////////////
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#getDatabaseVersion()
-	 */
-	public Version getDatabaseVersion() throws ConfigException {
-		VersionManager versionManager = daoService.getVersionManager();
-		if (versionManager == null) {
-			return null;
-		}
-		return new Version(versionManager.getVersion());
-	}
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#setDatabaseVersion(java.lang.String)
-	 */
-	public void setDatabaseVersion(final String version) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("setting database version to '" + version + "'...");
-		}
-		VersionManager versionManager = daoService.getVersionManager();
-		versionManager.setVersion(version);
-		daoService.updateVersionManager(versionManager);
-		if (logger.isDebugEnabled()) {
-			logger.debug("database version set to '" + version + "'.");
-		}
-	}
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#setDatabaseVersion(
-	 * org.esupportail.commons.services.application.Version)
-	 */
-	public void setDatabaseVersion(final Version version) {
-		setDatabaseVersion(version.toString());
-	}
-
-	//////////////////////////////////////////////////////////////
-	// Authorizations
-	//////////////////////////////////////////////////////////////
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#userCanViewAdmins(org.esupportail.activbo.domain.beans.User)
-	 */
-	public boolean userCanViewAdmins(final User user) {
-		if (user == null) {
-			return false;
-		}
-		return user.getAdmin();
-	}
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#userCanAddAdmin(org.esupportail.activbo.domain.beans.User)
-	 */
-	public boolean userCanAddAdmin(final User user) {
-		if (user == null) {
-			return false;
-		}
-		return user.getAdmin();
-	}
-
-	/**
-	 * @see org.esupportail.activbo.domain.DomainService#userCanDeleteAdmin(
-	 * org.esupportail.activbo.domain.beans.User, org.esupportail.activbo.domain.beans.User)
-	 */
-	public boolean userCanDeleteAdmin(final User user, final User admin) {
-		if (user == null) {
-			return false;
-		}
-		if (!user.getAdmin()) {
-			return false;
-		}
-		return !user.equals(admin);
-	}
-
-	//////////////////////////////////////////////////////////////
 	// Misc
 	//////////////////////////////////////////////////////////////
-
-	/**
-	 * @param daoService the daoService to set
-	 */
-	public void setDaoService(final DaoService daoService) {
-		this.daoService = daoService;
-	}
 
 	/**
 	 * @param ldapUserService the ldapUserService to set

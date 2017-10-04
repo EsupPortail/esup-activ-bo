@@ -15,9 +15,8 @@
 	<bean 
 		id="versionningService"
 		class="org.esupportail.activbo.services.application.VersionningServiceImpl"
-		parent="abstractDomainAwareBean"
 		>
-		<property name="firstAdministratorId" value="${init.firstAdministratorId}" />
+		<property name="firstAdministratorId" value="__unused__" />
 	</bean>
 
 </beans>

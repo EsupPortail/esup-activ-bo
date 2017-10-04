@@ -46,17 +46,6 @@
 		</property>
 	</bean>
 
-	<bean id="administratorsController"
-		class="org.esupportail.activbo.web.controllers.AdministratorsController"
-		parent="abstractContextAwareController"
-		scope="session"
-		>
-		<description>A bean to manage administrators.</description>
-		<property name="ldapUserService" ref="ldapUserService">
-			<description>The LDAP service.</description>
-		</property>
-	</bean>
-
 	<bean id="preferencesController"
 		class="org.esupportail.activbo.web.controllers.PreferencesController"
 		parent="abstractContextAwareController"
