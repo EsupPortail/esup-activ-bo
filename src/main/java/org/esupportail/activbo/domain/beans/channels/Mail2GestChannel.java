@@ -3,7 +3,7 @@
  */
 package org.esupportail.activbo.domain.beans.channels;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
@@ -24,8 +24,8 @@ public class Mail2GestChannel extends AbstractChannel{
 	private String mailCodeSubject;
 	private String mailCodeBody;
 	private String attributeDisplayName;
-	private HashMap<String,List<String>> access;
-	private HashMap<String,List<String>> deny;
+	private Map<String,List<String>> access;
+	private Map<String,List<String>> deny;
 	/* (non-Javadoc)
 	 * @see org.esupportail.activbo.domain.beans.channels.AbstractChannel#send(java.lang.String)
 	 */
@@ -98,7 +98,7 @@ public class Mail2GestChannel extends AbstractChannel{
 		else return false;
 	}
 	
-	private boolean profileMatches(HashMap<String,List<String>> profile, LdapUser ldapUser){
+	private boolean profileMatches(Map<String,List<String>> profile, LdapUser ldapUser){
 		Set<String> keySet = profile.keySet();
 		for(String attribute : keySet) {
 			List<String> values=profile.get(attribute);
@@ -127,28 +127,28 @@ public class Mail2GestChannel extends AbstractChannel{
 	/**
 	 * @return the access
 	 */
-	public HashMap<String, List<String>> getAccess() {
+	public Map<String, List<String>> getAccess() {
 		return access;
 	}
 
 	/**
 	 * @param access the access to set
 	 */
-	public void setAccess(HashMap<String, List<String>> access) {
+	public void setAccess(Map<String, List<String>> access) {
 		this.access = access;
 	}
 
 	/**
 	 * @return the deny
 	 */
-	public HashMap<String, List<String>> getDeny() {
+	public Map<String, List<String>> getDeny() {
 		return deny;
 	}
 
 	/**
 	 * @param deny the deny to set
 	 */
-	public void setDeny(HashMap<String, List<String>> deny) {
+	public void setDeny(Map<String, List<String>> deny) {
 		this.deny = deny;
 	}
 	
