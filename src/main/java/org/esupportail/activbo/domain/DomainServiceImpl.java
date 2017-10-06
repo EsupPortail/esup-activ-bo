@@ -300,7 +300,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 				logger.debug("Parcours des informations personnelles mises � jour au niveau du FO pour insertion LDAP");
 				
 				Iterator<Map.Entry<String,String>> it=hashBeanPersoInfo.entrySet().iterator();
-				int i=0;
 				while(it.hasNext()){
 					
 					List<String> list=new ArrayList<String>();
@@ -317,7 +316,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 							list.add(e.getValue());
 							ldapUser.getAttributes().put(e.getKey(),list);
 						}					
-					i++;
 				}
 				
 				this.finalizeLdapWriting(ldapUser);			
