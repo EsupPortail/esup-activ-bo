@@ -9,7 +9,6 @@ import jakarta.mail.Transport;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeUtility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
