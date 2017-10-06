@@ -1,7 +1,6 @@
 package org.esupportail.activbo.domain;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
