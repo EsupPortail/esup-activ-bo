@@ -15,6 +15,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.ldap.AttributesMapper;
 
 /**
@@ -87,6 +88,10 @@ public class LdapAttributesMapper implements AttributesMapper, Serializable {
 					if (!(attributeValue instanceof byte[])) {
 						attributeValue = attributeValue.toString();
 						listAttr.add(attributeValue.toString());
+					} else {
+                                                // transform bytes[] into base64
+						byte[] bytesVal = Base64.encodeBase64((byte[])attributeValue);
+						listAttr.add(new String(bytesVal));                     
 					}
 				}
 				@SuppressWarnings("rawtypes")
