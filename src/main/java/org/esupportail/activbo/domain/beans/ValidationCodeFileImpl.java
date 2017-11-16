@@ -59,7 +59,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
        @param HashMap  map a serialiser
    
      */
-    public void writeMap(String fileName,HashMap<String,HashMap<String,String>> map) throws IOException
+    public synchronized void writeMap(String fileName,HashMap<String,HashMap<String,String>> map) throws IOException
     {	FileOutputStream fos;
  	    try {
  	        fos = new FileOutputStream(fileName);
