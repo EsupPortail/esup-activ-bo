@@ -96,6 +96,7 @@
 				<value>${ldap.attribute.departmentNumber}</value>
 				<value>${ldap.attribute.supannAutreTelephone}</value>
 				<value>${ldap.attribute.supannRoleGenerique}</value>
+				<value>${ldap.attribute.supannActivite}</value>
 				<value>${ldap.attribute.up1RoomAccess}</value>
 				<value>${ldap.attribute.jpegPhoto}</value>
 				<value>${ldap.attribute.mailDeliveryOption}</value>
