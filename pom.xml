@@ -63,6 +63,7 @@
     <dependency><groupId>org.codehaus.xfire</groupId><artifactId>xfire-all</artifactId><version>1.2.6</version></dependency>
     <dependency><groupId>cas</groupId><artifactId>casclient</artifactId><version>2.1.1</version></dependency>
     <dependency><groupId>org.apache.myfaces.core</groupId><artifactId>myfaces-api</artifactId><version>1.1.5</version></dependency>
+    <dependency><groupId>org.springframework</groupId><artifactId>spring-portlet</artifactId><version>2.0.8</version></dependency>
     <dependency><groupId>org.springframework</groupId><artifactId>spring-ldap</artifactId><version>1.1.2</version></dependency>
     <dependency><groupId>org.acegisecurity</groupId><artifactId>acegi-security</artifactId><version>1.0.4</version></dependency>
     <dependency><groupId>com.sun</groupId><artifactId>ldapbp</artifactId><version>1.0</version></dependency>
