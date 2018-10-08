@@ -5,9 +5,11 @@ package org.esupportail.activbo.services.ldap;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.sf.ehcache.CacheManager;
 
 import javax.naming.Name;
+import javax.naming.directory.Attribute;
+
+import net.sf.ehcache.CacheManager;
 
 import org.apache.commons.codec.binary.Base64;
 import org.esupportail.activbo.exceptions.AuthentificationException;
@@ -15,7 +17,6 @@ import org.esupportail.commons.services.ldap.LdapException;
 import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
-
 import org.springframework.ldap.UncategorizedLdapException;
 import org.springframework.ldap.support.DirContextAdapter;
 import org.springframework.ldap.support.DistinguishedName;
@@ -78,6 +79,11 @@ public class WriteableLdapUserServiceImpl extends org.esupportail.commons.servic
 					 bytetVal = listVal.getBytes();
 					 obj.add(Base64.decodeBase64(bytetVal));
 					 context.setAttributeValues(ldapAttributeName, obj.toArray());
+					 // l'attribut jpegPhoto n'est pas censé etre multi-value.
+					 // spring-ldap ne sait pas faire de ADD_ATTRIBUTE + REMOVE_ATTRIBUTE de plusieurs jpegPhoto,on contourne ce bug
+					 // en lui envoyant qu'un seul attribut origine pour qu'il puisse faire du REPLACE_ATTRIBUTE au lieu de ADD_ATTRIBUTE + REMOVE_ATTRIBUTE
+					 Attribute origAttr = context.getAttributes().get(ldapAttributeName);
+                     for (int i = 1; i < origAttr.size(); i++) origAttr.remove(i);
 				 }
 				// insertion autres attributs que jpegphoto
 				 else context.setAttributeValues(ldapAttributeName, listAttrValue.toArray());
