@@ -83,7 +83,9 @@ public class WriteableLdapUserServiceImpl extends org.esupportail.commons.servic
 					 // spring-ldap ne sait pas faire de ADD_ATTRIBUTE + REMOVE_ATTRIBUTE de plusieurs jpegPhoto,on contourne ce bug
 					 // en lui envoyant qu'un seul attribut origine pour qu'il puisse faire du REPLACE_ATTRIBUTE au lieu de ADD_ATTRIBUTE + REMOVE_ATTRIBUTE
 					 Attribute origAttr = context.getAttributes().get(ldapAttributeName);
-                     for (int i = 1; i < origAttr.size(); i++) origAttr.remove(i);
+					 if (origAttr!=null){
+						 for (int i = 1; i < origAttr.size(); i++) origAttr.remove(i);
+					 }
 				 }
 				// insertion autres attributs que jpegphoto
 				 else context.setAttributeValues(ldapAttributeName, listAttrValue.toArray());
