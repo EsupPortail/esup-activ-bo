@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
@@ -29,7 +30,7 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 	 */
 	private final Logger logger = new LoggerImpl(getClass());
 	
-	protected  HashMap<String,HashMap<String,String>> validationCodes=new HashMap<String,HashMap<String,String>>();
+	protected ConcurrentHashMap<String,HashMap<String,String>> validationCodes=new ConcurrentHashMap<String,HashMap<String,String>>();
 	
 	protected Thread thread;
 	
@@ -234,15 +235,10 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 		this.cleaningTimeInterval = cleaningTimeInterval*1000;
 	}
 	
-	public HashMap<String, HashMap<String, String>> getValidationCodes() {
+	public ConcurrentHashMap<String, HashMap<String, String>> getValidationCodes() {
 		return validationCodes;
 	}
 
-	public void setValidationCodes(
-			HashMap<String, HashMap<String, String>> validationCodes) {
-		this.validationCodes = validationCodes;
-	}
-	
 	public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>> it)
 	{
 		it.remove();

@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
@@ -27,7 +28,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		validationCodes=readMap(getCodeFileName());
+		validationCodes= new ConcurrentHashMap<String, HashMap<String, String>>(readMap(getCodeFileName()));
 		logger.debug("validationCodes:"+validationCodes.size());
 	}
 	
@@ -59,12 +60,13 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
        @param HashMap  map a serialiser
    
      */
-    public synchronized void writeMap(String fileName,HashMap<String,HashMap<String,String>> map) throws IOException
+    public synchronized void writeMap(String fileName,Map<String,HashMap<String,String>> map) throws IOException
     {	FileOutputStream fos;
  	    try {
  	        fos = new FileOutputStream(fileName);
  	        ObjectOutputStream oos = new ObjectOutputStream(fos);
- 	        oos.writeObject(map);
+            // on force le format de sérialisation HashMap<String, HashMap<String,String>>
+ 	        oos.writeObject(new HashMap<String, HashMap<String,String>>(map));
 	    	oos.close();
 	
  	    } catch (FileNotFoundException e) {logger.error(e.getMessage(), e);} 
