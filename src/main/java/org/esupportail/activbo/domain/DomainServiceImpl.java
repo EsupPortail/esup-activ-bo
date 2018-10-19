@@ -531,8 +531,8 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 	public void exceptions(Exception exception) throws LdapProblemException,KerberosException, LoginException, UserPermissionException{
 		logger.debug("Dans m�thode exceptions",exception);
 		if 		(exception instanceof LdapException)throw new LdapProblemException("Probleme au niveau du LDAP");
-		else if (exception instanceof KRBException) throw new KerberosException("Probleme au niveau de Kerberos");
-		else if (exception instanceof KRBIllegalArgumentException) throw new KerberosException("Probleme au niveau de Kerberos");
+		else if (exception instanceof KRBException) throw new KerberosException("Probleme au niveau de Kerberos", exception);
+		else if (exception instanceof KRBIllegalArgumentException) throw new KerberosException("Probleme au niveau de Kerberos", exception);
 		else if (exception instanceof UserPermissionException) throw (UserPermissionException)exception;
 		else if (exception instanceof RuntimeException) throw (RuntimeException)(exception);
 		else logger.error("Erreur inattendue");
