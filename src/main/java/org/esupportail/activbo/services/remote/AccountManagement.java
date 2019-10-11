@@ -3,7 +3,6 @@ package org.esupportail.activbo.services.remote;
 import java.util.HashMap;
 import java.util.List;
 
-
 import org.esupportail.activbo.domain.beans.channels.ChannelException;
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
@@ -12,6 +11,7 @@ import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
+import org.esupportail.activbo.services.kerberos.KRBException;
 
 
 
@@ -33,4 +33,6 @@ public interface AccountManagement {
 	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException,PrincipalNotExistsException;
 	
 	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException;
+
+	public String validatePassword(String id,String password) throws KRBException, LdapProblemException, LoginException ;
 }

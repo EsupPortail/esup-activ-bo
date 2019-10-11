@@ -3,6 +3,8 @@ package org.esupportail.activbo.services.kerberos;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
 import org.esupportail.commons.utils.Assert;
@@ -236,6 +238,30 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		return exist;
 	}
 	
+	public String validatePassword(String principal, String password) throws KRBException{
+		String stdout = null;
+		String []kadmin={kadminCmd};
+		String []cmd = {"verify-password-quality",principal,password};
+		cmd = (String[]) ArrayUtils.addAll(kadmin,cmd);
+		Runtime runtime = Runtime.getRuntime();
+		Process process=null;
+		try {
+			//debug
+			logger.debug(StringUtils.join(cmd, ","));
+
+			process = runtime.exec(cmd);
+			ErrorInput errorIn=new ErrorInput(process,1);
+			new StandardInput(process);
+			if(errorIn.getLines().size()>0 )
+			 stdout=errorIn.getLines().get(0).toString();
+
+		} catch (IOException e) {
+			logger.error(e);
+			throw new KRBException("Unknown error. See log files for more information");
+		}
+		return stdout;
+	}
+
 	/**
 	 * is used for silence process
 	 * @param process

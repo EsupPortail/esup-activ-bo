@@ -13,13 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.esupportail.activbo.domain.tools.BruteForceBlock;
+import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.ValidationCode;
 import org.esupportail.activbo.domain.beans.ValidationProxyTicket;
-import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.channels.Channel;
 import org.esupportail.activbo.domain.beans.channels.ChannelException;
-
+import org.esupportail.activbo.domain.tools.BruteForceBlock;
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
@@ -280,11 +279,15 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 		return ldapUser;
 	}
 	
+	public LdapUser getLdapUserId(String id) throws LdapProblemException,LoginException{
+		LdapUser ldapUser = this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");
+		if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
+		return ldapUser;
+	}
 	public LdapUser getLdapUser(String id,String code) throws UserPermissionException,LdapProblemException,LoginException{
 		if (!validationCode.verify(id,code)) throw new UserPermissionException("Code invalide L'utilisateur id="+id+" n'a pas le droit de continuer la procédure");
 		
-		LdapUser ldapUser = this.getLdapUser("("+ldapSchema.getLogin()+"="+ id + ")");	
-		if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
+		LdapUser ldapUser = getLdapUserId(id);
 		ldapUser.getAttributes().clear(); 
 		return ldapUser;
 	}
@@ -532,7 +535,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 		else logger.error("Erreur inattendue");
 		
 	}
-	
 	
 
 }

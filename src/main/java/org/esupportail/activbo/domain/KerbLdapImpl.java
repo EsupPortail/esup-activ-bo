@@ -11,6 +11,7 @@ import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.activbo.services.kerberos.KRBAdmin;
+import org.esupportail.activbo.services.kerberos.KRBException;
 import org.esupportail.activbo.services.kerberos.KRBPrincipalAlreadyExistsException;
 import org.esupportail.commons.services.ldap.LdapException;
 import org.esupportail.commons.services.ldap.LdapUser;
@@ -166,6 +167,14 @@ public class KerbLdapImpl extends DomainServiceImpl {
 		this.kerberosAdmin = kerberosAdmin;
 	}
 	
+	public String validatePassword(String id, String password)throws KRBException, LdapProblemException, LoginException {
+		String up1KrbPrincipal=null;
+		LdapUser ldapUser=null;
+		ldapUser=this.getLdapUserId(id);
+		List<String> principals=ldapUser.getAttributes(getLdapSchema().getKrbPrincipal());
+		if(principals.size()>0)	 up1KrbPrincipal=principals.get(0);
+		return kerberosAdmin.validatePassword(up1KrbPrincipal, password);
+	}
 }
 
 

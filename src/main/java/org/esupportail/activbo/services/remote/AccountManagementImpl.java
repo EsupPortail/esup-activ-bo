@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.esupportail.activbo.domain.DomainService;
 import org.esupportail.activbo.domain.beans.channels.ChannelException;
-
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
@@ -13,7 +12,7 @@ import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
-
+import org.esupportail.activbo.services.kerberos.KRBException;
 import org.springframework.beans.factory.InitializingBean;
 
 
@@ -69,6 +68,11 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	
 	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
 		return domainService.authentificateUser(id, password,attrPersoInfo);
+	}
+
+
+	public String validatePassword(String id, String password) throws KRBException, LdapProblemException, LoginException {
+		return domainService.validatePassword(id, password);
 	}
 
 }

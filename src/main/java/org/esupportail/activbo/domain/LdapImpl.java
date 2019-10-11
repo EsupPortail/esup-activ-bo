@@ -12,6 +12,7 @@ import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
+import org.esupportail.activbo.services.kerberos.KRBException;
 import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
@@ -87,6 +88,10 @@ public class LdapImpl extends DomainServiceImpl {
 		
 
 		return encryptedPassword;
+	}
+
+	public String validatePassword(String id, String password)throws KRBException, LdapProblemException, LoginException {
+		return "Fonction non traitée";
 	}
 	
 

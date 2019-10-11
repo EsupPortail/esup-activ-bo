@@ -51,5 +51,6 @@ public interface KRBAdmin {
 	 * @throws KRBException, KRBPrincipalAlreadyExistsException
 	 */
 	public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException;
+	public String validatePassword (String principal, String password) throws KRBException ;
 
 }

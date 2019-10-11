@@ -8,8 +8,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
-
-
 import org.esupportail.activbo.domain.beans.User;
 import org.esupportail.activbo.domain.beans.channels.ChannelException;
 import org.esupportail.activbo.exceptions.AuthentificationException;
@@ -19,6 +17,7 @@ import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
+import org.esupportail.activbo.services.kerberos.KRBException;
 import org.esupportail.commons.exceptions.UserNotFoundException;
 
 /**
@@ -61,5 +60,6 @@ public interface DomainService extends Serializable {
 	public HashMap<String,String> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
 
 	public HashMap<String,String> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
+	public String validatePassword(String id, String password) throws  KRBException,LdapProblemException, LoginException;
 
 }
