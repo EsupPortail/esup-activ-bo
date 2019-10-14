@@ -27,6 +27,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	private String options="";
 	
 	private String kadminCmd;
+	private String realm;
 	
 	/**
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -54,18 +55,19 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * 
 	 */
 	public void add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException{
-		
-		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
-		
-		if( !(principal.contains(" ") || passwd.contains(" "))){
+		if( !(principal.contains(" "))){
 			if(!exists(principal)){
-			
-				String cmd =kadmin+" add --password="+passwd+" "+options+" "+principal;
+				//Passer cmd sous forme de tableau de String permet de gérer les mots de passe avec espace.
+				//Si cmd est un String, kerberos refusera un mot de passe contenant un espace car il fait une concaténation de paramètres sans escaping
+				String []opt=options.split(" ");
+				String []cmd= {"add","--password="+passwd};
+				cmd = (String[]) ArrayUtils.add(ArrayUtils.addAll(ArrayUtils.addAll(kadminCmd(),cmd),opt),principal);
+
 				Runtime runtime = Runtime.getRuntime();
 				Process process;
 				try {
 					//debug
-					logger.debug(cmd.replaceFirst("--password=.* ", "--password=****** "));
+					logger.debug((StringUtils.join(cmd, ",")).replaceFirst("--password=.* ", "--password=****** "));
 					
 					process = runtime.exec(cmd);
 					
@@ -91,14 +93,14 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#del(String)
 	 */
 	public void del(final String principal) throws KRBException{
-		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
+		String []cmd = {"del",principal};
+		cmd = (String[]) ArrayUtils.addAll(kadminCmd(),cmd);
 		
-		String cmd =kadmin+" del "+principal;
 		Runtime runtime = Runtime.getRuntime();
 		Process process;
 		try {
 			//debug
-			logger.debug(cmd);
+			logger.debug(StringUtils.join(cmd, ","));
 			
 			process = runtime.exec(cmd);
 			//this command must be silence if not something unknown happened
@@ -118,17 +120,16 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * 
 */
 	public void changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException{
-		
-		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
-		
 		//eliminer les requetes par injection de code
-		if( !(principal.contains(" ") || passwd.contains(" "))){
-			String cmd =kadmin+" passwd --password="+passwd+" "+principal;
+		if( !(principal.contains(" "))){
+			String []cmd = {"passwd","--password="+passwd,principal};
+			cmd = (String[]) ArrayUtils.addAll(kadminCmd(),cmd);
+
 			Runtime runtime = Runtime.getRuntime();
 			Process process;
 			try {
-				//debug				
-				logger.debug(cmd.replaceFirst("--password=.* ", "--password=****** "));
+				//debug
+				logger.debug((StringUtils.join(cmd, ",")).replaceFirst("--password=.* ", "--password=****** "));
 
 				process = runtime.exec(cmd);
 				//this command must be silence if not something unknown happened
@@ -186,8 +187,8 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 * @see org.esupportail.activbo.services.kerberos.KRBAdmin#rename(String,String)
 	 */
 	public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException{
-		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
-		String cmd=kadmin+" rename "+oldPrincipal+" "+newPrincipal;
+		String []cmd = {"rename",oldPrincipal,newPrincipal};
+		cmd = (String[]) ArrayUtils.addAll(kadminCmd(),cmd);
 		
 		if(this.exists(newPrincipal)) throw new KRBPrincipalAlreadyExistsException("The new principal "+newPrincipal+" already exists");
 		
@@ -195,7 +196,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		Process process;
 		try {
 			//debug
-			logger.debug(cmd);
+			logger.debug(StringUtils.join(cmd, ","));
 			
 			process = runtime.exec(cmd);
 			//this command must be silence if not something unknown happened
@@ -216,14 +217,13 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	public boolean exists(String principal) throws KRBException{
 		
 		boolean exist=true; 	
-		String kadmin=kadminCmd+" -p "+principalAdmin+" -K "+principalAdminKeyTab;
-		
-		String cmd=kadmin+" list -s "+principal;
+		String []cmd = {"list","-s",principal};
+		cmd = (String[]) ArrayUtils.addAll(kadminCmd(),cmd);
 		Runtime runtime = Runtime.getRuntime();
 		Process process=null;
 		try {
 			//debug
-			logger.debug(cmd);
+			logger.debug(StringUtils.join(cmd, ","));
 			
 			process = runtime.exec(cmd);
 			ErrorInput errorIn=new ErrorInput(process,1);
@@ -238,6 +238,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		return exist;
 	}
 	
+
 	public String validatePassword(String principal, String password) throws KRBException{
 		String stdout = null;
 		String []kadmin={kadminCmd};
@@ -260,6 +261,12 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			throw new KRBException("Unknown error. See log files for more information");
 		}
 		return stdout;
+	}
+
+	private String[] kadminCmd() {
+		//Ajouter realm, permet de travailler sur le domain test(TEST.UNIV-PARIS1.FR) ou prod
+		String []kadmin={kadminCmd,"-r",realm,"-p",principalAdmin,"-K",principalAdminKeyTab};
+		return kadmin;
 	}
 
 	/**
@@ -295,6 +302,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	 */
 	public void setKadminCmd(String kadminCmd) {
 		this.kadminCmd = kadminCmd;
+	}
+	public void setRealm(String realm) {
+		this.realm = realm;
 	}
 
 }

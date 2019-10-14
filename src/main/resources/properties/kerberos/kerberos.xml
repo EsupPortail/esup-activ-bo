@@ -37,5 +37,8 @@
 		<property name="kadminCmd" value="${kerberos.kadmin}">
 			<description>kadmin command</description>
 		</property>
+		<property name="realm" value="${kerberos.realm}">
+            <description>kadmin command</description>
+        </property>
 	</bean>
 </beans>
