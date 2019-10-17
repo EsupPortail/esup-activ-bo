@@ -58,6 +58,11 @@ public class KRBAdminMock implements KRBAdmin,InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	public String validatePassword(String principal, String password) throws KRBException {
+		return "Fonction non traitée";
 	}	
 
 }
