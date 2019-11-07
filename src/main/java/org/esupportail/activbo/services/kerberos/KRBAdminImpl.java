@@ -67,7 +67,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 				Process process;
 				try {
 					//debug
-					logger.debug((StringUtils.join(cmd, ",")).replaceFirst("--password=.* ", "--password=****** "));
+					logger.debug((StringUtils.join(cmd, " ")).replaceFirst("--password=.* ", "--password=****** "));
 					
 					process = runtime.exec(cmd);
 					
@@ -129,7 +129,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			Process process;
 			try {
 				//debug
-				logger.debug((StringUtils.join(cmd, ",")).replaceFirst("--password=.* ", "--password=****** "));
+				logger.debug((StringUtils.join(cmd, " ")).replaceFirst("--password=.* ", "--password=****** "));
 
 				process = runtime.exec(cmd);
 				//this command must be silence if not something unknown happened
