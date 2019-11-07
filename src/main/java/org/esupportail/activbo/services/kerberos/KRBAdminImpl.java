@@ -196,7 +196,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		Process process;
 		try {
 			//debug
-			logger.debug(StringUtils.join(cmd, ","));
+			logger.debug(StringUtils.join(cmd, " "));
 			
 			process = runtime.exec(cmd);
 			//this command must be silence if not something unknown happened
@@ -223,7 +223,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		Process process=null;
 		try {
 			//debug
-			logger.debug(StringUtils.join(cmd, ","));
+			logger.debug(StringUtils.join(cmd, " "));
 			
 			process = runtime.exec(cmd);
 			ErrorInput errorIn=new ErrorInput(process,1);
@@ -248,7 +248,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 		Process process=null;
 		try {
 			//debug
-			logger.debug(StringUtils.join(cmd, ","));
+			logger.debug(StringUtils.join(cmd, " "));
 
 			process = runtime.exec(cmd);
 			ErrorInput errorIn=new ErrorInput(process,1);
