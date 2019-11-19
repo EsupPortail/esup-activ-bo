@@ -34,5 +34,5 @@ public interface AccountManagement {
 	
 	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException;
 
-	public String validatePassword(String id,String password) throws KRBException, LdapProblemException, LoginException ;
+	public String validatePassword(String supannAliasLogin,String password) throws KRBException, LdapProblemException, LoginException ;
 }

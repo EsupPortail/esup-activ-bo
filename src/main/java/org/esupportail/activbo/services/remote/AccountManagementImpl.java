@@ -71,8 +71,8 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	}
 
 
-	public String validatePassword(String id, String password) throws KRBException, LdapProblemException, LoginException {
-		return domainService.validatePassword(id, password);
+	public String validatePassword(String supannAliasLogin, String password) throws KRBException, LdapProblemException, LoginException {
+		return domainService.validatePassword(supannAliasLogin, password);
 	}
 
 }

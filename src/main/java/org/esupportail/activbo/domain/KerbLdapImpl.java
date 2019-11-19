@@ -167,12 +167,10 @@ public class KerbLdapImpl extends DomainServiceImpl {
 		this.kerberosAdmin = kerberosAdmin;
 	}
 	
-	public String validatePassword(String id, String password)throws KRBException, LdapProblemException, LoginException {
+	public String validatePassword(String supannAliasLogin, String password)throws KRBException, LdapProblemException, LoginException {
 		String up1KrbPrincipal=null;
-		LdapUser ldapUser=null;
-		ldapUser=this.getLdapUserId(id);
-		List<String> principals=ldapUser.getAttributes(getLdapSchema().getKrbPrincipal());
-		if(principals.size()>0)	 up1KrbPrincipal=principals.get(0);
+		//Généré le up1KrbPrincipal
+		up1KrbPrincipal=supannAliasLogin+"@"+krbHost;
 		return kerberosAdmin.validatePassword(up1KrbPrincipal, password);
 	}
 }

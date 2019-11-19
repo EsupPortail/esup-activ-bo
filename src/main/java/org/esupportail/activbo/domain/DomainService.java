@@ -60,6 +60,6 @@ public interface DomainService extends Serializable {
 	public HashMap<String,String> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
 
 	public HashMap<String,String> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
-	public String validatePassword(String id, String password) throws  KRBException,LdapProblemException, LoginException;
+	public String validatePassword(String supannAliasLogin, String password) throws  KRBException,LdapProblemException, LoginException;
 
 }

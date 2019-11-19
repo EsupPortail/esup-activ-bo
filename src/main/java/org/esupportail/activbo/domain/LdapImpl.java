@@ -90,7 +90,7 @@ public class LdapImpl extends DomainServiceImpl {
 		return encryptedPassword;
 	}
 
-	public String validatePassword(String id, String password)throws KRBException, LdapProblemException, LoginException {
+	public String validatePassword(String supannAliasLogin, String password)throws KRBException, LdapProblemException, LoginException {
 		return "Fonction non traitée";
 	}
 	
