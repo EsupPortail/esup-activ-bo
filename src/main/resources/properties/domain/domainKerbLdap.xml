@@ -11,7 +11,7 @@
 			parent="abstractDomainService">			
 		
 		<property name="krbLdapMethod" value="${kerberos.ldap.method}" />
-		<property name="krbHost" value="${kerberos.host}" />
+		<property name="krbRealm" value="${kerberos.realm}" />
 		
 		<property name="kerberosAdmin" ref="KRBAdminService" />
 	

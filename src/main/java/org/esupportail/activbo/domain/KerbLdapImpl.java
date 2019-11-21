@@ -30,7 +30,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 	 * kerberos.ldap.method
 	 * kerberos.host
 	 */
-	private String krbLdapMethod,krbHost;
+	private String krbLdapMethod,krbRealm;
 	
 	/**
 	 * {@link KerberosAdmin}
@@ -120,8 +120,8 @@ public class KerbLdapImpl extends DomainServiceImpl {
 		if(principals.size()>0)	krbPrincipal=principals.get(0);
 		
 		logger.debug("ancien redirection : "+ldapUserRedirectKerb);
-		String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbHost;
-		String newPrincipal=id+"@"+krbHost;
+		String redirectKer="{"+krbLdapMethod+"}"+id+"@"+krbRealm;
+		String newPrincipal=id+"@"+krbRealm;
 		
 		if (!redirectKer.equals(ldapUserRedirectKerb) || !newPrincipal.equals(krbPrincipal)) {
 			logger.debug("Le compte Kerberos ne g�re pas encore l'authentification");
@@ -159,8 +159,8 @@ public class KerbLdapImpl extends DomainServiceImpl {
 	/**
 	 * @param krbHost
 	 */
-	public final void setKrbHost(String krbHost) {
-		this.krbHost = krbHost;
+	public final void setKrbRealm(String krbRealm) {
+		this.krbRealm = krbRealm;
 	}
 
 	public void setKerberosAdmin(KRBAdmin kerberosAdmin) {
@@ -170,7 +170,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 	public String validatePassword(String supannAliasLogin, String password)throws KRBException, LdapProblemException, LoginException {
 		String up1KrbPrincipal=null;
 		//Généré le up1KrbPrincipal
-		up1KrbPrincipal=supannAliasLogin+"@"+krbHost;
+		up1KrbPrincipal=supannAliasLogin+"@"+krbRealm;
 		return kerberosAdmin.validatePassword(up1KrbPrincipal, password);
 	}
 }
