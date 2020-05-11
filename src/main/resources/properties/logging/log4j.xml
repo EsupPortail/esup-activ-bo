@@ -13,7 +13,6 @@
 	<!-- Rotation tous les jours -->
 	<appender name="fileAppenderEsup-activ-bo" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="File" value="esup-activ-bo.log" />
-		<param name="append" value="true"/>
 			<!-- a paramétrer -->
 		<param name="DatePattern" value="'.'yyyy-MM" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -25,7 +24,6 @@
 	<!-- Rotation tous les jours -->
 	<appender name="fileAppenderModifiedData" class="org.apache.log4j.DailyRollingFileAppender" >
 		<param name="file" value="esup-activ-bo-modifiedDataFile.log"/>
-		<param name="append" value="true"/>
 		<param name="DatePattern" value="'.'yyyy-MM" />
 		<layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %p [%c] - %m%n" />
