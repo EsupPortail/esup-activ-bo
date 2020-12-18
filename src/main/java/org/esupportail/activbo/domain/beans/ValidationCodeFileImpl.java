@@ -36,9 +36,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	public String generateCode(String id, int codeDelay) {
 		String code = null;
 		code=super.generateCode(id, codeDelay);
-		try {
-			this.writeMap(getCodeFileName(),validationCodes);
-		} catch (IOException e) {logger.error(e.getMessage(), e);}
+		writeMap();
 				
 		return code;
 		
@@ -48,6 +46,10 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>> it)
 	{
 		it.remove();
+		writeMap();
+	}
+    
+	private void writeMap() {
 		try {
 			writeMap(getCodeFileName(), validationCodes);
 		} catch (IOException e) {logger.error(e.getMessage(), e);}
