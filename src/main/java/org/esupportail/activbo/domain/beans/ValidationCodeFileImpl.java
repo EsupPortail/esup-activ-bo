@@ -45,7 +45,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	@Override
 	public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>> it)
 	{
-		it.remove();
+		super.removeCode(it);
 		writeMap();
 	}
     
