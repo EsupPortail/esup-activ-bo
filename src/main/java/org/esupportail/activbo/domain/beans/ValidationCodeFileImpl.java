@@ -36,9 +36,14 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	public String generateCode(String id, int codeDelay) {
 		String code = super.generateCode(id, codeDelay);
 		writeMap();
-				
 		return code;
+	}
 		
+	@Override
+	public void removeCode(String userId)
+	{
+		super.removeCode(userId);
+		writeMap();
 	}
 	
 	@Override

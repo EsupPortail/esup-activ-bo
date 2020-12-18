@@ -328,7 +328,10 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 			throw new LdapProblemException("Probleme au niveau du LDAP");
 		}
 	}
-	
+
+	public void removeCode(String user_id, String code) {
+	    validationCode.removeCode(user_id);
+	}
 	
 	public void sendCode(String id,String canal)throws ChannelException{	
 		for(Channel c:channels)

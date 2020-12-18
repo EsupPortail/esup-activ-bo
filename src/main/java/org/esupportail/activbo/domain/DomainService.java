@@ -49,6 +49,8 @@ public interface DomainService extends Serializable {
 	
 	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo) throws LdapProblemException,UserPermissionException,LoginException;
 	
+	public void removeCode(String user_id, String code);
+
 	public void sendCode(String id,String canal)throws ChannelException;
 	
 	public boolean validateCode(String id,String code)throws UserPermissionException;

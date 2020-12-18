@@ -239,6 +239,11 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 		return validationCodes;
 	}
 
+	public void removeCode(String userId)
+	{
+		validationCodes.remove(userId);
+	}
+
 	public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>> it)
 	{
 		it.remove();

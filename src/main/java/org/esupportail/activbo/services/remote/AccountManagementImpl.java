@@ -32,11 +32,12 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
 	
 	public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
 		domainService.setPassword(id,code,currentPassword);
-		
+		domainService.removeCode(id, code);
 	}
 	
 	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
 		domainService.setPassword(id,code,newLogin,currentPassword);
+		domainService.removeCode(id, code);
 	}
 	
 	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{

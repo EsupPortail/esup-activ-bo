@@ -21,6 +21,8 @@ public interface ValidationCode{
 			
 	public String generateCode(String id);
 	
+	public void removeCode(String userId);
+
 	public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>>it);
 	
 }
