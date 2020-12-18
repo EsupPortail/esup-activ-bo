@@ -42,25 +42,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 
 	//
 	public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		LdapUser ldapUser=null;		
-		try {
-			ldapUser=this.getLdapUser(id, code);
-			this.gestRedirectionKerberos(ldapUser,id);
-			//Ajout ou modification du mot de passe dans kerberos
-			kerberosAdmin.add(id, currentPassword);
-			logger.info("Ajout de mot de passe dans kerberos effectu�e");
-			this.finalizeLdapWriting(ldapUser);
-		} 
-		catch (KRBPrincipalAlreadyExistsException e){
-			
-			try{
-				logger.info("Le compte kerberos de l'utilisateur "+id+" existe d�ja, Modification du password");
-				kerberosAdmin.changePasswd(id, currentPassword);
-				this.finalizeLdapWriting(ldapUser);
-			
-			} catch(Exception  e2){exceptions (e2);}
-			
-		}catch(Exception  e3){exceptions (e3);}
+		setPassword(id, code, null, currentPassword);
 	}
 	
 	//
@@ -68,13 +50,14 @@ public class KerbLdapImpl extends DomainServiceImpl {
 		LdapUser ldapUser=null; 
 		try {
 			   ldapUser=this.getLdapUser(id, code);
-				this.gestRedirectionKerberos(ldapUser,newLogin);
+				this.gestRedirectionKerberos(ldapUser, newLogin != null ? newLogin : id);
 				kerberosAdmin.add(id, currentPassword);
 				logger.info("Ajout de mot de passe dans kerberos effectu�e");
-				
-				List<String> list=new ArrayList<String>();
-				list.add(newLogin);
-				ldapUser.getAttributes().put(getLdapSchema().getLogin(),list);
+				if (newLogin != null) {
+				    List<String> list=new ArrayList<String>();
+				    list.add(newLogin);
+				    ldapUser.getAttributes().put(getLdapSchema().getLogin(),list);
+				}
 
 				this.finalizeLdapWriting(ldapUser);
 		 } catch (KRBPrincipalAlreadyExistsException e){
