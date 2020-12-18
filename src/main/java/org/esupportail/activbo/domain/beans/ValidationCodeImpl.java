@@ -97,18 +97,7 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 		c.add(Calendar.SECOND,codeDelay);
 		Date date=c.getTime();
 			
-		HashMap<String,String> userData= validationCodes.get(id);		
-		if(userData==null) userData= new HashMap<String,String>();	
-		else 
-			{
-				code=userData.get(codeKey);
-				try {
-					date=this.stringToDate(getDate(id));
-				} catch (ParseException e) {
-					logger.error(e.getMessage());
-				}
-			}
-		if(c.getTime().getTime()>date.getTime()) date=c.getTime();
+		HashMap<String,String> userData= new HashMap<String,String>();	
 		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);							
 		userData.put(codeKey,code);
 		userData.put(dateKey,this.dateToString(date));
