@@ -91,7 +91,7 @@ public class LdapImpl extends DomainServiceImpl {
 	}
 
 	public String validatePassword(String supannAliasLogin, String password)throws KRBException, LdapProblemException, LoginException {
-		return "Fonction non traitée";
+		return null; // no (extra) validation, relying on application calling esup-activ-bo to validate it!
 	}
 	
 
