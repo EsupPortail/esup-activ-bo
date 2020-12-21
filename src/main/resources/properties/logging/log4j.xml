@@ -16,7 +16,7 @@
 			<!-- a paramétrer -->
 		<param name="DatePattern" value="'.'yyyy-MM" />
 		<layout class="org.apache.log4j.PatternLayout">
-		<param name="ConversionPattern" value="%d %p [%c] - %m%n" />
+		<param name="ConversionPattern" value="%X{Client-IP} %d %p [%c] - %m%n" />
 		</layout>
 	</appender>
 	
@@ -26,7 +26,7 @@
 		<param name="file" value="esup-activ-bo-modifiedDataFile.log"/>
 		<param name="DatePattern" value="'.'yyyy-MM" />
 		<layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d %p [%c] - %m%n" />
+            <param name="ConversionPattern" value="%X{Client-IP} %d %p [%c] - %m%n" />
         </layout>
 		<filter class="org.apache.log4j.varia.LevelMatchFilter">
 			<param name="levelToMatch" value="INFO" />
