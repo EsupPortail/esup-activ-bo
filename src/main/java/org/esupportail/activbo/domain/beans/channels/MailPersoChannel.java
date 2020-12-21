@@ -52,12 +52,13 @@ public class MailPersoChannel extends AbstractChannel{
 			}
 			
 			String mailBody=this.mailCodeBody.replace("{0}", displayName);
-			mailBody=mailBody.replace("{1}", validationCode.getCode(id));
+			String code = validationCode.getCode(id);
+			mailBody=mailBody.replace("{1}", code);
 			mailBody=mailBody.replace("{2}", validationCode.getDate(id));
 			
 			smtpService.send(mail,newSubject,mailBody,"");
 			
-			logger.debug("Envoi du code à l'adresse mail "+mailPerso);										
+			logger.info(id + "@" + code + ": Envoi du code à l'adresse mail perso "+mailPerso);
 	}
 	/**
 	 * @param attributeMailPerso the attributeMailPerso to set

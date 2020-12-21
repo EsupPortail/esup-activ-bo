@@ -50,13 +50,14 @@ public class Mail2GestChannel extends AbstractChannel{
 			}
 			
 			String mailBody=this.mailCodeBody;
+			String code = validationCode.getCode(id);
 			mailBody=mailBody.replace("{0}", id);
-			mailBody=mailBody.replace("{1}", validationCode.getCode(id));
+			mailBody=mailBody.replace("{1}", code);
 			mailBody=mailBody.replace("{2}", validationCode.getDate(id));
 			mailBody=mailBody.replace("{3}", displayName);
 			
 			smtpService.send(mail,newSubject,mailBody,"");
-			logger.debug("Envoi du code à l'adresse mail "+mailGest);										
+			logger.info(id + "@" + code + ": Envoi du code à l'adresse mail gestionnaire "+mailGest);
 	}
 
 	/**

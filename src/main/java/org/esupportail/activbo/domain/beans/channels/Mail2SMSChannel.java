@@ -48,13 +48,14 @@ public class Mail2SMSChannel extends AbstractChannel{
 			}
 			
 			String mailBody=this.mailCodeBody;
+			String code = validationCode.getCode(id);
 			mailBody=mailBody.replace("{0}", pager);
-			mailBody=mailBody.replace("{1}", validationCode.getCode(id));
+			mailBody=mailBody.replace("{1}", code);
 			mailBody=mailBody.replace("{2}", validationCode.getDate(id));
 			
 			smtpService.send(mail,this.mailCodeSubject,"",mailBody);
 			
-			logger.debug("Envoi du code par sms via mail2sms au numéro portable "+pager);										
+			logger.info(id + "@" + code + ": Envoi du code par sms via mail2sms au numéro portable "+pager);
 	}
 	
 	/**

@@ -51,7 +51,8 @@ public class SMSUChannel extends AbstractChannel{
 									
 			
 			String message=this.messageBody;
-			message=message.replace("{0}", validationCode.getCode(id));
+			String code = validationCode.getCode(id);
+			message=message.replace("{0}", code);
 			Map<String, String> map = new HashMap<String,String>();
 			HttpClient client = new HttpClient();
 		    client.getState().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM),
@@ -68,7 +69,7 @@ public class SMSUChannel extends AbstractChannel{
 			
 			
 			
-			logger.debug("Envoi du code par sms au numéro portable "+pager);										
+			logger.info(id + "@" + code + ": Envoi du code par sms au numéro portable "+pager);
 	}
 	
 
