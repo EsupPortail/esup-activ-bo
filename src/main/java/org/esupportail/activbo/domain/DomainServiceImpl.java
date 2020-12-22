@@ -230,7 +230,10 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 		
 		LdapUser ldapUser=this.getLdapUser(filter);
 				
-		if (ldapUser==null) throw new AuthentificationException("Identification �chouée : "+filter);
+		if (ldapUser==null) {
+		    logger.warn("Identification failed: " + filter);
+		    throw new AuthentificationException("Identification �chouée : "+filter);
+		}
 							
 		//Construction du hasMap de retour
 		
