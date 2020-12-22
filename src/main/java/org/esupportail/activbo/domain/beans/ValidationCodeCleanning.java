@@ -30,7 +30,7 @@ public class ValidationCodeCleanning implements Runnable {
 					while(it.hasNext()){
 						Map.Entry<String, HashMap<String,String>> e=it.next();
 						HashMap<String,String> hash=e.getValue();
-						logger.info("Utilisateur "+e.getKey()+"(Code --> "+hash.get(vc.getCodeKey())+"  ||  Date d'expiration --> "+hash.get(vc.getDateKey())+")");
+						logger.debug("Utilisateur "+e.getKey()+"(Code --> "+hash.get(vc.getCodeKey())+"  ||  Date d'expiration --> "+hash.get(vc.getDateKey())+")");
 						
 						Date date=new Date();
 						
