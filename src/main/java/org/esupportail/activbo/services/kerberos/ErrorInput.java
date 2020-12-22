@@ -56,6 +56,7 @@ public class ErrorInput extends Thread{
 				//error
 				logger.warn(line);
 				arrayLine.add(line);
+				i++;
 			}
 		}catch(final IOException ioe) {logger.error(ioe);}
 		return arrayLine;

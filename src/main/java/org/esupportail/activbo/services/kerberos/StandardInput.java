@@ -54,6 +54,7 @@ public class StandardInput extends Thread{
 				//INFO	
 				logger.info(line);
 				arrayLine.add(line);
+				i++;
 			}
 		}catch(final IOException ioe) {logger.error(ioe);}
 		return arrayLine;
