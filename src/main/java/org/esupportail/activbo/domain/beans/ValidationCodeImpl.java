@@ -98,7 +98,7 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 		Date date=c.getTime();
 			
 		HashMap<String,String> userData= new HashMap<String,String>();	
-		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);							
+		logger.trace("Code de validation pour l'utilisateur : "+id+" est :"+ code + " avec durée de vie " + codeDelay + " secondes");
 		userData.put(codeKey,code);
 		userData.put(dateKey,this.dateToString(date));
 		if (channel != null) userData.put("channel", channel); // only useful to differentiate channel codes (sent to user) and service codes (when CASified)
