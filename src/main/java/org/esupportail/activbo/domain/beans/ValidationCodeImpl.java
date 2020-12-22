@@ -89,7 +89,7 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
     	else return null;
     }
     
-	public String generateCode(String id,int codeDelay){
+	public String generateCode(String id,int codeDelay,String channel){
 			
 		String code=getRandomCode();			
 		
@@ -101,6 +101,7 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 		logger.trace("Code de vadidation pour l'utilisateur : "+id+" est :"+ code);							
 		userData.put(codeKey,code);
 		userData.put(dateKey,this.dateToString(date));
+		if (channel != null) userData.put("channel", channel); // only useful to differentiate channel codes (sent to user) and service codes (when CASified)
 				
 		validationCodes.put(id, userData);
 		validationCodeCleanning();
@@ -118,9 +119,13 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 		}
 		
 	}
-	
+
+	public String generateChannelCode(String id, int codeDelay, String channel){
+		return generateCode(id,codeDelay, channel);
+	}
+
 	public String generateCode(String id){
-		return generateCode(id,codeDelay);
+		return generateCode(id,codeDelay, null);
 	}
 
 	private String getRandomCode()

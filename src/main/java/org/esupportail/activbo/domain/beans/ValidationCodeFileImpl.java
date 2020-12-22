@@ -33,8 +33,8 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
 	}
 	
 	@Override
-	public String generateCode(String id, int codeDelay) {
-		String code = super.generateCode(id, codeDelay);
+	public String generateCode(String id, int codeDelay, String channel) {
+		String code = super.generateCode(id, codeDelay, channel);
 		writeMap();
 		return code;
 	}

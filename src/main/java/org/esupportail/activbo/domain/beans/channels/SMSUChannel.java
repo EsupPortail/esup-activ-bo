@@ -37,7 +37,7 @@ public class SMSUChannel extends AbstractChannel{
 	@Override
 	public void send(String id) throws ChannelException {
 		
-			this.validationCode.generateCode(id, codeDelay);
+			this.validationCode.generateChannelCode(id, codeDelay, getName());
 			logger.debug("Insertion code pour l'utilisateur "+id+" dans la table effectuée");
 			
 			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");

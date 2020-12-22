@@ -17,8 +17,8 @@ public interface ValidationCode{
 	 */  
     public String getDate(String id);
     
-	public String generateCode(String id,int codeDelay);
-			
+	public String generateChannelCode(String id,int codeDelay, String channelName);
+
 	public String generateCode(String id);
 	
 	public void removeCode(String userId);
