@@ -105,6 +105,7 @@ public class WriteableLdapUserServiceImpl extends org.esupportail.commons.servic
 		} catch (UncategorizedLdapException e) {
 			logger.debug("Une authentification a échouée : "+e);
 			if (e.getCause() instanceof javax.naming.AuthenticationException) {
+				logger.warn("Authentification invalide pour l'utilisateur " + ldapUser.getId());
 				throw new AuthentificationException("Authentification invalide pour l'utilisateur " + ldapUser.getId());
 			}
 		} 
