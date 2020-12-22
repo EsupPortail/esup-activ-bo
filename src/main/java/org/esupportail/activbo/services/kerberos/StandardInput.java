@@ -19,15 +19,16 @@ public class StandardInput extends Thread{
 	private final Logger logger = new LoggerImpl(getClass());
 	
 	private final BufferedReader reader;
-	private final ArrayList<String> arrayLine=new ArrayList<String>();
 
 	static void background_log(Process process) {
-		new StandardInput(process);
+		(new StandardInput(process)).start();
 	}
 
 	static String getFirstLine_and_log_the_rest(Process process) {
-	    StandardInput o = new StandardInput(process, 1);
-	    return o.getLines().isEmpty() ? null : o.getLines().get(0);
+	    StandardInput o = new StandardInput(process);
+	    ArrayList<String> lines = o.readLines(1);
+	    o.start();
+	    return lines.isEmpty() ? null : lines.get(0);
 	}
 
 	/**
@@ -36,16 +37,15 @@ public class StandardInput extends Thread{
 	private StandardInput(Process process)
 	{
 		reader=new BufferedReader(new InputStreamReader(process.getInputStream()));
-		start();
 	}
 	
 	/**
 	 * @param p
 	 * @param n nb minimun de lignes de sortie 
 	 */
-	private StandardInput(Process process, int n)
+	private ArrayList<String> readLines(int n)
 	{
-		reader=new BufferedReader(new InputStreamReader(process.getInputStream()));
+		ArrayList<String> arrayLine=new ArrayList<String>();
 		int i=0;
 		String line="";
 		try{
@@ -56,11 +56,6 @@ public class StandardInput extends Thread{
 				arrayLine.add(line);
 			}
 		}catch(final IOException ioe) {logger.error(ioe);}
-		start();
-	}
-	
-	public ArrayList<String> getLines()
-	{		
 		return arrayLine;
 	}
 	
