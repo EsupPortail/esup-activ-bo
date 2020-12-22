@@ -159,7 +159,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			//debug
 			logger.debug(cmd);
 			process = runtime.exec(cmd);
-			new ErrorInput(process);			
+			ErrorInput.background_log(process);
 			
 			//changement du mot de passe
 			pw=new PrintWriter(process.getOutputStream());
@@ -168,7 +168,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			pw.println(newPasswd);
 			pw.flush();
 			
-			/*StandardInput input=new StandardInput(process,1);
+			/*StandardInput input=StandardInput.background_log(process,1);
 			if(input.getLines().size()>0 && input.getLines().get(0).contains("Password changed"))
 				state=CHANGED;*/																	
 		
@@ -226,9 +226,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			logger.debug(StringUtils.join(cmd, " "));
 			
 			process = runtime.exec(cmd);
-			ErrorInput errorIn=new ErrorInput(process,1);
-			new StandardInput(process);
-			 if(errorIn.getLines().size()>0 && errorIn.getLines().get(0).contains("Principal does not exist"))
+			String err = ErrorInput.getFirstLine_and_log_the_rest(process);
+			StandardInput.background_log(process);
+			if(err != null && err.contains("Principal does not exist"))
                   exist=false;
 			
 		} catch (IOException e) { 
@@ -251,10 +251,8 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 			logger.debug(StringUtils.join(cmd, " "));
 
 			process = runtime.exec(cmd);
-			ErrorInput errorIn=new ErrorInput(process,1);
-			new StandardInput(process);
-			if(errorIn.getLines().size()>0 )
-			 stdout=errorIn.getLines().get(0).toString();
+			stdout = ErrorInput.getFirstLine_and_log_the_rest(process);
+			StandardInput.background_log(process);
 
 		} catch (IOException e) {
 			logger.error(e);
@@ -277,9 +275,9 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
 	private boolean verboseProcess(Process process)
 	{
 				
-		StandardInput input1=new StandardInput(process,1);
-		ErrorInput input2=new ErrorInput(process,1);
-		if(input1.getLines().size()>0 || input2.getLines().size()>0)
+		String input1= StandardInput.getFirstLine_and_log_the_rest(process);
+		String input2= ErrorInput.getFirstLine_and_log_the_rest(process);
+		if(input1 != null || input2 != null)
 			return true;
 		else 
 			return false;					

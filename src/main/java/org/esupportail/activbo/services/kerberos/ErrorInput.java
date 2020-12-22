@@ -23,20 +23,29 @@ public class ErrorInput extends Thread{
 	private final BufferedReader reader;
 	private final ArrayList<String> arrayLine=new ArrayList<String>();
 
+	static void background_log(Process process) {
+	    new ErrorInput(process);
+	}
+
+	static String getFirstLine_and_log_the_rest(Process process) {
+	    ErrorInput errorIn = new ErrorInput(process, 1);
+	    return errorIn.getLines().isEmpty() ? null : errorIn.getLines().get(0);
+	}
+
 	/**
 	 * @param p
 	 */
-	public ErrorInput(Process process)
+	private ErrorInput(Process process)
 	{
 		reader=new BufferedReader(new InputStreamReader(process.getErrorStream()));
 		start();
 	}
-	
+
 	/**
 	 * @param p
 	 * @param n nb minimun de lignes de sortie 
 	 */
-	public ErrorInput(Process process, int n)
+	private ErrorInput(Process process, int n)
 	{
 		reader=new BufferedReader(new InputStreamReader(process.getErrorStream()));
 		int i=0;

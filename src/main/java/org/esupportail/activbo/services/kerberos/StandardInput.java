@@ -21,10 +21,19 @@ public class StandardInput extends Thread{
 	private final BufferedReader reader;
 	private final ArrayList<String> arrayLine=new ArrayList<String>();
 
+	static void background_log(Process process) {
+		new StandardInput(process);
+	}
+
+	static String getFirstLine_and_log_the_rest(Process process) {
+	    StandardInput o = new StandardInput(process, 1);
+	    return o.getLines().isEmpty() ? null : o.getLines().get(0);
+	}
+
 	/**
 	 * @param p
 	 */
-	public StandardInput(Process process)
+	private StandardInput(Process process)
 	{
 		reader=new BufferedReader(new InputStreamReader(process.getInputStream()));
 		start();
@@ -34,7 +43,7 @@ public class StandardInput extends Thread{
 	 * @param p
 	 * @param n nb minimun de lignes de sortie 
 	 */
-	public StandardInput(Process process, int n)
+	private StandardInput(Process process, int n)
 	{
 		reader=new BufferedReader(new InputStreamReader(process.getInputStream()));
 		int i=0;
