@@ -52,7 +52,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 			   ldapUser=this.getLdapUser(id, code);
 				this.gestRedirectionKerberos(ldapUser, newLogin != null ? newLogin : id);
 				kerberosAdmin.add(id, currentPassword);
-				logger.info("Ajout de mot de passe dans kerberos effectu�e");
+				logger.info(id + "@" + code + ": Ajout de mot de passe dans kerberos effectu�e");
 				if (newLogin != null) {
 				    List<String> list=new ArrayList<String>();
 				    list.add(newLogin);
@@ -62,7 +62,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
 				this.finalizeLdapWriting(ldapUser);
 		 } catch (KRBPrincipalAlreadyExistsException e){
 			try{
-				logger.info("Le compte kerberos de l'utilisateur "+id+" existe d�ja, Modification du password");
+				logger.info(id + "@" + code + ": Le compte kerberos de l'utilisateur existe d�ja, Modification du password");
 				kerberosAdmin.changePasswd(id, currentPassword);
 				this.finalizeLdapWriting(ldapUser);
 			

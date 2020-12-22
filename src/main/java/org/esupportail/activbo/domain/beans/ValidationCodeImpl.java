@@ -64,12 +64,12 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
 				return true;
 			}
 			else{			
-				logger.warn("Code pour l'utilisateur "+id+" invalide");				
+				logger.warn(id + "@" + code + ": Code invalide");
 				bruteForceBlock.setFail(id);
 			}
 		}
 		else{
-			logger.info("Pas de code pour l'utilisateur "+id);
+			logger.warn(id + "@" + code + ": Code invalide (aucun code pour cet utilisateur)");
 
 		}
 		return false;

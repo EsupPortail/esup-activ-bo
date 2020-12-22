@@ -309,7 +309,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 					Map.Entry<String,String> e=it.next();
 					
 					logger.debug("Key="+e.getKey()+" Value="+e.getValue());
-					logger.info("( Champs Valeur ID ): "+e.getKey()+" "+e.getValue()+" "+id);
+					logger.info(id + "@" + code + ": modification "+e.getKey()+": "+e.getValue());
 					if("".equals(e.getValue())||e.getValue()==null) ldapUser.getAttributes().put(e.getKey(),list);
 					else
 						if (e.getValue().contains(getSeparator())) {
