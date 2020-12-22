@@ -30,8 +30,6 @@ public class MailPersoChannel extends AbstractChannel{
 		
 			this.validationCode.generateChannelCode(id, codeDelay, getName());
 			
-			logger.debug("Insertion code pour l'utilisateur "+id+" dans la table effectuée");
-			
 			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
 			
 			if (ldapUserList.size() == 0) throw new ChannelException("Utilisateur "+id+" inconnu");
