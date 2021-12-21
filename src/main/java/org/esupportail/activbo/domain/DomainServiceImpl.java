@@ -128,7 +128,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         var ldapUser = searchUser(hashInfToValidate, toArray(wanted_attrs));
         
         // envoi d'un code si le compte n'est pas active
-        boolean with_code = ldapUser.getAttribute(ldapSchema.shadowLastChange)==null;
+        boolean with_code = isAccountNeedActivation(ldapUser);
 
         var infos = ldapInfos_and_maybe_code(ldapUser, attrPersoInfo, with_code);
 
@@ -253,7 +253,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
             }
     
             // envoi d'un code si le compte est active
-            boolean with_code = ldapUser.getAttribute(ldapSchema.shadowLastChange)!=null;
+            boolean with_code = !isAccountNeedActivation(ldapUser);
 
             //Construction du hasMap de retour
             return ldapInfos_and_maybe_code(ldapUser, attrPersoInfo, with_code);
@@ -307,4 +307,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         if (logger.isDebugEnabled()) {logger.debug("Setting shadowLastChange in LDAP : "+ shadowLastChange );}              
     }   
 
+    private boolean isAccountNeedActivation(LdapUser ldapUser) {
+        return ldapUser.getAttribute(ldapSchema.shadowLastChange) == null;
+    }
 }
