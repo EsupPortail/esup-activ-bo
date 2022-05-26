@@ -5,48 +5,34 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.esupportail.activbo.domain.tools.BruteForceBlock;
+import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
-import org.esupportail.activbo.exceptions.UserPermissionException;
-
-import org.esupportail.activbo.domain.tools.BruteForceBlock;
-
 import org.springframework.beans.factory.InitializingBean;
 
 public class ValidationCodeImpl implements ValidationCode, InitializingBean{
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    /**
-     * A logger.
-     */
     private final Logger logger = new LoggerImpl(getClass());
+    protected ConcurrentHashMap<String,UserData> validationCodes = new ConcurrentHashMap<>();
+    protected Thread validationCodeCleaningThread;
     
-    protected ConcurrentHashMap<String,HashMap<String,String>> validationCodes=new ConcurrentHashMap<String,HashMap<String,String>>();
-    
-    protected Thread thread;
-    
-    private String codeKey;
     private int codeDelay;
     private int codeLenght;
-    private String dateKey;
-    private String dateFormat;
-    
-    private long cleaningTimeInterval;
-    
+    private String dateFormat;  
+    public long cleaningTimeIntervalMillis; 
     private BruteForceBlock bruteForceBlock;
+
+    public void setCodeLenght(int codeLenght) { this.codeLenght = codeLenght; }
+    public void setDateFormat(String dateFormat) { this.dateFormat = dateFormat; }
+    public void setCodeDelay(int codeDelay) { this.codeDelay = codeDelay; }
+    public void setBruteForceBlock(BruteForceBlock bruteForceBlock) { this.bruteForceBlock = bruteForceBlock; }
+    public void setCleaningTimeInterval(long cleaningTimeIntervalSecond) { this.cleaningTimeIntervalMillis = cleaningTimeIntervalSecond * 1000; }
     
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
+
+    public void afterPropertiesSet() throws Exception {     
     }
     
     public boolean verify(String id,String code) throws UserPermissionException{        
@@ -55,192 +41,89 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
             throw new UserPermissionException ("Nombre de tentative de validation de code atteint pour l'utitilisateur "+id);
         
         //Recuperation des données correspondant de l'id de l'utilisateur
-        HashMap <String,String>userData=validationCodes.get(id);
+        var userData = validationCodes.get(id);
         
-        if (userData!=null){
+        if (userData!=null) {
             logger.debug("L'utilisateur "+id+" poss�de un code");
-            if(userData.get(codeKey).equals(code)){         
+            if (userData.code.equals(code)) {           
                 logger.debug("Code utilisateur "+id+" valide");             
                 return true;
-            }
-            else{           
+            } else {
                 logger.warn(id + "@" + code + ": Code invalide");
                 bruteForceBlock.setFail(id);
             }
-        }
-        else{
+        } else {
             logger.warn(id + "@" + code + ": Code invalide (aucun code pour cet utilisateur)");
-
         }
         return false;
         
     }
     
-    public String getCode(String id)
-    {
-        if(validationCodes.get(id)!=null)
-            return validationCodes.get(id).get(codeKey);
-        else return null;
-    }
-    public String getDate(String id)
-    {
-        if(validationCodes.get(id)!=null)
-            return validationCodes.get(id).get(dateKey);
-        else return null;
-    }
-    
-    public String generateCode(String id,int codeDelay,String channel){
+    protected UserData generateCode(String id,int codeDelay,String channel) {
             
-        String code=getRandomCode();            
-        
-        Calendar c = new GregorianCalendar();
-        c.add(Calendar.SECOND,codeDelay);
-        Date date=c.getTime();
-            
-        HashMap<String,String> userData= new HashMap<String,String>();  
+        String code=generateRandomCode();
+        Date date = nowPlusSeconds(codeDelay);      
         logger.trace("Code de validation pour l'utilisateur : "+id+" est :"+ code + " avec durée de vie " + codeDelay + " secondes");
-        userData.put(codeKey,code);
-        userData.put(dateKey,this.dateToString(date));
-        if (channel != null) userData.put("channel", channel); // only useful to differentiate channel codes (sent to user) and service codes (when CASified)
+
+        var userData = new UserData();  
+        userData.code = code;
+        userData.date = this.dateToString(date);
+        if (channel != null) userData.channel = channel; // only useful to differentiate channel codes (sent to user) and service codes (when CASified)
                 
         validationCodes.put(id, userData);
-        validationCodeCleanning();
-        return code;
+        mayStartValidationCodeCleanningThread();
+
+        return userData;
                 
     }
+
+    private Date nowPlusSeconds(int codeDelay) {
+        Calendar c = new GregorianCalendar();
+        c.add(Calendar.SECOND,codeDelay);
+        return c.getTime();
+    }
     
-    
-    
-    private void validationCodeCleanning(){
-        if(thread==null){
-            ValidationCodeCleanning cleaning = new ValidationCodeCleanning(this);
-            thread = new Thread(cleaning);
-            thread.start();
+    private void mayStartValidationCodeCleanningThread() {
+        if (validationCodeCleaningThread == null) {
+            var cleaning = new ValidationCodeCleanning(this);
+            validationCodeCleaningThread = new Thread(cleaning);
+            validationCodeCleaningThread.start();
         }
-        
     }
 
-    public String generateChannelCode(String id, int codeDelay, String channel){
+    public UserData generateChannelCode(String id, int codeDelay, String channel) {
         return generateCode(id,codeDelay, channel);
     }
 
-    public String generateCode(String id){
-        return generateCode(id,codeDelay, null);
+    public String generateCode(String id) {
+        return generateCode(id,codeDelay, null).code;
     }
 
-    private String getRandomCode()
+    private String generateRandomCode()
     {
-        Random r = new Random();
-        String code="";
-        for(int i=0;i<codeLenght;i++)
-        {
-          int num=r.nextInt(10);
-          code+=String.valueOf(num);
+        var r = new Random();
+        var code="";
+        for (int i = 0; i < codeLenght; i++) {
+          code += String.valueOf(r.nextInt(10));
         }   
         return code;
     }
     
-    private String dateToString(Date sDate){
-        
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+    private String dateToString(Date sDate) {
+        var sdf = new SimpleDateFormat(dateFormat);
         return sdf.format(sDate);
     }
     
     protected Date stringToDate(String sDate) throws ParseException{
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        var sdf = new SimpleDateFormat(dateFormat);
         return sdf.parse(sDate);
     }
 
-
-    /**
-     * @return the codeKey
-     */
-    public String getCodeKey() {
-        return codeKey;
-    }
-
-    /**
-     * @param codeKey the codeKey to set
-     */
-    public void setCodeKey(String codeKey) {
-        this.codeKey = codeKey;
-    }
-
-    /**
-     * @return the dateKey
-     */
-    public String getDateKey() {
-        return dateKey;
-    }
-
-    /**
-     * @param dateKey the dateKey to set
-     */
-    public void setDateKey(String dateKey) {
-        this.dateKey = dateKey;
-    }
-
-    /**
-     * @return the codeLenght
-     */
-    public int getCodeLenght() {
-        return codeLenght;
-    }
-
-    /**
-     * @param codeLenght the codeLenght to set
-     */
-    public void setCodeLenght(int codeLenght) {
-        this.codeLenght = codeLenght;
-    }
-
-    /**
-     * @param dateFormat the dateFormat to set
-     */
-    public void setDateFormat(String dateFormat) {
-        this.dateFormat = dateFormat;
-    }
-
-    /**
-     * @param codeDelay the codeDelay to set
-     */
-    public void setCodeDelay(int codeDelay) {
-        this.codeDelay = codeDelay;
-    }
-
-    /**
-     * @param bruteForceBlock the bruteForceBlock to set
-     */
-    public void setBruteForceBlock(BruteForceBlock bruteForceBlock) {
-        this.bruteForceBlock = bruteForceBlock;
-    }
-
-    /**
-     * @return the cleaningTimeInterval
-     */
-    public long getCleaningTimeInterval() {
-        return cleaningTimeInterval;
-    }
-
-    /**
-     * @param cleaningTimeInterval the cleaningTimeInterval to set
-     */
-    public void setCleaningTimeInterval(long cleaningTimeInterval) {
-        this.cleaningTimeInterval = cleaningTimeInterval*1000;
-    }
-    
-    public ConcurrentHashMap<String, HashMap<String, String>> getValidationCodes() {
-        return validationCodes;
-    }
-
-    public void removeCode(String userId)
-    {
+    public void removeCode(String userId) {
         validationCodes.remove(userId);
     }
 
-    public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>> it)
-    {
-        it.remove();
+    public void afterRemoveCode() {
     }
     
 }

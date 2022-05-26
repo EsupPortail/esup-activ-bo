@@ -1,133 +1,95 @@
 
-/**
- * 
- */
 package org.esupportail.activbo.domain.tools;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.esupportail.commons.services.logging.Logger;
 import org.esupportail.commons.services.logging.LoggerImpl;
 import org.springframework.beans.factory.InitializingBean;
 
-/**
- * @author aanli
- *
- */
-public class BruteForceBlockImpl implements BruteForceBlock, Runnable, InitializingBean 
-{
-private final Logger logger = new LoggerImpl(getClass());
-private Thread thread;
-private HashMap<String,LoginBlocked> logins=new HashMap<String,LoginBlocked>();
+public class BruteForceBlockImpl implements BruteForceBlock, Runnable, InitializingBean {
+    class LoginInfo {
+        Date date; // date de fin de blocage
+        int nbFail;
 
-private int nbMaxFail; //Nbre d'essai avant de bloquer le login
-
-private int wait; //durée de blocage en seconde
-
-private long cleaningTime=1000L; //temps d'attente entre 2 passages du nettoyeur
-
-/* (non-Javadoc)
- * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
- */
-public void afterPropertiesSet() throws Exception { 
-    
-}
-
-public boolean isBlocked(String id){
-    boolean blocked=true;
-    LoginBlocked login=logins.get(id);
-    if(login==null) blocked=false;
-    else{
-        Date currentDate=new Date();
-        if(currentDate.getTime()>login.date.getTime()){
-            blocked=false;
-            logins.remove(id);          
+        private boolean isExpired() {
+            return new Date().getTime() > date.getTime();
         }
-        else if(login.nbFail<nbMaxFail) 
-            blocked=false;
-    }   
-    return blocked;     
-}
-
-public void setFail(String id)
-{
-    LoginBlocked login=logins.get(id);
-    if(login==null) login=new LoginBlocked();
-    Calendar c = new GregorianCalendar();   
-    c.add(Calendar.SECOND, wait);   
-    login.date=c.getTime();
-    login.nbFail++;
-    logins.put(id, login);
-    
-    if(thread==null){
-        thread = new Thread(this); 
-        thread.start();
     }
-}
+    
+    private final Logger logger = new LoggerImpl(getClass());
+    private Thread purgeExpiredThread;
+    private HashMap<String,LoginInfo> loginsInfo = new HashMap<>();
 
-/**
- * @param wait the wait to set
- */
-public void setWait(int wait) {
-    this.wait = wait;
-}
+    private int wait; //durée de blocage en seconde
+    private int nbMaxFail; //Nbre d'essai avant de bloquer le login
+    private long cleaningTimeMillis = 1000L; //temps d'attente entre 2 passages du nettoyeur
 
-/**
- * @param nbMaxFail the nbMaxFail to set
- */
-public void setNbMaxFail(int nbMaxFail) {
-    this.nbMaxFail = nbMaxFail;
-}
+    public void setWait(int wait) { this.wait = wait; }
+    public void setNbMaxFail(int nbMaxFail) { this.nbMaxFail = nbMaxFail; }
+    public void setCleaningTime(long cleaningTimeSecond) { this.cleaningTimeMillis = cleaningTimeSecond * 1000; }
 
-/**
- * @return the cleaningTime
- */
-public long getCleaningTime() {
-    return cleaningTime;
-}
 
-/**
- * @param cleaningTime the cleaningTime to set
- */
-public void setCleaningTime(long cleaningTime) {
-    this.cleaningTime = cleaningTime*1000;
-}
+    public void afterPropertiesSet() throws Exception {
+    }
 
-/* (non-Javadoc)
- * @see java.lang.Runnable#run()
- */
-public void run() {
-    while(true){        
-        if(logins.isEmpty()) logger.debug("Pas d'utilisateurs bloqués");
-        Iterator<String> i=logins.keySet().iterator();      
-        Date currentDate=new Date();
-        while(i.hasNext())
-        {       
-            String key=i.next();
-            LoginBlocked loginBlocked=logins.get(key);
-            logger.info(key+" a fait "+loginBlocked.nbFail+" tentative(s) échouée(s)");
-            if(currentDate.getTime()>loginBlocked.date.getTime())
-            {
-                logins.remove(key);
-                logger.debug("Déblocage de l'utilisateur "+key);
+    private LoginInfo removeExpired_or_get(String id) {
+        var info = loginsInfo.get(id);
+        if (info != null && info.isExpired()) {
+            logger.debug("Deblocage de l'utilisateur " + id);
+            loginsInfo.remove(id);
+            return null;
+        }
+        return info;
+    }
+
+    public boolean isBlocked(String id) {
+        LoginInfo info = removeExpired_or_get(id);
+        return info != null && info.nbFail >= nbMaxFail;
+    }
+
+    private Date nowPlusSeconds(int codeDelay) {
+        Calendar c = new GregorianCalendar();
+        c.add(Calendar.SECOND,codeDelay);
+        return c.getTime();
+    }
+
+    public void setFail(String id)
+    {
+        LoginInfo info = loginsInfo.get(id);
+        if (info==null) info = new LoginInfo();
+
+        info.date = nowPlusSeconds(wait);
+        info.nbFail++;
+        loginsInfo.put(id, info);
+        
+        mayStartPurgeExpiredThread();
+    }
+    private void mayStartPurgeExpiredThread() {
+        if (purgeExpiredThread == null) {
+            purgeExpiredThread = new Thread(this); 
+            purgeExpiredThread.start();
+        }
+    }
+
+    // remove expired LoginInfo
+    public void run() {
+        while(true) {       
+            if (loginsInfo.isEmpty()) logger.debug("Pas d'utilisateurs bloqués");
+
+            for (String id: loginsInfo.keySet()) {
+                logger.info(id + " a fait " + loginsInfo.get(id).nbFail + " tentative(s) échouée(s)");
+                removeExpired_or_get(id);
             }
-        }
-        try {
-            Thread.sleep(cleaningTime);
-        } catch (InterruptedException e) {      
-            logger.error(e);
-        }
-    }   
-}
 
-
-}
-
-class LoginBlocked {
-    Date date; // date de fin de blocage
-    int nbFail;
+            try {
+                Thread.sleep(cleaningTimeMillis);
+            } catch (InterruptedException e) {      
+                logger.error(e);
+            }
+        }   
+    }
 }

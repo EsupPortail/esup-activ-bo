@@ -1,103 +1,41 @@
-/**
- * 
- */
 package org.esupportail.activbo.domain.beans.channels;
-
-import java.util.List;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 
 import org.esupportail.commons.services.ldap.LdapUser;
 import org.esupportail.commons.services.smtp.AsynchronousSmtpServiceImpl;
 
-/**
- * @author aanli
- *
- */
-public class Mail2SMSChannel extends AbstractChannel{
-
+public class Mail2SMSChannel extends AbstractChannel {
     private String attributePager;
     private String mailSMS;
-    private AsynchronousSmtpServiceImpl smtpService;
     private String mailCodeSubject;
     private String mailCodeBody;
-    /* (non-Javadoc)
-     * @see org.esupportail.activbo.domain.beans.channels.AbstractChannel#send(java.lang.String)
-     */
+    private AsynchronousSmtpServiceImpl smtpService;
+
+    public void setAttributePager(String attributePager) { this.attributePager = attributePager; }
+    public void setMailSMS(String mailSMS) { this.mailSMS = mailSMS; }  
+    public void setMailCodeSubject(String mailCodeSubject) { this.mailCodeSubject = mailCodeSubject; }
+    public void setMailCodeBody(String mailCodeBody) { this.mailCodeBody = mailCodeBody; }
+    public void setSmtpService(AsynchronousSmtpServiceImpl smtpService) { this.smtpService = smtpService; }
+
+    public boolean isPossible(LdapUser ldapUser) {
+        return ldapUser.getAttribute(attributePager) != null;
+    }
+
     @Override
     public void send(String id) throws ChannelException {
+        String pager = getUser(id).getAttribute(attributePager);            
+        if (pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
+                                
+        var mail = to_InternetAddress(mailSMS);
         
-            this.validationCode.generateChannelCode(id, codeDelay, getName());
-            
-            List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
-                        if (ldapUserList.size() == 0) throw new ChannelException("Utilisateur "+id+" inconnu");
-    
-            LdapUser ldapUserRead = ldapUserList.get(0); 
-            
-            String pager = ldapUserRead.getAttribute(attributePager);
-            
-            if(pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
-                                    
-            InternetAddress mail=null;          
-            try {
-                mail = new InternetAddress(mailSMS);
-            } catch (AddressException e) {
-                throw new ChannelException("Problem de création de InternetAddress "+mailSMS);
-            }
-            
-            String mailBody=this.mailCodeBody;
-            String code = validationCode.getCode(id);
-            mailBody=mailBody.replace("{0}", pager);
-            mailBody=mailBody.replace("{1}", code);
-            mailBody=mailBody.replace("{2}", validationCode.getDate(id));
-            
-            smtpService.send(mail,this.mailCodeSubject,"",mailBody);
-            
-            logger.info(id + "@" + code + ": Envoi du code par sms via mail2sms au numéro portable "+pager);
+        var code = validationCode.generateChannelCode(id, codeDelay, getName());
+        String mailBody=mailCodeBody
+            .replace("{0}", pager)
+            .replace("{1}", code.code)
+            .replace("{2}", code.date);
+        
+        smtpService.send(mail,mailCodeSubject,"",mailBody);
+        
+        logger.info(id + "@" + code + ": Envoi du code par sms via mail2sms au numéro portable "+pager);
     }
     
-    /**
-     * @param smtpService the smtpService to set
-     */
-    public void setSmtpService(AsynchronousSmtpServiceImpl smtpService) {
-        this.smtpService = smtpService;
-    }
-    /**
-     * @param mailCodeSubject the mailCodeSubject to set
-     */
-    public void setMailCodeSubject(String mailCodeSubject) {
-        this.mailCodeSubject = mailCodeSubject;
-    }
-    /**
-     * @param mailCodeBody the mailCodeBody to set
-     */
-    public void setMailCodeBody(String mailCodeBody) {
-        this.mailCodeBody = mailCodeBody;
-    }
-
-    /**
-     * @param attributePager the attributePager to set
-     */
-    public void setAttributePager(String attributePager) {
-        this.attributePager = attributePager;
-    }
-
-    /**
-     * @param mailSMS the mailSMS to set
-     */
-    public void setMailSMS(String mailSMS) {
-        this.mailSMS = mailSMS;
-    }
-    
-    public boolean isPossible(LdapUser ldapUser){
-        
-        String pager = ldapUser.getAttribute(attributePager);
-        
-        if(pager==null) return false;
-        
-        return true;
-        
-    }
-
 }

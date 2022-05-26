@@ -4,10 +4,6 @@ package org.esupportail.activbo.services.kerberos;
 import org.springframework.beans.factory.InitializingBean;
 
 
-/**
- * @author aanli
- *
- */
 public class KRBAdminMock implements KRBAdmin,InitializingBean {
     
     

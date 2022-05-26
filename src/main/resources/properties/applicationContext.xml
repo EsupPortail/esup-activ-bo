@@ -23,7 +23,6 @@
 
     <import resource="auth/auth.xml" />
     <import resource="cache/cache.xml" />
-    <import resource="dao/dao.xml" />
     <import resource="domain/domain.xml" />
 
     <import resource="domain/domainLdap.xml" />
@@ -37,7 +36,5 @@
     <import resource="misc/abstractBeans.xml" />
     <import resource="misc/application.xml" />
     <import resource="smtp/smtp.xml" />
-    <import resource="init/init.xml" />
-    <import resource="web/converters.xml" />
 
 </beans>

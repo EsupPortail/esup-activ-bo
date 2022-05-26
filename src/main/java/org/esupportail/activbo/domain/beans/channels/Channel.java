@@ -7,7 +7,7 @@ import org.esupportail.commons.services.ldap.LdapUser;
  * @author aanli
  * Canal permettant l'envoi du code d'activation pour un utilisateur donné
  */
-public interface Channel{
+public interface Channel {
     /**
      * @param id login de l'utilisateur concerné par le code
      * @throws ChannelException 
@@ -19,11 +19,7 @@ public interface Channel{
      */
     public void setName(String name);
     
-    /**
-     * @return name
-     */
     public String getName();
-    
     
     public boolean isPossible(LdapUser ldapUser);
 

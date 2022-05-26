@@ -9,34 +9,21 @@ import org.esupportail.commons.services.ldap.LdapUser;
  */
 public class CodeChannel implements Channel {
 
+    // default name
     private String name="code";
-    /* (non-Javadoc)
-     * @see org.esupportail.activbo.domain.beans.channels.Channel#getName()
-     */
+    public void setName(String name) { this.name=name; }
+
     public String getName() {       
         return name;
     }
 
-    /* (non-Javadoc)
-     * @see org.esupportail.activbo.domain.beans.channels.Channel#isPossible(org.esupportail.commons.services.ldap.LdapUser)
-     */
     public boolean isPossible(LdapUser ldapUser) {  
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.esupportail.activbo.domain.beans.channels.Channel#send(java.lang.String)
-     */
     public void send(String id) throws ChannelException {
-    
+        // nothing to do :-)
     }
 
-    /* (non-Javadoc)
-     * @see org.esupportail.activbo.domain.beans.channels.Channel#setName(java.lang.String)
-     */
-    public void setName(String name) {
-        this.name=name;
-
-    }
 
 }

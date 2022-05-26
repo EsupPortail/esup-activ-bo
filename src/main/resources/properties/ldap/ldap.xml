@@ -372,48 +372,12 @@
     </bean>
     <bean id="ldapSchema"
         class="org.esupportail.activbo.services.ldap.LdapSchema" >
-            <property name="displayName" value="${ldap.attribute.displayName}"/>
-            <property name="birthdate" value="${ldap.attribute.birthdate}"/>
-            <property name="birthdateFormat" value="${ldap.attribute.birthdate.format}"/>
-            <property name="uid" value="${ldap.attribute.uid}"/>
-            <property name="employeeId" value="${ldap.attribute.employeeId}"/>
-            <property name="cn" value="${ldap.attribute.cn}"/>
-            <property name="birthName" value="${ldap.attribute.birthname}"/>
             <property name="password" value="${ldap.attribute.password}"/>
             <property name="shadowLastChange" value="${ldap.attribute.shadowLastChange}"/>
             <property name="mail" value="${ldap.attribute.mail}"/>
             <property name="usernameAdmin" value="${ldap.username}"/>
             <property name="passwordAdmin" value="${ldap.password}"/>
-            <property name="mailPerso" value="${ldap.attribute.mailPerso}"/>
             <property name="login" value="${ldap.attribute.login}"/>
-            <property name="termsOfUse" value="${ldap.attribute.smsagreement}"/>
             <property name="krbPrincipal" value="${ldap.attribute.krbPrincipal}"/>
-            <property name="eduPersonPrimaryAffiliation" value="${ldap.attribute.eduPersonPrimaryAffiliation}"/>
-            <property name="eduPersonAffiliation" value="${ldap.attribute.eduPersonAffiliation}"/>
-            <property name="supannListeRouge" value="${ldap.attribute.supannListeRouge}"/>
-            <property name="supannRefId" value="${ldap.attribute.supannRefId}"/>
-            <property name="supannCivilite" value="${ldap.attribute.supannCivilite}"/>
-            <property name="sn" value="${ldap.attribute.sn}"/>
-            <property name="givenName" value="${ldap.attribute.givenName}"/>
-            <property name="telephoneNumber" value="${ldap.attribute.telephoneNumber}"/>
-            <property name="facsimileTelephoneNumber" value="${ldap.attribute.facsimileTelephoneNumber}"/>
-            <property name="postalAddress" value="${ldap.attribute.postalAddress}"/>
-            <property name="homePostalAddress" value="${ldap.attribute.homePostalAddress}"/>
-            <property name="supannEntiteAffectation" value="${ldap.attribute.supannEntiteAffectation}" />
-            <property name="employeeType" value="${ldap.attribute.employeeType}"/>
-            <property name="supannEmpId" value="${ldap.attribute.supannEmpId}"/>
-            <property name="mobile" value="${ldap.attribute.mobile}"/>
-            <property name="supannCodeINE" value="${ldap.attribute.supannCodeINE}"/>
-            <property name="supannEtuId" value="${ldap.attribute.supannEtuId}"/>
-            <property name="supannEtuCursusAnnee" value="${ldap.attribute.supannEtuCursusAnnee}"/>
-            <property name="mailForwardingAddress" value="${ldap.attribute.mailForwardingAddress}"/>
-            <property name="info" value="${ldap.attribute.info}"/>
-            <property name="roomNumber" value="${ldap.attribute.roomNumber}"/>
-            <property name="up1FloorNumber" value="${ldap.attribute.up1FloorNumber}"/>
-            <property name="supannAliasLogin" value="${ldap.attribute.supannAliasLogin}"/>
-            <property name="up1AltGivenName" value="${ldap.attribute.up1AltGivenName}"/>        
-            <property name="jpegPhoto" value="${ldap.attribute.jpegPhoto}"/>
-            <property name="mailDeliveryOption" value="${ldap.attribute.mailDeliveryOption}"/>
-            <property name="labeledURI" value="${ldap.attribute.labeledURI}"/>
     </bean>
 </beans>

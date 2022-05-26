@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,45 +16,39 @@ import org.esupportail.commons.services.logging.LoggerImpl;
 
 public class ValidationCodeFileImpl extends ValidationCodeImpl  {
     private final Logger logger = new LoggerImpl(getClass());
+
     private String codeFileName;
 
-    
-    // construteur
-    ValidationCodeFileImpl(){
-        super();
-    };
-    
+    public void setCodeFileName(String codeFileName) { this.codeFileName = codeFileName; }
+
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        validationCodes= new ConcurrentHashMap<String, HashMap<String, String>>(readMap(getCodeFileName()));
+        validationCodes = new ConcurrentHashMap<String, UserData>(readMap(codeFileName));
         logger.debug("validationCodes:"+validationCodes.size());
     }
     
     @Override
-    public String generateCode(String id, int codeDelay, String channel) {
-        String code = super.generateCode(id, codeDelay, channel);
+    public UserData generateCode(String id, int codeDelay, String channel) {
+        var code = super.generateCode(id, codeDelay, channel);
         writeMap();
         return code;
     }
         
     @Override
-    public void removeCode(String userId)
-    {
+    public void removeCode(String userId) {
         super.removeCode(userId);
         writeMap();
     }
     
     @Override
-    public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>> it)
-    {
-        super.removeCode(it);
+    public void afterRemoveCode() {
         writeMap();
     }
     
     private void writeMap() {
         try {
-            writeMap(getCodeFileName(), validationCodes);
+            writeMap(codeFileName, validationCodes);
         } catch (IOException e) {logger.error(e.getMessage(), e);}
     }
     
@@ -66,15 +59,13 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
        @param HashMap  map a serialiser
    
      */
-    private synchronized void writeMap(String fileName,Map<String,HashMap<String,String>> map) throws IOException
-    {   FileOutputStream fos;
+    private synchronized void writeMap(String fileName,Map<String,UserData> map) throws IOException {
         try {
-            fos = new FileOutputStream(fileName);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            // on force le format de sérialisation HashMap<String, HashMap<String,String>>
-            oos.writeObject(new HashMap<String, HashMap<String,String>>(map));
+            var fos = new FileOutputStream(fileName);
+            var oos = new ObjectOutputStream(fos);
+            // on force le format de sérialisation HashMap<String, UserData>
+            oos.writeObject(new HashMap<String, UserData>(map));
             oos.close();
-    
         } catch (FileNotFoundException e) {logger.error(e.getMessage(), e);} 
           catch (IOException e) {logger.error(e.getMessage(), e); }
      
@@ -83,28 +74,20 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl  {
      * Retourner une HashMap déserialisé depuis un fichier
      * @param filename chemin du fichier
      */
-    public HashMap<String,HashMap<String,String>> readMap(String fileName) throws IOException, ClassNotFoundException {  
-        HashMap<String,HashMap<String,String>> map=new HashMap<String,HashMap<String,String>>();
+    public HashMap<String,UserData> readMap(String fileName) throws IOException, ClassNotFoundException {  
+        var map=new HashMap<String,UserData>();
         try {
                 FileInputStream fis = new FileInputStream(fileName);
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                map = (HashMap<String,HashMap<String,String>> ) ois.readObject();
+                map = (HashMap<String,UserData> ) ois.readObject();
                 ois.close();
-    
-       } 
-      catch (FileNotFoundException e) {logger.debug("Si le fichier n'exsite pas, il va être créé automatiquement");}
-      catch (IOException e) {logger.error(e.getMessage(), e);}
-      catch (ClassNotFoundException e) {logger.error(e.getMessage(), e);}
-      return map;
-     }
+        } 
+        catch (FileNotFoundException e) {logger.debug("Si le fichier n'exsite pas, il va être créé automatiquement");}
+        catch (IOException e) {logger.error(e.getMessage(), e);}
+        catch (ClassNotFoundException e) {logger.error(e.getMessage(), e);}
 
-    public String getCodeFileName() {
-        return codeFileName;
+        return map;
     }
 
-
-    public void setCodeFileName(String codeFileName) {
-        this.codeFileName = codeFileName;
-    }
     
 }

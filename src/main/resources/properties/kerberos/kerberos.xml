@@ -31,7 +31,7 @@
         <property name="principalAdminKeyTab" value="${kerberos.principalAdminKeyTab}">
             <description>the KeyTab path</description>
         </property>
-        <property name="options" value="${kerberos.options}">
+        <property name="addOptions" value="${kerberos.options}">
             <description>Options for add kerberos command</description>
         </property>
         <property name="kadminCmd" value="${kerberos.kadmin}">

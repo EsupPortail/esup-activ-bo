@@ -1,28 +1,24 @@
 package org.esupportail.activbo.domain.beans;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.esupportail.activbo.exceptions.UserPermissionException;
 
 public interface ValidationCode{
-        
-    public boolean verify(String id,String code) throws UserPermissionException;        
-        
-    public String getCode(String id);
-    /**
-     * @param id identifiant de l'utilisateur
-     * @return la date de fin de validité du code associé à l'id
-     */  
-    public String getDate(String id);
-    
-    public String generateChannelCode(String id,int codeDelay, String channelName);
 
+    class UserData {
+        public String code;
+        public String date;
+        String channel; // optional
+    }
+
+    public boolean verify(String id,String code) throws UserPermissionException;        
+    
+    public UserData generateChannelCode(String id,int codeDelay, String channelName);
+
+    // code envoyé directement à l'utilisateur (quand il a donné son mot de passe ou qque infos pour un compte non activé)
     public String generateCode(String id);
     
     public void removeCode(String userId);
 
-    public void removeCode(Iterator<Map.Entry<String, HashMap<String,String>>>it);
+    public void afterRemoveCode();
     
 }

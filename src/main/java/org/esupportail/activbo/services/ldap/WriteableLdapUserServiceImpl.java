@@ -3,13 +3,7 @@
  */
 package org.esupportail.activbo.services.ldap;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.naming.Name;
-import javax.naming.directory.Attribute;
-
-import net.sf.ehcache.CacheManager;
 
 import org.apache.commons.codec.binary.Base64;
 import org.esupportail.activbo.exceptions.AuthentificationException;
@@ -21,6 +15,8 @@ import org.springframework.ldap.UncategorizedLdapException;
 import org.springframework.ldap.support.DirContextAdapter;
 import org.springframework.ldap.support.DistinguishedName;
 
+import net.sf.ehcache.CacheManager;
+
 /**
  * An implementation of WriteableLdapService based on LdapTemplate.
  * See /properties/ldap/ldap-write-example.xml.
@@ -30,28 +26,18 @@ public class WriteableLdapUserServiceImpl extends org.esupportail.commons.servic
      * The serialization id.
      */
     private static final long serialVersionUID = -2833750508738328830L;
+    private final Logger logger = new LoggerImpl(getClass());
 
     private CacheManager cacheManager;
 
-    /**
-     * A logger.
-     */
-    private final Logger logger = new LoggerImpl(getClass());
+    public void setCacheManager(final CacheManager cacheManager) { this.cacheManager = cacheManager; }
     
-    /**
-     * Bean constructor.
-     */
-    public WriteableLdapUserServiceImpl() {
-        super();
-    }
-
 
     /** Modify an LDAP user using Spring LdapContextSource.
      * @see org.esupportail.commons.services.ldap.WriteableLdapUserService#updateLdapUser(
      * org.esupportail.commons.services.ldap.LdapUser)
      */
-    public void updateLdapUser(final LdapUser ldapUser) throws LdapAttributesModificationException {
-        
+    public void updateLdapUser(final LdapUser ldapUser) throws LdapAttributesModificationException {        
         super.updateLdapUser(ldapUser);
         invalidateLdapCache();      
     }
@@ -61,36 +47,32 @@ public class WriteableLdapUserServiceImpl extends org.esupportail.commons.servic
      * @param context
      */
     protected void mapToContext(final LdapUser ldapUser, final DirContextAdapter context) {
-        List<String> attributesNames = ldapUser.getAttributeNames();
+        var attributesNames = ldapUser.getAttributeNames();
         for (String ldapAttributeName : attributesNames) {
-            List<String> listAttrValue = new ArrayList<String>();           
-            listAttrValue = ldapUser.getAttributes(ldapAttributeName);
-            
-            List<Object> obj = new ArrayList<Object>();
-            byte[] bytetVal = null;
+            var values = ldapUser.getAttributes(ldapAttributeName);
             
             // The attribute exists
-            if (!listAttrValue.contains("null") && listAttrValue != null && listAttrValue.size() != 0 ) {
-                for (String listVal : listAttrValue) 
+            if (!values.contains("null") && values.size() != 0 ) {
+                for (String val : values) 
                 // Si insertion de l'attribut jpegphoto dans LDAP
                 // Décoder la photo qui a été encodée lors de la saisie dans le formulaire accountDataChange
-                 if (listVal.contains("encodeBase64")){
-                     listVal=listVal.substring(12);
-                     bytetVal = listVal.getBytes();
-                     obj.add(Base64.decodeBase64(bytetVal));
-                     context.setAttributeValues(ldapAttributeName, obj.toArray());
+                 if (val.contains("encodeBase64")) {
+                     var obj = Base64.decodeBase64(val.substring(12).getBytes());
+                     context.setAttributeValues(ldapAttributeName, new Object[] { obj });
+
                      // l'attribut jpegPhoto n'est pas censé etre multi-value.
                      // spring-ldap ne sait pas faire de ADD_ATTRIBUTE + REMOVE_ATTRIBUTE de plusieurs jpegPhoto,on contourne ce bug
                      // en lui envoyant qu'un seul attribut origine pour qu'il puisse faire du REPLACE_ATTRIBUTE au lieu de ADD_ATTRIBUTE + REMOVE_ATTRIBUTE
-                     Attribute origAttr = context.getAttributes().get(ldapAttributeName);
-                     if (origAttr!=null){
+                     var origAttr = context.getAttributes().get(ldapAttributeName);
+                     if (origAttr!=null) {
+                         // garder un seul attribut :
                          for (int i = 1; i < origAttr.size(); i++) origAttr.remove(i);
                      }
+                 } else {
+                     // insertion autres attributs que jpegphoto
+                     context.setAttributeValues(ldapAttributeName, values.toArray());
                  }
-                // insertion autres attributs que jpegphoto
-                 else context.setAttributeValues(ldapAttributeName, listAttrValue.toArray());
-            }
-            else  {
+            } else {
                 context.setAttributeValues(ldapAttributeName, null); 
             }
         }
@@ -98,7 +80,7 @@ public class WriteableLdapUserServiceImpl extends org.esupportail.commons.servic
     
 
     public void bindLdap(final LdapUser ldapUser)throws AuthentificationException{
-        try{
+        try {
             Name dn = buildLdapUserDn(ldapUser.getId());
             this.getLdapTemplate().lookup(dn);
         
@@ -117,30 +99,25 @@ public class WriteableLdapUserServiceImpl extends org.esupportail.commons.servic
     }
     
     public void defineAuthenticatedContextForUser(String userId, String password) throws LdapException{
-        DistinguishedName ldapBindUserDn = new DistinguishedName(this.getDnAuth());
-        ldapBindUserDn.add(this.getIdAuth(), userId);
+        DistinguishedName ldapBindUserDn = new DistinguishedName(getDnAuth());
+        ldapBindUserDn.add(getIdAuth(), userId);
         logger.debug("Binding to LDAP with DN [" + ldapBindUserDn + "] (password ******)");
         
-        this.getContextSource().setUserName(ldapBindUserDn.encode());
-        this.getContextSource().setPassword(password);
+        getContextSource().setUserName(ldapBindUserDn.encode());
+        getContextSource().setPassword(password);
     }
 
     /**
      * @see org.esupportail.commons.services.ldap.WriteableLdapUserService#defineAnonymousContext()
      */
     public void defineAnonymousContext() throws LdapException {
-        this.getContextSource().setUserName("");
-        this.getContextSource().setPassword("");
+        getContextSource().setUserName("");
+        getContextSource().setPassword("");
     }
 
     public void invalidateLdapCache() {
         net.sf.ehcache.Cache cache = cacheManager.getCache(org.esupportail.commons.services.ldap.CachingLdapEntityServiceImpl.class.getName());
         cache.removeAll();      
     }
-        
-    public void setCacheManager(final CacheManager cacheManager) {
-        this.cacheManager = cacheManager;
-    }
-
     
 }

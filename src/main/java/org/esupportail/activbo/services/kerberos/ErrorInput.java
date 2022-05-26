@@ -7,69 +7,48 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-/**
- * @author aanli
- *
- */
-public class ErrorInput extends Thread{
-    
-    
-    /**
-     * Log4j logger.
-     */
-
+public class ErrorInput extends Thread {
     private final Logger logger = new LoggerImpl(getClass());
     
     private final BufferedReader reader;
 
+    private ErrorInput(Process process) {
+        reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+    }
+    
     static void background_log(Process process) {
         (new ErrorInput(process)).start();
     }
 
     static String getFirstLine_and_log_the_rest(Process process) {
-        ErrorInput errorIn = new ErrorInput(process);
-        ArrayList<String> lines = errorIn.readLines(1);
-        errorIn.start();
+        var errorIn = new ErrorInput(process);
+        var lines = errorIn.readLines(1);
+        errorIn.start(); // log the rest
         return lines.isEmpty() ? null : lines.get(0);
     }
 
     /**
-     * @param p
-     */
-    private ErrorInput(Process process)
-    {
-        reader=new BufferedReader(new InputStreamReader(process.getErrorStream()));
-    }
-
-    /**
-     * @param p
      * @param n nb minimun de lignes de sortie 
      */
     private ArrayList<String> readLines(int n)
     {
-        ArrayList<String> arrayLine=new ArrayList<String>();
-        int i=0;
-        String line="";
-        try{
-            while(i<n && (line = reader.readLine())!=null)
-            {
-                //error
+        var lines = new ArrayList<String>();
+        try {
+            for(int i = 0; i<n; i++) {
+                String line = reader.readLine();
+                if (line == null) break;
                 logger.warn(line);
-                arrayLine.add(line);
-                i++;
+                lines.add(line);
             }
-        }catch(final IOException ioe) {logger.error(ioe);}
-        return arrayLine;
+        } catch(final IOException ioe) {logger.error(ioe);}
+    
+        return lines;
     }
 
-    /** (non-Javadoc)
-     * @see java.lang.Thread#run()
-     */
     @Override
-    public void run()
-    {
+    public void run() {
         try {           
-            String line = "";
+            String line;
             try {
                 while((line = reader.readLine()) != null) {
                     // Traitement du flux de sortie de l'application

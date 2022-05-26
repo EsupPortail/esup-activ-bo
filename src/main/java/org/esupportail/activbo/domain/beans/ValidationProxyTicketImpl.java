@@ -9,21 +9,17 @@ import org.esupportail.commons.services.logging.LoggerImpl;
 import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 
 public class ValidationProxyTicketImpl implements ValidationProxyTicket{
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    /**
-     * A logger.
-     */
     private final Logger logger = new LoggerImpl(getClass());
     
     private String casValidateUrl;
     private String allowedProxies;
-    
     private ProxyTicketValidator proxyTicketValidator;
-    
+
+    public void setCasValidateUrl(String casValidateUrl) { this.casValidateUrl = casValidateUrl; }
+    public void setProxyTicketValidator(ProxyTicketValidator proxyTicketValidator) { this.proxyTicketValidator = proxyTicketValidator; }
+    public void setAllowedProxies(String allowedProxies) { this.allowedProxies = allowedProxies; }
+
+
     public boolean validation(String id,String proxyticket,String targetUrl) {
             
         proxyTicketValidator.setCasValidateUrl(casValidateUrl);
@@ -39,8 +35,7 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
             
             if (proxyTicketValidator.isAuthenticationSuccesful() &&
                 proxyTicketValidator.getUser().equals(id) &&
-                isProxyAllowed(proxyTicketValidator.getProxyList()))
-                {
+                isProxyAllowed(proxyTicketValidator.getProxyList())) {
                     logger.debug("Authentification réussie");                  
                     return true;
                 }                                   
@@ -52,9 +47,9 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
         return false;       
     }
     
-    private boolean isProxyAllowed(List<String> proxies) {      
-        List<String> allowedProxyList = Arrays.asList(allowedProxies.split(","));
-        for(String p:proxies) 
+    private boolean isProxyAllowed(List<?> proxies) {       
+        var allowedProxyList = Arrays.asList(allowedProxies.split(","));
+        for (var p : proxies) 
             if (allowedProxyList.contains(p))
                 return true;        
         logger.warn("Les proxies ci-après ne sont pas authorisés à accéder au BO : "+proxies.toString());
@@ -63,49 +58,4 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
         return false;
     }
 
-    /**
-     * @return the casValidateUrl
-     */
-    public String getCasValidateUrl() {
-        return casValidateUrl;
-    }
-
-
-    /**
-     * @param casValidateUrl the casValidateUrl to set
-     */
-    public void setCasValidateUrl(String casValidateUrl) {
-        this.casValidateUrl = casValidateUrl;
-    }
-
-
-    /**
-     * @return the proxyTicketValidator
-     */
-    public ProxyTicketValidator getProxyTicketValidator() {
-        return proxyTicketValidator;
-    }
-
-    /**
-     * @param proxyTicketValidator the proxyTicketValidator to set
-     */
-    public void setProxyTicketValidator(ProxyTicketValidator proxyTicketValidator) {
-        this.proxyTicketValidator = proxyTicketValidator;
-    }
-
-    /**
-     * @return the allowedProxies
-     */
-    public String getAllowedProxies() {
-        return allowedProxies;
-    }
-
-    /**
-     * @param allowedProxies the allowedProxies to set
-     */
-    public void setAllowedProxies(String allowedProxies) {
-        this.allowedProxies = allowedProxies;
-    }
-
-    
 }

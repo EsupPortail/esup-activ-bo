@@ -8,7 +8,6 @@ import org.esupportail.activbo.domain.beans.channels.ChannelException;
 import org.esupportail.activbo.exceptions.AuthentificationException;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
-import org.esupportail.activbo.exceptions.LoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
@@ -32,12 +31,10 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
     
     public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
         domainService.setPassword(id,code,currentPassword);
-        domainService.removeCode(id, code);
     }
     
     public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
         domainService.setPassword(id,code,newLogin,currentPassword);
-        domainService.removeCode(id, code);
     }
     
     public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
@@ -63,14 +60,13 @@ public class AccountManagementImpl implements AccountManagement,InitializingBean
         return domainService.validateCode(id, code);
     }
     
-    public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException,PrincipalNotExistsException{
+    public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException, LoginException,PrincipalNotExistsException{
         domainService.changeLogin(id, code, newLogin);
     }
     
     public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
         return domainService.authentificateUser(id, password,attrPersoInfo);
     }
-
 
     public String validatePassword(String supannAliasLogin, String password) throws KRBException, LdapProblemException, LoginException {
         return domainService.validatePassword(supannAliasLogin, password);

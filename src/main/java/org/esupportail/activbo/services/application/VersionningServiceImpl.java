@@ -4,18 +4,8 @@
  */
 package org.esupportail.activbo.services.application; 
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import org.esupportail.activbo.domain.beans.User;
-import org.esupportail.commons.exceptions.ConfigException;
-import org.esupportail.commons.services.application.Version;
 import org.esupportail.commons.services.application.VersionException;
 import org.esupportail.commons.services.application.VersionningService;
-import org.esupportail.commons.services.database.DatabaseUtils;
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
-import org.esupportail.commons.utils.Assert;
 
 /**
  * A bean for versionning management.
@@ -29,13 +19,6 @@ public class VersionningServiceImpl implements VersionningService {
     public void setDatabaseVersion(
             final String version, 
             final boolean silent) {
-    }
-
-    /**
-     * @return the database version.
-     */
-    public Version getDatabaseVersion() {
-            return null;
     }
 
     /**
@@ -64,13 +47,6 @@ public class VersionningServiceImpl implements VersionningService {
      */
     public boolean upgradeDatabase() {
         return false;
-    }
-
-    /**
-     * @return the firstAdministratorId
-     */
-    public String getFirstAdministratorId() {
-        return null;
     }
 
     /**

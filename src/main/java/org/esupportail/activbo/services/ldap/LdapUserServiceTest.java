@@ -3,15 +3,11 @@
  */
 package org.esupportail.activbo.services.ldap;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import net.sf.ehcache.CacheManager;
-
 
 import org.esupportail.commons.exceptions.UserNotFoundException;
 import org.esupportail.commons.services.i18n.I18nService;
@@ -29,10 +25,12 @@ import org.springframework.ldap.support.filter.OrFilter;
 import org.springframework.ldap.support.filter.WhitespaceWildcardsFilter;
 import org.springframework.util.StringUtils;
 
+import net.sf.ehcache.CacheManager;
+
 /**
  * An implementation of LdapUserService that delegates to a CachingLdapEntityServiceImpl.
  */
-public class LdapUserServiceTest implements LdapUserService, InitializingBean, Serializable {
+public class LdapUserServiceTest implements LdapUserService, InitializingBean {
 
     /**
      * The serialization id.
@@ -97,7 +95,7 @@ public class LdapUserServiceTest implements LdapUserService, InitializingBean, S
     @Override
     public String toString() {
         return getClass().getSimpleName() + "#" + hashCode() + "[" 
-        + "searchDisplayedAttributes=[" + getSearchDisplayedAttributes() + "], " 
+        + "searchDisplayedAttributes=[" + searchDisplayedAttributes + "], " 
         + "searchAttribute=[" + searchAttribute + "], " 
         + "service=" + service  
         + "]";

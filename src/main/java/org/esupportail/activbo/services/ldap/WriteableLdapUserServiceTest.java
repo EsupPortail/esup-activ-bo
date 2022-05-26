@@ -3,7 +3,6 @@
  */
 package org.esupportail.activbo.services.ldap;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.naming.Name;
@@ -66,11 +65,6 @@ public class WriteableLdapUserServiceTest implements WriteableLdapUserService, I
     private String dnSubPath;
     
     /**
-     * The names of the attributes to update.
-     */
-    private List<String> attributes;
-    
-    /**
      * Bean constructor.
      */
     public WriteableLdapUserServiceTest() {
@@ -131,10 +125,8 @@ public class WriteableLdapUserServiceTest implements WriteableLdapUserService, I
      * @param context
      */
     protected void mapToContext(final LdapUser ldapUser, final DirContextAdapter context) {
-        List<String> attributesNames = ldapUser.getAttributeNames();
-        for (String ldapAttributeName : attributesNames) {
-            List<String> listAttr = new ArrayList<String>();
-            listAttr = ldapUser.getAttributes(ldapAttributeName);
+        for (String ldapAttributeName : ldapUser.getAttributeNames()) {
+            List<String> listAttr = ldapUser.getAttributes(ldapAttributeName);
             // The attribute exists
             if (listAttr != null && listAttr.size() != 0) {
                 context.setAttributeValues(ldapAttributeName, listAttr.toArray());
@@ -174,25 +166,10 @@ public class WriteableLdapUserServiceTest implements WriteableLdapUserService, I
     }
 
     /**
-     * @return ldapTemplate the LdapTemplate to get
-     */
-    public LdapTemplate getLdapTemplate() {
-        return ldapTemplate;
-    }
-
-    
-    /**
      * @param ldapTemplate the LdapTemplate to set
      */
     public void setLdapTemplate(LdapTemplate ldapTemplate) {
         this.ldapTemplate = ldapTemplate;
-    }
-
-    /**
-     * @return the contextSource to get
-     */
-    public LdapContextSource getContextSource() {
-        return contextSource;
     }
 
     /**
@@ -203,24 +180,10 @@ public class WriteableLdapUserServiceTest implements WriteableLdapUserService, I
     }
 
     /**
-     * @return the idAttribute to get
-     */
-    public String getIdAttribute() {
-        return idAttribute;
-    }
-
-    /**
      * @param idAttribute the idAttribute to set
      */
     public void setIdAttribute(final String idAttribute) {
         this.idAttribute = idAttribute;
-    }
-
-    /**
-     * @return the dnSubPath to get
-     */
-    public String getDnSubPath() {
-        return dnSubPath;
     }
 
     /**
@@ -231,38 +194,10 @@ public class WriteableLdapUserServiceTest implements WriteableLdapUserService, I
     }
 
     /**
-     * @return the attributes to get
-     */
-    public List<String> getAttributes() {
-        return attributes;
-    }
-
-    /**
-     * @param attributes the attributes to set
-     */
-    public void setAttributes(final List<String> attributes) {
-        this.attributes = attributes;
-    }
-
-    /**
-     * @return the dnAuth to get
-     */
-    public String getDnAuth() {
-        return dnAuth;
-    }
-
-    /**
      * @param dnAuth the dnAuth to set
      */
     public void setDnAuth(final String dnAuth) {
         this.dnAuth = dnAuth;
-    }
-
-    /**
-     * @return the idAuth to get
-     */
-    public String getIdAuth() {
-        return idAuth;
     }
 
     /**
