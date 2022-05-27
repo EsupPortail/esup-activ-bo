@@ -12,7 +12,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.esupportail.commons.services.ldap.LdapUser;
+import org.esupportail.activbo.services.ldap.LdapUser;
 
 /**
  * @author csar
@@ -39,7 +39,7 @@ public class SMSUChannel extends AbstractChannel{
 
     @Override
     public void send(String id) throws ChannelException {
-        String pager = getUser(id).getAttribute(attributePager);
+        String pager = getUserAttr(id, attributePager);
         if (pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
 
         var code = validationCode.generateChannelCode(id, codeDelay, getName());

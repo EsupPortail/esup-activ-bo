@@ -1,8 +1,8 @@
 package org.esupportail.activbo.domain;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.esupportail.activbo.domain.beans.channels.ChannelException;
 import org.esupportail.activbo.exceptions.AuthentificationException;
@@ -16,28 +16,28 @@ import org.esupportail.activbo.services.kerberos.KRBException;
 
 public interface DomainService extends Serializable {
 
-    public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,LoginException;
+    public Map<String,List<String>> validateAccount(Map<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,LoginException;
     
     public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException,LoginException;
     
     public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException;
     
-    public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo) throws LdapProblemException,UserPermissionException,LoginException;
+    public void updatePersonalInformations(String id,String code,Map<String,List<? extends Object>> hashBeanPersoInfo) throws LdapProblemException,UserPermissionException,LoginException;
     
     public void removeCode(String user_id, String code);
 
-    public void sendCode(String id,String canal)throws ChannelException;
+    public void sendCode(String id,String channel)throws ChannelException;
     
-    public boolean validateCode(String id,String code)throws UserPermissionException;
+    public void verifyCode(String id,String code)throws UserPermissionException;
     
     public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginException,PrincipalNotExistsException;
     
-    public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
+    public Map<String,List<String>> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
     
-    public HashMap<String,String> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
+    public Map<String,List<String>> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
 
-    public HashMap<String,String> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
+    public Map<String,List<String>> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException,LoginException;
 
-    public String validatePassword(String supannAliasLogin, String password) throws  KRBException,LdapProblemException, LoginException;
+    public String validatePassword(String supannAliasLogin, String password) throws KRBException;
 
 }

@@ -6,27 +6,15 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
     >
 
-    <bean id="abstractDomainService" abstract="true">
-        
-        <property name="ldapUserService" ref="ldapUserService" /> 
-        <property name="writeableLdapUserService" ref="writeableLdapUserService" />
-        <property name="displayNameLdapAttribute" value="displayName" />
-        
-            
+    <bean id="abstractDomainService" abstract="true">   
+        <property name="ldapUserService" ref="ldapUserService" />
+        <property name="displayNameLdapAttribute" value="displayName" />        
         <property name="accountDescrCodeKey" value="${account.key.code}"/>
-        
         <property name="accountDescrPossibleChannelsKey" value="${account.key.possibleChannels}"/>
-                        
         <property name="validationCode" ref="validationCode"/>
-        
         <property name="validationProxyTicket" ref="validationProxyTicket"/>
-
         <property name="bruteForceBlock" ref="bruteForceBlock"/>
-        
         <property name="ldapSchema" ref="ldapSchema"/>
-                
-        <property name="separator" value="${sep.multiValue}" />     
-        
         <property name="casID" value="${cas.attributeID}" /> 
                                                     
         <property name="channels">
@@ -168,8 +156,7 @@
         class="edu.yale.its.tp.cas.client.ProxyTicketValidator"
         >
     </bean>
-    
-    
+
     <bean
         id="bruteForceBlock"
         class="org.esupportail.activbo.domain.tools.BruteForceBlockImpl" lazy-init="true"

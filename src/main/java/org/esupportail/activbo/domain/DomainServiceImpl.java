@@ -4,36 +4,37 @@
  */
 package org.esupportail.activbo.domain;
 
+import static org.esupportail.activbo.Utils.toArray;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.esupportail.activbo.domain.beans.ValidationCode;
+import org.esupportail.activbo.Utils;
+import org.esupportail.activbo.domain.beans.ValidationCodeImpl;
 import org.esupportail.activbo.domain.beans.ValidationProxyTicket;
 import org.esupportail.activbo.domain.beans.channels.Channel;
 import org.esupportail.activbo.domain.beans.channels.ChannelException;
 import org.esupportail.activbo.domain.tools.BruteForceBlock;
 import org.esupportail.activbo.exceptions.AuthentificationException;
-import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
-import org.esupportail.activbo.services.kerberos.KRBException;
-import org.esupportail.activbo.services.kerberos.KRBIllegalArgumentException;
+import org.esupportail.activbo.services.ldap.LdapAttributesModificationException;
 import org.esupportail.activbo.services.ldap.LdapSchema;
-import org.esupportail.activbo.services.ldap.WriteableLdapUserService;
-import org.esupportail.commons.services.ldap.LdapException;
-import org.esupportail.commons.services.ldap.LdapUser;
-import org.esupportail.commons.services.ldap.LdapUserService;
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
-import org.esupportail.commons.utils.Assert;
+import org.esupportail.activbo.services.ldap.LdapUser;
+import org.esupportail.activbo.services.ldap.LdapUserImpl;
+import org.esupportail.activbo.services.ldap.LdapUserOut;
+import org.esupportail.activbo.services.ldap.WriteableLdapUserServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-
 
 
 
@@ -49,46 +50,42 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
      */
     private static final long serialVersionUID = -8200845058340254019L;
 
-    private final Logger logger = new LoggerImpl(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     
     private List<Channel> channels;
     protected LdapSchema ldapSchema;
     private String accountDescrCodeKey; 
     private String accountDescrPossibleChannelsKey;
-    private ValidationCode validationCode;
+    private ValidationCodeImpl validationCode;
     private ValidationProxyTicket validationProxyTicket;
     private BruteForceBlock bruteForceBlock;
-    private LdapUserService ldapUserService;
+    private WriteableLdapUserServiceImpl ldapUserService;
     private String displayNameLdapAttribute;
-    private WriteableLdapUserService writeableLdapUserService;
-    private String separator;
     private String casID;
     
     public void setChannels(List<Channel> channels) { this.channels = channels; }
     public void setLdapSchema(LdapSchema ldapSchema) { this.ldapSchema = ldapSchema; }
     public void setAccountDescrCodeKey(String accountDescrCodeKey) { this.accountDescrCodeKey = accountDescrCodeKey; }
     public void setAccountDescrPossibleChannelsKey( String accountDescrPossibleChannelsKey) { this.accountDescrPossibleChannelsKey = accountDescrPossibleChannelsKey; }
-    public void setValidationCode(ValidationCode validationCode) { this.validationCode = validationCode; }
+    public void setValidationCode(ValidationCodeImpl validationCode) { this.validationCode = validationCode; }
     public void setValidationProxyTicket(ValidationProxyTicket validationProxyTicket) { this.validationProxyTicket = validationProxyTicket; }
     public void setBruteForceBlock(BruteForceBlock bruteForceBlock) { this.bruteForceBlock = bruteForceBlock; }
-    public void setLdapUserService(final LdapUserService ldapUserService) { this.ldapUserService = ldapUserService; }
+    public void setLdapUserService(final WriteableLdapUserServiceImpl ldapUserService) { this.ldapUserService = ldapUserService; }
     public void setDisplayNameLdapAttribute(final String displayNameLdapAttribute) { this.displayNameLdapAttribute = displayNameLdapAttribute; }
-    public void setWriteableLdapUserService(WriteableLdapUserService writeableLdapUserService) { this.writeableLdapUserService = writeableLdapUserService; }
-    public void setSeparator(String separator) { this.separator = separator; }
     public void setCasID(String casID) { this.casID = casID; }
     
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(ldapUserService, 
-                "property ldapUserService of class " + getClass().getName() + " can not be null");
-        Assert.notNull(channels, 
-                "property channels of class " + getClass().getName() + " can not be null");
-        Assert.hasText(displayNameLdapAttribute, 
-                "property displayNameLdapAttribute of class " + getClass().getName() 
+        if (ldapUserService == null) 
+                throw new Exception("property ldapUserService of class " + getClass().getName() + " can not be null");
+        if (channels == null) 
+                throw new Exception("property channels of class " + getClass().getName() + " can not be null");
+        if (StringUtils.isBlank(displayNameLdapAttribute)) 
+                throw new Exception("property displayNameLdapAttribute of class " + getClass().getName() 
                 + " can not be null");
     }
     
 
-    private LdapUser searchUser(HashMap<String, String> hashInfToValidate) throws LoginException, AuthentificationException {
+    private LdapUser searchUser(Map<String, String> hashInfToValidate, String[] wanted_attrs) throws LoginException, AuthentificationException {
         /**
          * Construction d'un filtre ldap à partir des données à valider.
          * Si l'application du filtre retourne une entrée, c'est que les données sont valides
@@ -96,15 +93,15 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         
         String filter = hasInf_to_ldap_filter(hashInfToValidate);
         logger.debug("Le filtre construit pour la validation est : "+filter);
-        var ldapUser = getLdapUser(filter);
+        var ldapUser = getLdapUser(filter, wanted_attrs);
 
         if (ldapUser==null) {
             logger.warn("Identification failed: " + filter);
-            throw new AuthentificationException("Identification �chouée : "+filter);
+            throw new AuthentificationException("Identification échouée");
         }
         return ldapUser;
     }
-    private String hasInf_to_ldap_filter(HashMap<String, String> hashInfToValidate) {
+    private String hasInf_to_ldap_filter(Map<String, String> hashInfToValidate) {
         String filter="(&";
         for (var entry: hashInfToValidate.entrySet()) {
             filter+="("+ entry.getKey() + "=" + escape_ldap_filter_value(entry.getValue()) + ")";
@@ -123,36 +120,48 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         return value;
     }
 
-    public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException, LdapProblemException, LoginException{          
-        var ldapUser = searchUser(hashInfToValidate);
+    public Map<String,List<String>> validateAccount(Map<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException, LdapProblemException, LoginException{        
+        var ldapUser = searchUser(hashInfToValidate, toArray(attrPersoInfo));
         
         //envoi d'un code si le compte n'est pas activ�
         boolean with_code = ldapUser.getAttribute(ldapSchema.shadowLastChange)==null;
 
         var infos = ldapInfos_and_maybe_code(ldapUser, attrPersoInfo, with_code);
 
-        infos.put(accountDescrPossibleChannelsKey, convertListToString(possibleChannels(ldapUser)));
+        infos.put(accountDescrPossibleChannelsKey, possibleChannels(ldapUser));
 
         return infos;
     }
     
-    private HashMap<String, String> ldapInfos_and_maybe_code(LdapUser ldapUser, List<String> wanted_attrs, boolean with_code) {
-        var infos=new HashMap<String,String>();
-        infos.put(ldapSchema.login, convertListToString(ldapUser.getAttributes(ldapSchema.login)));
-        infos.put(ldapSchema.mail, convertListToString(ldapUser.getAttributes(ldapSchema.mail)));
+    private HashMap<String, List<String>> ldapInfos_and_maybe_code(LdapUser ldapUser, List<String> wanted_attrs, boolean with_code) {
+        var infos=new HashMap<String,List<String>>();
+        infos.put(ldapSchema.login, ldapUser.getAttributeValues(ldapSchema.login));
         
+        var rawAttrs = ((LdapUserImpl) ldapUser).attributes();
         for (String attr: wanted_attrs) {
-            infos.put(attr, convertListToString(ldapUser.getAttributes(attr)));
+            var vals = rawAttrs.get(attr);
+            if (vals == null) vals = Collections.emptyList();
+            var base64s = mayEncodeBase64s(vals);
+            if (base64s != null) {
+                infos.put(attr + ";base64", base64s);
+            } else {
+                infos.put(attr, (List<String>) vals); }
         }
         
         if (with_code) {
             String code = validationCode.generateCode(ldapUser.getAttribute(ldapSchema.login));
-            infos.put(accountDescrCodeKey, code);
+            infos.put(accountDescrCodeKey, Collections.singletonList(code));
             logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.login)+" dans la table effectu�e");
         }
         return infos;
     }
 
+    private List<String> mayEncodeBase64s(List<? extends Object> vals) {
+        for (var val: vals) {
+            if (!(val instanceof String)) return Utils.encodeBase64s(vals);
+        }
+        return null;
+    }
     private List<String> possibleChannels(LdapUser ldapUser) {
         var possibleChannels= new ArrayList<String>();
         for (var c : channels) {
@@ -163,52 +172,47 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         return possibleChannels;
     }
     
-    public LdapUser getLdapUser(String filter) throws LoginException{
-        LdapUser ldapUser=null;
-        List<LdapUser> ldapUserList = ldapUserService.getLdapUsersFromFilter(filter);
+    public LdapUser getLdapUser(String filter, String[] wantedAttrs) throws LoginException{
+        var ldapUser = ldapUserService.getLdapUserFromFilter(filter, 
+            (String[]) ArrayUtils.add(ArrayUtils.add(wantedAttrs, ldapSchema.login), ldapSchema.shadowLastChange));
         
-        if (ldapUserList.size() !=0) {
-            ldapUser = ldapUserList.get(0);
-            if (ldapUser.getAttribute(ldapSchema.login)== null) 
+        if (ldapUser != null && ldapUser.getAttribute(ldapSchema.login)== null) {
                 throw new LoginException("Le login pour l'utilisateur est null");
         }
         
         return ldapUser;
     }
     
-    protected LdapUser getLdapUserId(String id) throws LdapProblemException,LoginException{
-        return getLdapUser("("+ldapSchema.login+"="+ id + ")");
+    protected LdapUser getLdapUserId(String id, String[] wantedAttrs) throws LoginException{
+        return getLdapUser("("+ldapSchema.login+"="+ id + ")", wantedAttrs);
     }
 
-    public LdapUser getLdapUser(String id,String code) throws UserPermissionException,LdapProblemException,LoginException{
+    public void verifyCode(String id, String code) throws UserPermissionException {
         if (!validationCode.verify(id,code)) throw new UserPermissionException("Code invalide L'utilisateur id="+id+" n'a pas le droit de continuer la procédure");
-        
-        var ldapUser = getLdapUserId(id);
+    }
+
+    public LdapUserOut getLdapUserOut(String id) throws LdapProblemException, LoginException {
+        var ldapUser = getLdapUserId(id, new String[] {});
         if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
-        ldapUser.getAttributes().clear(); 
-        return ldapUser;
+        return new LdapUserImpl(ldapUser.getDN());
     }
     
-    public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
+    public void updatePersonalInformations(String id,String code,Map<String,List<? extends Object>> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
         try {
-            writeableLdapUserService.invalidateLdapCache();
-            var ldapUser=getLdapUser(id,code);
+            verifyCode(id, code);
+            var ldapUser = getLdapUserOut(id);
                                             
             logger.debug("Parcours des informations personnelles mises � jour au niveau du FO pour insertion LDAP");
             
             for (var e : hashBeanPersoInfo.entrySet()) {
                 logger.debug("Key="+e.getKey()+" Value="+e.getValue());
                 logger.info(id + "@" + code + ": modification "+e.getKey()+": "+e.getValue());
-                List<String> list = 
-                    StringUtils.isEmpty(e.getValue()) ? Collections.<String>emptyList() :
-                    e.getValue().contains(separator) ? Arrays.asList(e.getValue().split(separator)) :
-                    Collections.singletonList(e.getValue());
-                ldapUser.getAttributes().put(e.getKey(), list);
+                ldapUser.attributes().put(e.getKey(), e.getValue());
             }
            
             finalizeLdapWriting(ldapUser);          
         
-        } catch (LdapException e) {
+        } catch (LdapAttributesModificationException e) {
             logger.debug("Exception thrown by updatePersonalInfo() : "+ e.getMessage());
             throw new LdapProblemException("Probleme au niveau du LDAP");
         }
@@ -218,27 +222,25 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         validationCode.removeCode(user_id);
     }
     
-    public void sendCode(String id,String canal)throws ChannelException{    
+    public void sendCode(String id,String channel)throws ChannelException{  
         for (var c : channels) {
-            if (c.getName().equalsIgnoreCase(canal)) {
+            if (c.getName().equalsIgnoreCase(channel)) {
                 c.send(id);
                 break;
             }                   
         }
     }
     
-    private HashMap<String,String> getLdapInfos(String id,String password,List<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+    private HashMap<String,List<String>> getLdapInfos(String id,String password,List<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
         try {
             if (bruteForceBlock.isBlocked(id)) {
                 throw new UserPermissionException("Nombre de tentative d'authentification atteint pour l'utilisateur "+id);
             }
-            
-            var ldapUser = getLdapUserId(id);       
+            var ldapUser = getLdapUserId(id, toArray(attrPersoInfo));
             if (ldapUser==null) throw new AuthentificationException("Login invalide");
 
             if (password!=null) {
-                writeableLdapUserService.defineAuthenticatedContextForUser(ldapUser.getId(), password);
-                writeableLdapUserService.bindLdap(ldapUser);
+                ldapUserService.bindLdap(ldapUser, password);
             }
     
             //envoi d'un code si le compte est activé
@@ -246,85 +248,56 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 
             //Construction du hasMap de retour
             return ldapInfos_and_maybe_code(ldapUser, attrPersoInfo, with_code);
-        } catch(LdapException e) {
-            logger.debug("Exception thrown by authentificateUser() : "+ e.getMessage());
-            throw new LdapProblemException("Probleme au niveau du LDAP");
-        }
-        catch(AuthentificationException e) {
+        } catch(AuthentificationException e) {
             //si authentification pas bonne 
             bruteForceBlock.setFail(id);
             throw e;
         }
     }
     
-    public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
+    public Map<String,List<String>> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
         if (password==null) throw new AuthentificationException("Password must not be null !");
         return getLdapInfos(id,password,attrPersoInfo);
     }
     
-    public HashMap<String,String> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+    public Map<String,List<String>> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
         logger.debug("Id, proxyticket et targetUrl : "+id +","+proxyticket+ ", "+targetUrl);
         
         if (!validationProxyTicket.validation(id, proxyticket,targetUrl))
-            throw new AuthentificationException("Authentification failed ! ");
+            throw new AuthentificationException();
         
-        var ldapUser =getLdapUser("("+casID+"="+ id + ")");
+        var ldapUser = getLdapUser("("+casID+"="+ id + ")", new String[] { ldapSchema.login });
         var login = ldapUser!=null ? ldapUser.getAttribute(ldapSchema.login) : id; 
         
         return getLdapInfos(login,null,attrPersoInfo);
     }
     
-    public HashMap<String,String> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+    public Map<String,List<String>> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
         
         logger.debug("Id et accountCodeKey : "+id +","+accountCodeKey);
         
         if (!validationCode.verify(id, accountCodeKey))
-            throw new AuthentificationException("Authentification failed ! ");
+            throw new AuthentificationException();
         
         return getLdapInfos(id,null,attrPersoInfo);
     }
 
-    public boolean validateCode(String id,String code)throws UserPermissionException {
-        return validationCode.verify(id,code);
-    }
-    
-    protected void finalizeLdapWriting(LdapUser ldapUser)throws LdapException{
+    protected void finalizeLdapWriting(LdapUserOut ldapUser) throws LdapAttributesModificationException {
         logger.debug("L'ecriture dans le LDAP commence");
-        writeableLdapUserService.defineAuthenticatedContext(ldapSchema.usernameAdmin, ldapSchema.passwordAdmin);
-        writeableLdapUserService.updateLdapUser(ldapUser);
-        writeableLdapUserService.defineAnonymousContext();
+        ldapUserService.updateLdapUser(ldapUser);
         logger.debug("Ecriture dans le LDAP r�ussie");
     }
-    
-    private String convertListToString(List<String>listString) {
-        return String.join(separator, listString);
-    }   
     
     private int nowEpochDays() {
         var cal = Calendar.getInstance();
         return (int) Math.floor(cal.getTimeInMillis() / (1000 * 3600 * 24));
     }
     
-    protected void setShadowLastChange(LdapUser ldapUser) {
+    protected void setShadowLastChange(LdapUserOut ldapUser) {
         // Préparer l'attribut shadowLastChange à écrire dans LDAP
         var shadowLastChange = Integer.toString(nowEpochDays());
-        ldapUser.getAttributes().put(ldapSchema.shadowLastChange, Collections.singletonList(shadowLastChange));
+        ldapUser.attributes().put(ldapSchema.shadowLastChange, Collections.singletonList(shadowLastChange));
         if (logger.isDebugEnabled()) {logger.debug("Setting shadowLastChange in LDAP : "+ shadowLastChange );}              
-    }
-    
-    /**
-     * But : Gestion des exceptions
-     */
-    protected void exceptions(Exception exception) throws LdapProblemException,KerberosException, LoginException, UserPermissionException{
-        logger.debug("Dans m�thode exceptions",exception);
-        if      (exception instanceof LdapException)throw new LdapProblemException("Probleme au niveau du LDAP");
-        else if (exception instanceof KRBException) throw new KerberosException("Probleme au niveau de Kerberos", exception);
-        else if (exception instanceof KRBIllegalArgumentException) throw new KerberosException("Probleme au niveau de Kerberos", exception);
-        else if (exception instanceof UserPermissionException) throw (UserPermissionException)exception;
-        else if (exception instanceof RuntimeException) throw (RuntimeException)(exception);
-        else logger.error("Erreur inattendue");
-        
-    }
-    
+    }   
 
 }

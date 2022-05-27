@@ -1,10 +1,7 @@
 package org.esupportail.activbo.services.kerberos;
 
 
-import org.springframework.beans.factory.InitializingBean;
-
-
-public class KRBAdminMock implements KRBAdmin,InitializingBean {
+public class KRBAdminMock implements KRBAdmin {
     
     
     /** 
@@ -49,13 +46,6 @@ public class KRBAdminMock implements KRBAdmin,InitializingBean {
     public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException{
         
     }
-
-
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
-    }
-
 
     public String validatePassword(String principal, String password) throws KRBException {
         return "Fonction non traitée";

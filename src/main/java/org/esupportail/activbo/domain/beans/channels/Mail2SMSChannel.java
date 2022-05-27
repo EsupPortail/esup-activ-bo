@@ -1,20 +1,20 @@
 package org.esupportail.activbo.domain.beans.channels;
 
-import org.esupportail.commons.services.ldap.LdapUser;
-import org.esupportail.commons.services.smtp.AsynchronousSmtpServiceImpl;
+import org.esupportail.activbo.services.SmtpService;
+import org.esupportail.activbo.services.ldap.LdapUser;
 
 public class Mail2SMSChannel extends AbstractChannel {
     private String attributePager;
     private String mailSMS;
     private String mailCodeSubject;
     private String mailCodeBody;
-    private AsynchronousSmtpServiceImpl smtpService;
+    private SmtpService smtpService;
 
     public void setAttributePager(String attributePager) { this.attributePager = attributePager; }
     public void setMailSMS(String mailSMS) { this.mailSMS = mailSMS; }  
     public void setMailCodeSubject(String mailCodeSubject) { this.mailCodeSubject = mailCodeSubject; }
     public void setMailCodeBody(String mailCodeBody) { this.mailCodeBody = mailCodeBody; }
-    public void setSmtpService(AsynchronousSmtpServiceImpl smtpService) { this.smtpService = smtpService; }
+    public void setSmtpService(SmtpService smtpService) { this.smtpService = smtpService; }
 
     public boolean isPossible(LdapUser ldapUser) {
         return ldapUser.getAttribute(attributePager) != null;
@@ -22,7 +22,7 @@ public class Mail2SMSChannel extends AbstractChannel {
 
     @Override
     public void send(String id) throws ChannelException {
-        String pager = getUser(id).getAttribute(attributePager);            
+        String pager = getUserAttr(id, attributePager);         
         if (pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
                                 
         var mail = to_InternetAddress(mailSMS);
@@ -33,7 +33,7 @@ public class Mail2SMSChannel extends AbstractChannel {
             .replace("{1}", code.code)
             .replace("{2}", code.date);
         
-        smtpService.send(mail,mailCodeSubject,"",mailBody);
+        smtpService.sendEmail(mail, mailCodeSubject, mailBody, false);
         
         logger.info(id + "@" + code + ": Envoi du code par sms via mail2sms au numéro portable "+pager);
     }

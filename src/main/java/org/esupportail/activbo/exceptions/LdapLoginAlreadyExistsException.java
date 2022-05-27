@@ -1,6 +1,6 @@
 package org.esupportail.activbo.exceptions;
 
-public class LdapLoginAlreadyExistsException extends Exception {
+public class LdapLoginAlreadyExistsException extends LdapProblemException {
     
     private static final long serialVersionUID = 8197090501242229324L;
 

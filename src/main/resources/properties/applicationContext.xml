@@ -21,20 +21,14 @@
       </property>
     </bean>
 
-    <import resource="auth/auth.xml" />
-    <import resource="cache/cache.xml" />
     <import resource="domain/domain.xml" />
 
     <import resource="domain/domainLdap.xml" />
     <!--import resource="domain/domainKerbLdap.xml" /-->
 
-    <import resource="exceptionHandling/exceptionHandling.xml" />
     <import resource="export/export.xml"/>
-    <import resource="i18n/i18n.xml" />
     <import resource="ldap/ldap.xml" />
     <import resource="kerberos/kerberos.xml" />
-    <import resource="misc/abstractBeans.xml" />
-    <import resource="misc/application.xml" />
     <import resource="smtp/smtp.xml" />
 
 </beans>

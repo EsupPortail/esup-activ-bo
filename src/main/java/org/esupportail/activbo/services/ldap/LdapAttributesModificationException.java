@@ -4,12 +4,10 @@
  */
 package org.esupportail.activbo.services.ldap;
 
-import org.esupportail.commons.services.ldap.LdapException;
-
 /**
  * An exception thrown when failing to retrieve a user from a datasource.
  */
-public class LdapAttributesModificationException extends LdapException {
+public class LdapAttributesModificationException extends Exception {
 
     /**
      * the id for serialization.

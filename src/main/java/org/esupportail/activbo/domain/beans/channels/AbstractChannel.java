@@ -1,33 +1,32 @@
 package org.esupportail.activbo.domain.beans.channels;
 
-import java.util.List;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 
-import org.esupportail.activbo.domain.beans.ValidationCode;
+import org.esupportail.activbo.domain.beans.ValidationCodeImpl;
 import org.esupportail.activbo.services.ldap.LdapSchema;
-import org.esupportail.commons.services.ldap.LdapUser;
-import org.esupportail.commons.services.ldap.LdapUserService;
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
+import org.esupportail.activbo.services.ldap.WriteableLdapUserServiceImpl;
+import org.esupportail.activbo.services.ldap.LdapUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractChannel implements Channel {
-    protected final Logger logger = new LoggerImpl(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     
     /**
      * Nom du canal
      */
     private String name;
     protected int codeDelay;
-    protected ValidationCode validationCode;
+    protected ValidationCodeImpl validationCode;
     protected LdapSchema ldapSchema;
-    protected LdapUserService ldapUserService;
+    protected WriteableLdapUserServiceImpl ldapUserService;
 
     public void setName(String name) { this.name=name; }
     public void setCodeDelay(int codeDelay) { this.codeDelay = codeDelay; }
-    public void setValidationCode(ValidationCode validationCode) { this.validationCode = validationCode; }
+    public void setValidationCode(ValidationCodeImpl validationCode) { this.validationCode = validationCode; }
     public void setLdapSchema(LdapSchema ldapSchema) { this.ldapSchema = ldapSchema; }
-    public void setLdapUserService(LdapUserService ldapUserService) { this.ldapUserService = ldapUserService; }
+    public void setLdapUserService(WriteableLdapUserServiceImpl ldapUserService) { this.ldapUserService = ldapUserService; }
 
     
     public abstract boolean isPossible(LdapUser ldapUser);
@@ -37,10 +36,15 @@ public abstract class AbstractChannel implements Channel {
         return name;
     }
 
-    protected LdapUser getUser(String id) throws ChannelException {
-        List<LdapUser> ldapUserList = ldapUserService.getLdapUsersFromFilter("("+ldapSchema.login+"="+ id + ")");
-        if (ldapUserList.size() == 0) throw new ChannelException("Utilisateur "+id+" inconnu");
-        return ldapUserList.get(0); 
+    protected LdapUser getUser(String id, String[] wantedAttrs) throws ChannelException {
+        var ldapUser = ldapUserService.getLdapUserFromFilter("("+ldapSchema.login+"="+ id + ")", wantedAttrs);
+        if (ldapUser == null) throw new ChannelException("Utilisateur "+id+" inconnu");
+        return ldapUser; 
+    }
+
+    protected String getUserAttr(String id, String attrName) throws ChannelException {
+        var ldapUser = getUser(id, new String[] { attrName });
+        return ldapUser.getAttribute(attrName);
     }
 
     protected static InternetAddress to_InternetAddress(String mailPerso) throws ChannelException {

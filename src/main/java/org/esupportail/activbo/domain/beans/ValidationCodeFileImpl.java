@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
-public class ValidationCodeFileImpl extends ValidationCodeImpl  {
-    private final Logger logger = new LoggerImpl(getClass());
+
+public class ValidationCodeFileImpl extends ValidationCodeImpl implements InitializingBean {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String codeFileName;
 

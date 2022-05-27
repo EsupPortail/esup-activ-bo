@@ -1,10 +1,10 @@
 package org.esupportail.activbo.domain.beans.channels;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
-import org.esupportail.commons.services.ldap.LdapUser;
-import org.esupportail.commons.services.smtp.AsynchronousSmtpServiceImpl;
+import org.esupportail.activbo.services.ldap.LdapUser;
+import org.esupportail.activbo.services.SmtpService;
 
 public class Mail2GestChannel extends AbstractChannel{
     private String mailGest;
@@ -13,7 +13,7 @@ public class Mail2GestChannel extends AbstractChannel{
     private String attributeDisplayName;
     private Map<String,List<String>> access;
     private Map<String,List<String>> deny;
-    private AsynchronousSmtpServiceImpl smtpService;
+    private SmtpService smtpService;
 
     public void setMailCodeSubject(String mailCodeSubject) { this.mailCodeSubject = mailCodeSubject; }
     public void setMailCodeBody(String mailCodeBody) { this.mailCodeBody = mailCodeBody; }
@@ -21,11 +21,11 @@ public class Mail2GestChannel extends AbstractChannel{
     public void setAttributeDisplayName(String attributeDisplayName) { this.attributeDisplayName = attributeDisplayName; }
     public void setAccess(Map<String, List<String>> access) { this.access = access; }
     public void setDeny(Map<String, List<String>> deny) { this.deny = deny; }
-    public void setSmtpService(AsynchronousSmtpServiceImpl smtpService) { this.smtpService = smtpService; }
+    public void setSmtpService(SmtpService smtpService) { this.smtpService = smtpService; }
 
     @Override
     public void send(String id) throws ChannelException {
-        String displayName = getUser(id).getAttribute(attributeDisplayName);
+        String displayName = getUserAttr(id, attributeDisplayName);
         var mail = to_InternetAddress(mailGest);
         var code = validationCode.generateChannelCode(id, codeDelay, getName());
 
@@ -36,7 +36,7 @@ public class Mail2GestChannel extends AbstractChannel{
             .replace("{2}", code.date)
             .replace("{3}", displayName);
         
-        smtpService.send(mail,newSubject,mailBody,"");
+        smtpService.sendEmail(mail, newSubject, mailBody, true);
         logger.info(id + "@" + code + ": Envoi du code à l'adresse mail gestionnaire "+mailGest);
     }
 
@@ -56,7 +56,7 @@ public class Mail2GestChannel extends AbstractChannel{
     private boolean profileMatches(Map<String,List<String>> profile, LdapUser ldapUser) {
         for (String attribute : profile.keySet()) {
             var values=profile.get(attribute);
-            for (String userValue : ldapUser.getAttributes(attribute))
+            for (String userValue : ldapUser.getAttributeValues(attribute))
                 if (values.contains(userValue))     
                     return true;                                                                                    
         }

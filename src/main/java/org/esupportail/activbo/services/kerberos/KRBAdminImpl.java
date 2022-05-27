@@ -5,15 +5,14 @@ import java.io.PrintWriter;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
-import org.esupportail.commons.utils.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 
 public class KRBAdminImpl implements KRBAdmin, InitializingBean{
     
-    private final Logger logger = new LoggerImpl(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
         
     private String principalAdmin;
     private String principalAdminKeyTab;
@@ -28,16 +27,16 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
     public void setRealm(String realm) { this.realm = realm; }
     
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(this.principalAdmin, 
-                "property principalAdmin of class " + this.getClass().getName() + " can not be null");
-        Assert.notNull(this.principalAdminKeyTab, 
-                "property principalAdminKeyTab of class " + this.getClass().getName() + " can not be null");
-        Assert.notNull(this.kadminCmd, 
-                "property kadminCmd of class " + this.getClass().getName() + " can not be null");   
+        if (this.principalAdmin == null)
+                throw new Exception("property principalAdmin of class " + this.getClass().getName() + " can not be null");
+        if (this.principalAdminKeyTab == null)
+                throw new Exception("property principalAdminKeyTab of class " + this.getClass().getName() + " can not be null");
+        if (this.kadminCmd == null)
+                throw new Exception("property kadminCmd of class " + this.getClass().getName() + " can not be null");   
     }
     
 
-    public void add(String principal,String passwd) throws KRBException, KRBPrincipalAlreadyExistsException{
+    public void add(String principal,String passwd) throws KRBException {
         if (principal.contains(" "))
             throw new KRBIllegalArgumentException("Illegal argument");      
 
@@ -67,7 +66,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
             
     }
     
-    public void changePasswd(String principal,String passwd) throws KRBException,KRBIllegalArgumentException{
+    public void changePasswd(String principal,String passwd) throws KRBException {
         //eliminer les requetes par injection de code
         if ( principal.contains(" "))
             throw new KRBIllegalArgumentException("Illegal argument");          
@@ -104,7 +103,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
             state=CHANGED;*/                                                                                    
     }
 
-    public void rename(String oldPrincipal,String newPrincipal)throws KRBException,KRBPrincipalAlreadyExistsException{
+    public void rename(String oldPrincipal,String newPrincipal)throws KRBException {
         if (exists(newPrincipal)) throw new KRBPrincipalAlreadyExistsException("The new principal "+newPrincipal+" already exists");
 
         var cmd = kadminCmd("rename", oldPrincipal,newPrincipal);       
@@ -126,7 +125,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
         return !notExist;
     }
 
-    public String validatePassword(String principal, String password) throws KRBException{
+    public String validatePassword(String principal, String password) throws KRBException {
         String []cmd = kadminCmd("verify-password-quality", principal,password);
         logger.debug(StringUtils.join(cmd, " "));
 
@@ -141,7 +140,7 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
         try {
             return Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("", e);
             throw new KRBException("Unknown error. See log files for more information");
         }
     }

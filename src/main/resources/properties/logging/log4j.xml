@@ -49,32 +49,7 @@
         <appender-ref ref="fileAppenderEsup-activ-bo" />
         <appender-ref ref="consoleAppender" />
     </logger>
-    <logger name="org.esupportail.commons" additivity="false">
-        <level value="INFO" />
-        <appender-ref ref="fileAppenderEsup-activ-bo" />        
-        <appender-ref ref="consoleAppender" />
-    </logger>
-    <logger name="org.esupportail.portal.ws.client.support.uportal" additivity="false">
-        <level value="ERROR" /> 
-        <appender-ref ref="fileAppenderEsup-activ-bo" />    
-        <appender-ref ref="consoleAppender" />
-    </logger>
-    <logger name="org.springframework.ldap.support" additivity="false">
-        <level value="ERROR" /> 
-        <appender-ref ref="fileAppenderEsup-activ-bo" />    
-        <appender-ref ref="consoleAppender" />
-    </logger>
-    <logger name="org.esupportail.commons.services.ldap" additivity="false">
-        <level value="WARN" />  
-        <appender-ref ref="fileAppenderEsup-activ-bo" />    
-        <appender-ref ref="consoleAppender" />
-    </logger>
-    <logger name="org.esupportail.commons.services.i18n" additivity="false">
-        <level value="WARN"/> 
-        <appender-ref ref="fileAppenderEsup-activ-bo" />
-        <appender-ref ref="consoleAppender" />
-    </logger>
-    
+
     <root>
         <level value="INFO" />  
         <appender-ref ref="consoleAppender" />

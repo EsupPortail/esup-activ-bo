@@ -3,13 +3,13 @@ package org.esupportail.activbo.domain.beans;
 import java.util.Arrays;
 import java.util.List;
 
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 
 public class ValidationProxyTicketImpl implements ValidationProxyTicket{
-    private final Logger logger = new LoggerImpl(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     
     private String casValidateUrl;
     private String allowedProxies;

@@ -4,15 +4,13 @@ import java.util.Collections;
 import java.util.Random;
 
 import org.acegisecurity.providers.ldap.authenticator.LdapShaPasswordEncoder;
-import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapLoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginException;
-import org.esupportail.activbo.exceptions.PrincipalNotExistsException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
-import org.esupportail.activbo.services.kerberos.KRBException;
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
+import org.esupportail.activbo.services.ldap.LdapAttributesModificationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class LdapImpl extends DomainServiceImpl {
@@ -21,38 +19,44 @@ public class LdapImpl extends DomainServiceImpl {
      * 
      */
     private static final long serialVersionUID = -920391586782473692L;
-    private final Logger logger = new LoggerImpl(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
-    public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{      
+    public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,LoginException{     
         try {
-            var ldapUser = getLdapUser(id, code);
+            verifyCode(id, code);
+            var ldapUser = getLdapUserOut(id);
             // changement de mot de passe
-            ldapUser.getAttributes().put(ldapSchema.password, Collections.singletonList(encryptPassword(currentPassword)));
+            ldapUser.attributes().put(ldapSchema.password, Collections.singletonList(encryptPassword(currentPassword)));
             setShadowLastChange(ldapUser);
             finalizeLdapWriting(ldapUser);
-          } catch(Exception e) { exceptions (e); }
+        } catch (LdapAttributesModificationException e) {
+            logger.error("", e);
+            throw new LdapProblemException("Probleme au niveau du LDAP");
+        }
     }
     
-    public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{     
-        try {
+    public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LoginException, LdapProblemException, UserPermissionException {     
             changeLogin(id, code, newLogin);         
             setPassword(id, code, currentPassword);
-        } catch(Exception e) { exceptions (e); }
     }
     
-    public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException, LoginException, PrincipalNotExistsException{
+    public void changeLogin(String id, String code,String newLogin) throws LoginException, LdapProblemException, UserPermissionException {
         try {
-            var ldapUserNewLogin= getLdapUser("("+ldapSchema.login+"="+newLogin+ ")");              
+            var ldapUserNewLogin= getLdapUser("("+ldapSchema.login+"="+newLogin+ ")", new String[] {});             
             if (ldapUserNewLogin!=null) {throw new LdapLoginAlreadyExistsException("newLogin = "+newLogin); }
                 
-            var ldapUser=getLdapUser(id, code);
-            ldapUser.getAttributes().put(ldapSchema.login, Collections.singletonList(newLogin));           
+            verifyCode(id, code);
+            var ldapUser=getLdapUserOut(id);
+            ldapUser.attributes().put(ldapSchema.login, Collections.singletonList(newLogin));          
             finalizeLdapWriting(ldapUser);             
-        } catch (Exception e) { exceptions (e); }
+        } catch (LdapAttributesModificationException e) {
+            logger.error("", e);
+            throw new LdapProblemException("Probleme au niveau du LDAP");
+        }
     }
     
-    public String validatePassword(String supannAliasLogin, String password)throws KRBException, LdapProblemException, LoginException {
+    public String validatePassword(String supannAliasLogin, String password) {
         return null; // no (extra) validation, relying on application not calling esup-activ-bo to validate it!
     }
 

@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
-import org.springframework.beans.factory.InitializingBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class BruteForceBlockImpl implements BruteForceBlock, Runnable, InitializingBean {
+
+public class BruteForceBlockImpl implements BruteForceBlock, Runnable {
     class LoginInfo {
         Date date; // date de fin de blocage
         int nbFail;
@@ -20,7 +20,7 @@ public class BruteForceBlockImpl implements BruteForceBlock, Runnable, Initializ
         }
     }
     
-    private final Logger logger = new LoggerImpl(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private Thread purgeExpiredThread;
     private HashMap<String,LoginInfo> loginsInfo = new HashMap<>();
 
@@ -32,9 +32,6 @@ public class BruteForceBlockImpl implements BruteForceBlock, Runnable, Initializ
     public void setNbMaxFail(int nbMaxFail) { this.nbMaxFail = nbMaxFail; }
     public void setCleaningTime(long cleaningTimeSecond) { this.cleaningTimeMillis = cleaningTimeSecond * 1000; }
 
-
-    public void afterPropertiesSet() throws Exception {
-    }
 
     private LoginInfo removeExpired_or_get(String id) {
         var info = loginsInfo.get(id);
@@ -88,7 +85,7 @@ public class BruteForceBlockImpl implements BruteForceBlock, Runnable, Initializ
             try {
                 Thread.sleep(cleaningTimeMillis);
             } catch (InterruptedException e) {      
-                logger.error(e);
+                logger.error("", e);
             }
         }   
     }

@@ -1,6 +1,6 @@
 package org.esupportail.activbo.domain.beans.channels;
 
-import org.esupportail.commons.services.ldap.LdapUser;
+import org.esupportail.activbo.services.ldap.LdapUser;
 
 
 /**

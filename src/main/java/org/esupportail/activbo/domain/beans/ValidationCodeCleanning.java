@@ -2,11 +2,11 @@ package org.esupportail.activbo.domain.beans;
 
 import java.util.Date;
 
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ValidationCodeCleanning implements Runnable {  
-    private final Logger logger = new LoggerImpl(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private ValidationCodeImpl vc;
     
     ValidationCodeCleanning(ValidationCodeImpl validationCodeImpl) {
@@ -19,32 +19,33 @@ public class ValidationCodeCleanning implements Runnable {
             while(true) {
                 logger.debug("Boucle de nettoyage lancée");
                 if (!vc.validationCodes.isEmpty()) {
-                    boolean removed = false;
                     logger.debug("La table de hashage n'est pas vide");
-                    var it=vc.validationCodes.entrySet().iterator();
-                    Date date=new Date();
-                    while(it.hasNext()) {
-                        var e=it.next();
-                        var userData=e.getValue();
+
+                    boolean removedAtLeastOne = false;
+                    var now = new Date().getTime();
+
+                    var it = vc.validationCodes.entrySet().iterator();
+                    while (it.hasNext()) {
+                        var e = it.next();
+                        var userData = e.getValue();
                         logger.debug("Utilisateur "+e.getKey()+"(Code --> "+userData.code+"  ||  Date d'expiration --> "+userData.date+")");
                                             
-                        if (date.getTime() > vc.stringToDate(userData.date).getTime()) {
-                            String log = e.getKey() + "@" + userData.code + ": expiration";
-                            if (userData.channel != null) logger.info(log); else logger.debug(log);
+                        if (now > vc.stringToDate(userData.date).getTime()) {
+                            String logMsg = e.getKey() + "@" + userData.code + ": expiration";
+                            if (userData.channel != null) logger.info(logMsg); else logger.debug(logMsg);
+
                             it.remove();
-                            removed = true;
+                            removedAtLeastOne = true;
                         }
                     }
-                    if (removed) vc.afterRemoveCode();
-                }   
-                else{
+                    if (removedAtLeastOne) vc.afterRemoveCode();
+                } else {
                     logger.debug("La table de hashage est vide");
                 }
                 Thread.sleep(vc.cleaningTimeIntervalMillis);    
             }
-        
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("", e);
         }
         
     }

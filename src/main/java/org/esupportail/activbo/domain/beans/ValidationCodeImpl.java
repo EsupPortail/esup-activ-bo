@@ -1,5 +1,6 @@
 package org.esupportail.activbo.domain.beans;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,12 +11,24 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.esupportail.activbo.domain.tools.BruteForceBlock;
 import org.esupportail.activbo.exceptions.UserPermissionException;
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
-import org.springframework.beans.factory.InitializingBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ValidationCodeImpl implements ValidationCode, InitializingBean{
-    private final Logger logger = new LoggerImpl(getClass());
+
+public class ValidationCodeImpl {
+
+    public static class UserData implements Serializable {
+        public String code;
+        public String date;
+        public String channel; // optional
+
+        // to help inspecting validation.code.file.name
+        public String toString() {
+            return code + "|" + date + "|" + channel;
+        }
+    }
+    
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     protected ConcurrentHashMap<String,UserData> validationCodes = new ConcurrentHashMap<>();
     protected Thread validationCodeCleaningThread;
     
@@ -31,9 +44,6 @@ public class ValidationCodeImpl implements ValidationCode, InitializingBean{
     public void setBruteForceBlock(BruteForceBlock bruteForceBlock) { this.bruteForceBlock = bruteForceBlock; }
     public void setCleaningTimeInterval(long cleaningTimeIntervalSecond) { this.cleaningTimeIntervalMillis = cleaningTimeIntervalSecond * 1000; }
     
-
-    public void afterPropertiesSet() throws Exception {     
-    }
     
     public boolean verify(String id,String code) throws UserPermissionException{        
                 

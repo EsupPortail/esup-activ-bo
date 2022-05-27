@@ -1,14 +1,14 @@
 package org.esupportail.activbo.services.kerberos;
 
-import org.esupportail.commons.services.logging.Logger;
-import org.esupportail.commons.services.logging.LoggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class ErrorInput extends Thread {
-    private final Logger logger = new LoggerImpl(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     
     private final BufferedReader reader;
 
@@ -40,7 +40,7 @@ public class ErrorInput extends Thread {
                 logger.warn(line);
                 lines.add(line);
             }
-        } catch(final IOException ioe) {logger.error(ioe);}
+        } catch(final IOException ioe) {logger.error("", ioe);}
     
         return lines;
     }
@@ -58,7 +58,7 @@ public class ErrorInput extends Thread {
                 reader.close();             
             }
         } catch(final IOException ioe) {
-            logger.error(ioe);
+            logger.error("", ioe);
         }
     }
 }

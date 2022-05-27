@@ -47,18 +47,16 @@
     </filter>
     <filter-mapping>
       <filter-name>Log4jFilterAddIP</filter-name>
-      <url-pattern>/xfire/*</url-pattern>
+      <url-pattern>/</url-pattern>
     </filter-mapping>
 
-<servlet>
-        <servlet-name>xfire</servlet-name>
-        <servlet-class>
-        org.esupportail.commons.web.servlet.XFireServlet
-        </servlet-class>
-</servlet>
+    <servlet>
+        <servlet-name>rest</servlet-name>
+        <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
-        <servlet-name>xfire</servlet-name>
-        <url-pattern>/xfire/*</url-pattern>
+        <servlet-name>rest</servlet-name>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
 
 </web-app>
