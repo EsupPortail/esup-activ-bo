@@ -31,15 +31,14 @@ public class ValidationCodeImpl {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     protected ConcurrentHashMap<String,UserData> validationCodes = new ConcurrentHashMap<>();
     protected Thread validationCodeCleaningThread;
+    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
     
     private int codeDelay;
     private int codeLenght;
-    private String dateFormat;  
     public long cleaningTimeIntervalMillis; 
     private BruteForceBlock bruteForceBlock;
 
     public void setCodeLenght(int codeLenght) { this.codeLenght = codeLenght; }
-    public void setDateFormat(String dateFormat) { this.dateFormat = dateFormat; }
     public void setCodeDelay(int codeDelay) { this.codeDelay = codeDelay; }
     public void setBruteForceBlock(BruteForceBlock bruteForceBlock) { this.bruteForceBlock = bruteForceBlock; }
     public void setCleaningTimeInterval(long cleaningTimeIntervalSecond) { this.cleaningTimeIntervalMillis = cleaningTimeIntervalSecond * 1000; }
