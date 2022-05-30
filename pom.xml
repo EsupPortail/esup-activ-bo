@@ -53,7 +53,6 @@
     <dependency><groupId>org.springframework</groupId><artifactId>spring-context</artifactId><version>5.3.20</version></dependency>
     <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.11.0</version></dependency>
     <dependency><groupId>commons-lang</groupId><artifactId>commons-lang</artifactId><version>[2.1, 2.99]</version></dependency>
-    <dependency><groupId>commons-httpclient</groupId><artifactId>commons-httpclient</artifactId><version>3.1</version></dependency>
     <dependency><groupId>javax.mail</groupId><artifactId>mail</artifactId><version>1.4.7</version>
       <exclusions>
         <exclusion><groupId>javax.activation</groupId><artifactId>activation</artifactId></exclusion>
@@ -63,6 +62,10 @@
     <dependency><groupId>org.acegisecurity</groupId><artifactId>acegi-security</artifactId><version>1.0.4</version></dependency>
     <dependency><groupId>cas</groupId><artifactId>casclient</artifactId><version>2.1.1</version></dependency>
     <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-log4j12</artifactId><version>1.7.21</version></dependency>
+    <dependency><groupId>org.esup-portail</groupId><artifactId>esup-smsu-api-lib</artifactId><version>4.0.0</version><type>jar</type>
+      <exclusions><exclusion><groupId>org.esupportail</groupId><artifactId>esup-commons2-core</artifactId></exclusion></exclusions> 
+    </dependency>
+    <dependency><groupId>javax.inject</groupId><artifactId>javax.inject</artifactId><version>1</version></dependency>    
   </dependencies>
     
 </project>

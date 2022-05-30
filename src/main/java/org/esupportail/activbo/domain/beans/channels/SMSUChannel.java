@@ -1,20 +1,14 @@
 package org.esupportail.activbo.domain.beans.channels;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.esupportail.activbo.services.ldap.LdapUser;
+import org.esupportail.smsuapi.exceptions.InsufficientQuotaException;
+import org.esupportail.smsuapi.services.client.HttpRequestSmsuapiWS;
+import org.esupportail.smsuapi.utils.HttpException;
 
 /**
  * @author csar
@@ -23,16 +17,12 @@ import org.esupportail.activbo.services.ldap.LdapUser;
 public class SMSUChannel extends AbstractChannel{
 
     private String attributePager;
-    private String urlWS;
-    private String usernameCredentials;
-    private String passwordCredentials;
     private String messageBody;
+    private HttpRequestSmsuapiWS httpRequestSmsuapiWS;
 
     public void setAttributePager(String attributePager) { this.attributePager = attributePager; }
-    public void setUrlWS(String urlWS) { this.urlWS = urlWS; }
-    public void setUsernameCredentials(String usernameCredentials) { this.usernameCredentials = usernameCredentials; }
-    public void setPasswordCredentials(String passwordCredentials) { this.passwordCredentials = passwordCredentials; }
     public void setMessageBody(String messageBody) { this.messageBody = messageBody; }
+    public void setHttpRequestSmsuapiWS(HttpRequestSmsuapiWS httpRequestSmsuapiWS) { this.httpRequestSmsuapiWS = httpRequestSmsuapiWS; }
 
     public Set<String> neededAttrs() {
         return Collections.singleton(attributePager);
@@ -51,19 +41,12 @@ public class SMSUChannel extends AbstractChannel{
         
         String message = this.messageBody.replace("{0}", code.code);
 
-        var map = new HashMap<String,String>();
-        map.put("action", "SendSms");
-        map.put("phoneNumber", pager);
-        map.put("message", message);
-        String cooked_url = cook_url(this.urlWS, map);
-        
-        HttpClient client = new HttpClient();
-        client.getState().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM),
-            new UsernamePasswordCredentials(this.usernameCredentials, this.passwordCredentials));
-
         try {
-            requestGET(client, cooked_url);
-        } catch (IOException e) { logger.error(e.getMessage(), e); }
+            httpRequestSmsuapiWS.sendSms(null, pager, message);
+        } catch (HttpException | InsufficientQuotaException e) {
+            logger.error(e.getMessage(), e);
+            throw new ChannelException("error sending SMS");
+        }
         
         logger.info(id + "@" + code + ": Envoi du code par sms au numero portable "+pager);
     }
@@ -77,40 +60,4 @@ public class SMSUChannel extends AbstractChannel{
         }
     }
 
-    private static String cook_url(String url, Map<String, String> params) {
-        String s = null;
-        for (var e : params.entrySet()) {
-            s = (s == null ? "?" : s + "&") + e.getKey() + "=" + urlencode(e.getValue());
-        }
-        return url + s;
-    } 
-    
-    // Appel au service     
-    private String requestGET(HttpClient client, String request) throws IOException {
-        logger.debug("requesting url " + request);
-
-        var method = new GetMethod(request);
-
-        try {
-            // Execute the method.
-            int statusCode = client.executeMethod(method);
-
-            if (statusCode != HttpStatus.SC_OK) {
-                throw new IOException("GET failed with status " + method.getStatusLine());
-            }
-
-            // Read the response body.
-            String resp = method.getResponseBodyAsString();
-
-            logger.debug(resp);
-            return resp;
-       
-        } catch (HttpException e) {
-            throw new IOException("Fatal protocol violation: " + e.getMessage());
-        } finally {
-            // Release the connection.
-            method.releaseConnection();
-        }
-    } 
-        
 }

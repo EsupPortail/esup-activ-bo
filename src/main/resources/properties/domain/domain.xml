@@ -115,13 +115,17 @@
         >
         <property name="name" value="${channel.sms.name}"/>
         <property name="attributePager" value="${ldap.attribute.pager}"/>
-        <property name="urlWS" value="${channel.sms.urlWS}"/>   
-        <property name="usernameCredentials" value="${channel.sms.usernameCredentials}"/>
-        <property name="passwordCredentials" value="${channel.sms.passwordCredentials}"/>       
         <property name="messageBody" value="${channel.sms.messageBody.fr}"/>    
-        
-        
+        <property name="httpRequestSmsuapiWS" ref="httpRequestSmsuapiWS"/>
     </bean> 
+
+    <bean id="httpRequestSmsuapiWS"
+        class="org.esupportail.smsuapi.services.client.HttpRequestSmsuapiWS">
+        <property name="url" value="${channel.sms.urlWS}" />
+        <property name="username" value="${channel.sms.usernameCredentials}" />
+        <property name="password" value="${channel.sms.passwordCredentials}" />
+    </bean>
+
     <bean
         id="codeChannel"
         class="org.esupportail.activbo.domain.beans.channels.CodeChannel">
