@@ -17,63 +17,63 @@ import org.springframework.beans.factory.InitializingBean;
 
 
 public class AccountManagementImpl implements AccountManagement,InitializingBean{
-	
-	private DomainService domainService;
-	
-	public AccountManagementImpl() {
-		super();
-	}
-	
-	
-	public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException,AuthentificationException, LoginException{
-		return domainService.validateAccount(hashInfToValidate,attrPersoInfo);
-	}
-	
-	
-	public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		domainService.setPassword(id,code,currentPassword);
-		domainService.removeCode(id, code);
-	}
-	
-	public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-		domainService.setPassword(id,code,newLogin,currentPassword);
-		domainService.removeCode(id, code);
-	}
-	
-	public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
-		domainService.updatePersonalInformations(id,code,hashBeanPersoInfo);
-	}
-	
-	public void sendCode(String id,String canal)throws ChannelException{
-		domainService.sendCode(id, canal);
-	}
-	
-	
-	
-	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void setDomainService(DomainService domainService) {
-		this.domainService = domainService;
-	}
-	
-	public boolean validateCode(String id,String code)throws UserPermissionException{
-		return domainService.validateCode(id, code);
-	}
-	
-	public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException,PrincipalNotExistsException{
-		domainService.changeLogin(id, code, newLogin);
-	}
-	
-	public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
-		return domainService.authentificateUser(id, password,attrPersoInfo);
-	}
+    
+    private DomainService domainService;
+    
+    public AccountManagementImpl() {
+        super();
+    }
+    
+    
+    public HashMap<String,String> validateAccount(HashMap<String,String> hashInfToValidate,List<String>attrPersoInfo) throws LdapProblemException,AuthentificationException, LoginException{
+        return domainService.validateAccount(hashInfToValidate,attrPersoInfo);
+    }
+    
+    
+    public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
+        domainService.setPassword(id,code,currentPassword);
+        domainService.removeCode(id, code);
+    }
+    
+    public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
+        domainService.setPassword(id,code,newLogin,currentPassword);
+        domainService.removeCode(id, code);
+    }
+    
+    public void updatePersonalInformations(String id,String code,HashMap<String,String> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
+        domainService.updatePersonalInformations(id,code,hashBeanPersoInfo);
+    }
+    
+    public void sendCode(String id,String canal)throws ChannelException{
+        domainService.sendCode(id, canal);
+    }
+    
+    
+    
+    public void afterPropertiesSet() throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    public void setDomainService(DomainService domainService) {
+        this.domainService = domainService;
+    }
+    
+    public boolean validateCode(String id,String code)throws UserPermissionException{
+        return domainService.validateCode(id, code);
+    }
+    
+    public void changeLogin(String id, String code,String newLogin)throws LdapProblemException,UserPermissionException,KerberosException,LoginAlreadyExistsException, LoginException,PrincipalNotExistsException{
+        domainService.changeLogin(id, code, newLogin);
+    }
+    
+    public HashMap<String,String> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
+        return domainService.authentificateUser(id, password,attrPersoInfo);
+    }
 
 
-	public String validatePassword(String supannAliasLogin, String password) throws KRBException, LdapProblemException, LoginException {
-		return domainService.validatePassword(supannAliasLogin, password);
-	}
+    public String validatePassword(String supannAliasLogin, String password) throws KRBException, LdapProblemException, LoginException {
+        return domainService.validatePassword(supannAliasLogin, password);
+    }
 
 }

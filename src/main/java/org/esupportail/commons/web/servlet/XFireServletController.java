@@ -25,12 +25,12 @@ import org.codehaus.xfire.XFire;
 
 public class XFireServletController 
 extends org.codehaus.xfire.transport.http.XFireServletController implements Serializable {
-	
-	private static final long serialVersionUID = -9085512373620430084L;
+    
+    private static final long serialVersionUID = -9085512373620430084L;
 
     public XFireServletController(
-    		final XFire xfire, 
-    		final ServletContext servletContext) {
+            final XFire xfire, 
+            final ServletContext servletContext) {
         super(xfire, servletContext);
     }
 

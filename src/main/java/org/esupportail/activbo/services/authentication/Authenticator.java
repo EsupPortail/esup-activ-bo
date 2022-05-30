@@ -7,9 +7,9 @@ import org.esupportail.activbo.domain.beans.User;
  */
 public interface Authenticator {
 
-	/**
-	 * @return the authenticated user.
-	 */
-	User getUser();
+    /**
+     * @return the authenticated user.
+     */
+    User getUser();
 
 }

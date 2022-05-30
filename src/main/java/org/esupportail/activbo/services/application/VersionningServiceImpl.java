@@ -20,63 +20,63 @@ import org.esupportail.commons.utils.Assert;
 /**
  * A bean for versionning management.
  */
-public class VersionningServiceImpl implements VersionningService {	
-	/**
-	 * Set the database version.
-	 * @param version 
-	 * @param silent true to omit info messages
-	 */
-	public void setDatabaseVersion(
-			final String version, 
-			final boolean silent) {
-	}
+public class VersionningServiceImpl implements VersionningService { 
+    /**
+     * Set the database version.
+     * @param version 
+     * @param silent true to omit info messages
+     */
+    public void setDatabaseVersion(
+            final String version, 
+            final boolean silent) {
+    }
 
-	/**
-	 * @return the database version.
-	 */
-	public Version getDatabaseVersion() {
+    /**
+     * @return the database version.
+     */
+    public Version getDatabaseVersion() {
             return null;
-	}
+    }
 
-	/**
-	 * @see org.esupportail.commons.services.application.VersionningService#initDatabase()
-	 */
-	public void initDatabase() {
-	}
+    /**
+     * @see org.esupportail.commons.services.application.VersionningService#initDatabase()
+     */
+    public void initDatabase() {
+    }
 
-	/**
-	 * @see org.esupportail.commons.services.application.VersionningService#checkVersion(boolean, boolean)
-	 */
-	public void checkVersion(
-			final boolean throwException,
-			final boolean printLatestVersion) throws VersionException {
-	}
-	
-	/**
-	 * Upgrade the database to version 0.1.0.
-	 */
-	public void upgrade0d1d0() {
-		// nothing to do yet
-	}
+    /**
+     * @see org.esupportail.commons.services.application.VersionningService#checkVersion(boolean, boolean)
+     */
+    public void checkVersion(
+            final boolean throwException,
+            final boolean printLatestVersion) throws VersionException {
+    }
+    
+    /**
+     * Upgrade the database to version 0.1.0.
+     */
+    public void upgrade0d1d0() {
+        // nothing to do yet
+    }
 
-	/**
-	 * @see org.esupportail.commons.services.application.VersionningService#upgradeDatabase()
-	 */
-	public boolean upgradeDatabase() {
-		return false;
-	}
+    /**
+     * @see org.esupportail.commons.services.application.VersionningService#upgradeDatabase()
+     */
+    public boolean upgradeDatabase() {
+        return false;
+    }
 
-	/**
-	 * @return the firstAdministratorId
-	 */
-	public String getFirstAdministratorId() {
-		return null;
-	}
+    /**
+     * @return the firstAdministratorId
+     */
+    public String getFirstAdministratorId() {
+        return null;
+    }
 
-	/**
-	 * @param firstAdministratorId the firstAdministratorId to set
-	 */
-	public void setFirstAdministratorId(final String firstAdministratorId) {
-	}
+    /**
+     * @param firstAdministratorId the firstAdministratorId to set
+     */
+    public void setFirstAdministratorId(final String firstAdministratorId) {
+    }
 
 }

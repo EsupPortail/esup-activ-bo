@@ -10,10 +10,10 @@ import org.esupportail.commons.services.ldap.LdapUser;
  * The interface of writeable LDAP user services.
  */
 public interface WriteableLdapUserService extends org.esupportail.commons.services.ldap.WriteableLdapUserService {
-	public void defineAuthenticatedContext(String username, String password);
-	public void defineAuthenticatedContextForUser(String userId, String password);
-	
-	public void bindLdap(final LdapUser ldapUser) throws AuthentificationException;
-	
-	public void invalidateLdapCache();
+    public void defineAuthenticatedContext(String username, String password);
+    public void defineAuthenticatedContextForUser(String userId, String password);
+    
+    public void bindLdap(final LdapUser ldapUser) throws AuthentificationException;
+    
+    public void invalidateLdapCache();
 }

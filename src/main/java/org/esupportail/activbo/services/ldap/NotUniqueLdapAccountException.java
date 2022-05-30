@@ -12,31 +12,31 @@ import org.esupportail.commons.services.ldap.LdapException;
  */
 public class NotUniqueLdapAccountException extends LdapException {
 
-	/**
-	 * The serialization id.
-	 */
-	private static final long serialVersionUID = -3452596009604914042L;
+    /**
+     * The serialization id.
+     */
+    private static final long serialVersionUID = -3452596009604914042L;
 
-	/**
-	 * @param message
-	 */
-	public NotUniqueLdapAccountException(final String message) {
-		super(message);
-	}
+    /**
+     * @param message
+     */
+    public NotUniqueLdapAccountException(final String message) {
+        super(message);
+    }
 
-	/**
-	 * @param cause
-	 */
-	public NotUniqueLdapAccountException(final Exception cause) {
-		super(cause);
-	}
+    /**
+     * @param cause
+     */
+    public NotUniqueLdapAccountException(final Exception cause) {
+        super(cause);
+    }
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public NotUniqueLdapAccountException(final String message, final Exception cause) {
-		super(message, cause);
-	}
+    /**
+     * @param message
+     * @param cause
+     */
+    public NotUniqueLdapAccountException(final String message, final Exception cause) {
+        super(message, cause);
+    }
 
 }

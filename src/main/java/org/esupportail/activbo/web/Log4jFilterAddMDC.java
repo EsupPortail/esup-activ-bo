@@ -20,11 +20,11 @@ public class Log4jFilterAddMDC implements Filter {
     public void init(FilterConfig config) { this.config = config; }
     public void destroy() {}
  
- 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         for (String name : config.getInitParameter("headers").split(" ")) {
             String val = ((HttpServletRequest) request).getHeader(name);
             if (val != null) MDC.put(name, val);
         }
         chain.doFilter(request, response);
- 	} 
+    } 
 }

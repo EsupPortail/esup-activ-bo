@@ -11,25 +11,25 @@ package org.esupportail.activbo.services.exceptionHandling;
  */
 public class CachingEmailExceptionServiceFactoryImpl 
 extends org.esupportail.commons.services.exceptionHandling.CachingEmailExceptionServiceFactoryImpl {
-	
-	/**
-	 * The developer's list for bugs.
-	 */
-	private static final String DEVEL_EMAIL = "commons-bugs@esup-portail.org";
+    
+    /**
+     * The developer's list for bugs.
+     */
+    private static final String DEVEL_EMAIL = "commons-bugs@esup-portail.org";
 
-	/**
-	 * Bean constructor.
-	 */
-	public CachingEmailExceptionServiceFactoryImpl() {
-		super();
-	}
+    /**
+     * Bean constructor.
+     */
+    public CachingEmailExceptionServiceFactoryImpl() {
+        super();
+    }
 
-	/**
-	 * @return The developer's list for bugs.
-	 */
-	@Override
-	public String getDevelEmail() {
-		return DEVEL_EMAIL;
-	}
-	
+    /**
+     * @return The developer's list for bugs.
+     */
+    @Override
+    public String getDevelEmail() {
+        return DEVEL_EMAIL;
+    }
+    
 }

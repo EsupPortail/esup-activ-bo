@@ -25,54 +25,54 @@ import org.esupportail.commons.services.ldap.LdapUser;
  */
 public class SMSUChannel extends AbstractChannel{
 
-	private String attributePager;
-	private String urlWS;
-	private String usernameCredentials;
-	private String passwordCredentials;
-	private String messageBody;
-	
-	/* (non-Javadoc)
-	 * @see org.esupportail.activbo.domain.beans.channels.AbstractChannel#send(java.lang.String)
-	 */
-	@Override
-	public void send(String id) throws ChannelException {
-		
-			this.validationCode.generateChannelCode(id, codeDelay, getName());
-			
-			List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
-						if (ldapUserList.size() == 0) throw new ChannelException("Utilisateur "+id+" inconnu");
-	
-			LdapUser ldapUserRead = ldapUserList.get(0); 
-			
-			String pager = ldapUserRead.getAttribute(attributePager);
-			
-			if(pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
-									
-			
-			String message=this.messageBody;
-			String code = validationCode.getCode(id);
-			message=message.replace("{0}", code);
-			Map<String, String> map = new HashMap<String,String>();
-			HttpClient client = new HttpClient();
-		    client.getState().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM),
-		    								 new UsernamePasswordCredentials(this.usernameCredentials, this.passwordCredentials));
+    private String attributePager;
+    private String urlWS;
+    private String usernameCredentials;
+    private String passwordCredentials;
+    private String messageBody;
+    
+    /* (non-Javadoc)
+     * @see org.esupportail.activbo.domain.beans.channels.AbstractChannel#send(java.lang.String)
+     */
+    @Override
+    public void send(String id) throws ChannelException {
+        
+            this.validationCode.generateChannelCode(id, codeDelay, getName());
+            
+            List<LdapUser> ldapUserList = this.ldapUserService.getLdapUsersFromFilter("("+ldapSchema.getLogin()+"="+ id + ")");
+                        if (ldapUserList.size() == 0) throw new ChannelException("Utilisateur "+id+" inconnu");
+    
+            LdapUser ldapUserRead = ldapUserList.get(0); 
+            
+            String pager = ldapUserRead.getAttribute(attributePager);
+            
+            if(pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
+                                    
+            
+            String message=this.messageBody;
+            String code = validationCode.getCode(id);
+            message=message.replace("{0}", code);
+            Map<String, String> map = new HashMap<String,String>();
+            HttpClient client = new HttpClient();
+            client.getState().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM),
+                                             new UsernamePasswordCredentials(this.usernameCredentials, this.passwordCredentials));
 
-	        map.put("action", "SendSms");
-	        map.put("phoneNumber", pager);
-	        map.put("message", message);
-		    String cooked_url = cook_url(this.urlWS, map);
-		    try {
-				requestGET(client, cooked_url);
-			} catch (IOException e) {logger.error(e.getMessage(),e);
-			}
-			
-			
-			
-			logger.info(id + "@" + code + ": Envoi du code par sms au numéro portable "+pager);
-	}
-	
+            map.put("action", "SendSms");
+            map.put("phoneNumber", pager);
+            map.put("message", message);
+            String cooked_url = cook_url(this.urlWS, map);
+            try {
+                requestGET(client, cooked_url);
+            } catch (IOException e) {logger.error(e.getMessage(),e);
+            }
+            
+            
+            
+            logger.info(id + "@" + code + ": Envoi du code par sms au numéro portable "+pager);
+    }
+    
 
-	public static String urlencode(String s) {
+    public static String urlencode(String s) {
         try {
             return URLEncoder.encode(s, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -89,7 +89,7 @@ public class SMSUChannel extends AbstractChannel{
     } 
     
     // Appel au service     
-	private String requestGET(HttpClient client, String request) throws IOException {
+    private String requestGET(HttpClient client, String request) throws IOException {
         logger.debug("requesting url " + request);
 
         GetMethod method = new GetMethod(request);
@@ -115,59 +115,59 @@ public class SMSUChannel extends AbstractChannel{
             method.releaseConnection();
         }
     } 
-	
-	
-	public String getUrlWS() {
-		return urlWS;
-	}
+    
+    
+    public String getUrlWS() {
+        return urlWS;
+    }
 
 
-	public void setUrlWS(String urlWS) {
-		this.urlWS = urlWS;
-	}
+    public void setUrlWS(String urlWS) {
+        this.urlWS = urlWS;
+    }
 
-	public String getUsernameCredentials() {
-		return usernameCredentials;
-	}
-
-
-	public void setUsernameCredentials(String usernameCredentials) {
-		this.usernameCredentials = usernameCredentials;
-	}
+    public String getUsernameCredentials() {
+        return usernameCredentials;
+    }
 
 
-	public String getPasswordCredentials() {
-		return passwordCredentials;
-	}
+    public void setUsernameCredentials(String usernameCredentials) {
+        this.usernameCredentials = usernameCredentials;
+    }
 
 
-	public void setPasswordCredentials(String passwordCredentials) {
-		this.passwordCredentials = passwordCredentials;
-	}
+    public String getPasswordCredentials() {
+        return passwordCredentials;
+    }
 
 
-	/**
-	 * @param messageBody the messageBody to set
-	 */
-	public void setMessageBody(String messageBody) {
-		this.messageBody = messageBody;
-	}
+    public void setPasswordCredentials(String passwordCredentials) {
+        this.passwordCredentials = passwordCredentials;
+    }
 
-	/**
-	 * @param attributePager the attributePager to set
-	 */
-	public void setAttributePager(String attributePager) {
-		this.attributePager = attributePager;
-	}
-	
-	public boolean isPossible(LdapUser ldapUser){
-		
-		String pager = ldapUser.getAttribute(attributePager);
-		
-		if(pager==null) return false;
-		
-		return true;
-		
-	}
+
+    /**
+     * @param messageBody the messageBody to set
+     */
+    public void setMessageBody(String messageBody) {
+        this.messageBody = messageBody;
+    }
+
+    /**
+     * @param attributePager the attributePager to set
+     */
+    public void setAttributePager(String attributePager) {
+        this.attributePager = attributePager;
+    }
+    
+    public boolean isPossible(LdapUser ldapUser){
+        
+        String pager = ldapUser.getAttribute(attributePager);
+        
+        if(pager==null) return false;
+        
+        return true;
+        
+    }
 
 }
