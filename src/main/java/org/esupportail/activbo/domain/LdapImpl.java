@@ -22,12 +22,12 @@ public class LdapImpl extends DomainServiceImpl {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
-    public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,LoginException{     
+    public void setPassword(String id,String code,final String password) throws LdapProblemException,UserPermissionException,LoginException{
         try {
             verifyCode(id, code);
             var ldapUser = getLdapUserOut(id);
             // changement de mot de passe
-            ldapUser.attributes().put(ldapSchema.password, Collections.singletonList(encryptPassword(currentPassword)));
+            ldapUser.attributes().put(ldapSchema.password, Collections.singletonList(encryptPassword(password)));
             setShadowLastChange(ldapUser);
             finalizeLdapWriting(ldapUser);
         } catch (LdapAttributesModificationException e) {
@@ -36,9 +36,9 @@ public class LdapImpl extends DomainServiceImpl {
         }
     }
     
-    public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LoginException, LdapProblemException, UserPermissionException {     
+    public void setPassword(String id,String code,String newLogin, final String password) throws LoginException, LdapProblemException, UserPermissionException {
             changeLogin(id, code, newLogin);         
-            setPassword(id, code, currentPassword);
+            setPassword(id, code, password);
     }
     
     public void changeLogin(String id, String code,String newLogin) throws LoginException, LdapProblemException, UserPermissionException {

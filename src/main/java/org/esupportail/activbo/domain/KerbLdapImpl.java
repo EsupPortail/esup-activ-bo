@@ -37,11 +37,11 @@ public class KerbLdapImpl extends DomainServiceImpl {
     public void setKerberosAdmin(KRBAdmin kerberosAdmin) { this.kerberosAdmin = kerberosAdmin; }
 
 
-    public void setPassword(String id,String code,final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
-        setPassword(id, code, null, currentPassword);
+    public void setPassword(String id,String code,final String password) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{
+        setPassword(id, code, null, password);
     }
     
-    public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{             
+    public void setPassword(String id,String code,String newLogin, final String password) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{             
         try {
             verifyCode(id, code);
             var ldapUser = getLdapUserForKrb(id);
@@ -49,7 +49,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
             setRedirectionKerberos(ldapUser, ldapUserOut, newLogin != null ? newLogin : id);
             var created = true;
             try {
-                kerberosAdmin.add(id, currentPassword);
+                kerberosAdmin.add(id, password);
             } catch (KRBPrincipalAlreadyExistsException e) {
                 created = false;
             }
@@ -60,7 +60,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
                 }
             } else {
                 logger.info(id + "@" + code + ": Le compte kerberos de l'utilisateur existe deja, Modification du password");
-                kerberosAdmin.changePasswd(id, currentPassword);    
+                kerberosAdmin.changePasswd(id, password);    
             }
             finalizeLdapWriting(ldapUserOut);
         } catch (KRBException e) {

@@ -19,9 +19,9 @@ public interface DomainService extends Serializable {
 
     public Map<String,List<String>> validateAccount(Map<String,String> hashInfToValidate, Set<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,LoginException;
     
-    public void setPassword(String id,String code,final String currentPassword)throws LdapProblemException,UserPermissionException,KerberosException,LoginException;
+    public void setPassword(String id,String code,final String password)throws LdapProblemException,UserPermissionException,KerberosException,LoginException;
     
-    public void setPassword(String id,String code,String newLogin, final String currentPassword) throws LdapProblemException,UserPermissionException,KerberosException, LoginException;
+    public void setPassword(String id,String code,String newLogin, final String password) throws LdapProblemException,UserPermissionException,KerberosException, LoginException;
     
     public void updatePersonalInformations(String id,String code,Map<String,List<? extends Object>> hashBeanPersoInfo) throws LdapProblemException,UserPermissionException,LoginException;
     
