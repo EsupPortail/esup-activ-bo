@@ -24,7 +24,7 @@ public class BruteForceBlockImpl implements BruteForceBlock, Runnable {
     private Thread purgeExpiredThread;
     private HashMap<String,LoginInfo> loginsInfo = new HashMap<>();
 
-    private int wait; //durée de blocage en seconde
+    private int wait; //duree de blocage en seconde
     private int nbMaxFail; //Nbre d'essai avant de bloquer le login
     private long cleaningTimeMillis = 1000L; //temps d'attente entre 2 passages du nettoyeur
 
@@ -75,10 +75,10 @@ public class BruteForceBlockImpl implements BruteForceBlock, Runnable {
     // remove expired LoginInfo
     public void run() {
         while(true) {       
-            if (loginsInfo.isEmpty()) logger.debug("Pas d'utilisateurs bloqués");
+            if (loginsInfo.isEmpty()) logger.debug("Pas d'utilisateurs bloques");
 
             for (String id: loginsInfo.keySet()) {
-                logger.info(id + " a fait " + loginsInfo.get(id).nbFail + " tentative(s) échouée(s)");
+                logger.info(id + " a fait " + loginsInfo.get(id).nbFail + " tentative(s) echouee(s)");
                 removeExpired_or_get(id);
             }
 

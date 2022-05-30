@@ -50,11 +50,11 @@ public class ValidationCodeImpl {
         if (bruteForceBlock.isBlocked(id))
             throw new UserPermissionException ("Nombre de tentative de validation de code atteint pour l'utitilisateur "+id);
         
-        //Recuperation des données correspondant de l'id de l'utilisateur
+        //Recuperation des donnees correspondant de l'id de l'utilisateur
         var userData = validationCodes.get(id);
         
         if (userData!=null) {
-            logger.debug("L'utilisateur "+id+" poss�de un code");
+            logger.debug("L'utilisateur "+id+" possede un code");
             if (userData.code.equals(code)) {           
                 logger.debug("Code utilisateur "+id+" valide");             
                 return true;
@@ -73,7 +73,7 @@ public class ValidationCodeImpl {
             
         String code=generateRandomCode();
         Date date = nowPlusSeconds(codeDelay);      
-        logger.trace("Code de validation pour l'utilisateur : "+id+" est :"+ code + " avec durée de vie " + codeDelay + " secondes");
+        logger.trace("Code de validation pour l'utilisateur : "+id+" est :"+ code + " avec duree de vie " + codeDelay + " secondes");
 
         var userData = new UserData();  
         userData.code = code;

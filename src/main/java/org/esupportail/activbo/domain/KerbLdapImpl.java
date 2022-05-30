@@ -54,12 +54,12 @@ public class KerbLdapImpl extends DomainServiceImpl {
                 created = false;
             }
             if (created) {
-                logger.info(id + "@" + code + ": Ajout de mot de passe dans kerberos effectu�e");
+                logger.info(id + "@" + code + ": Ajout de mot de passe dans kerberos effectuee");
                 if (newLogin != null) {
                     ldapUserOut.attributes().put(ldapSchema.login, Collections.singletonList(newLogin));
                 }
             } else {
-                logger.info(id + "@" + code + ": Le compte kerberos de l'utilisateur existe d�ja, Modification du password");
+                logger.info(id + "@" + code + ": Le compte kerberos de l'utilisateur existe deja, Modification du password");
                 kerberosAdmin.changePasswd(id, currentPassword);    
             }
             finalizeLdapWriting(ldapUserOut);
@@ -110,7 +110,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
         String redirectKer = "{"+krbLdapMethod+"}" + newPrincipal;
         
         if (!redirectKer.equals(currentPasswd) || !newPrincipal.equals(currentPrincipal)) {
-            logger.debug("Le compte Kerberos ne g�re pas encore l'authentification");
+            logger.debug("Le compte Kerberos ne gere pas encore l'authentification");
 
             setShadowLastChange(out);
             

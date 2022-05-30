@@ -43,8 +43,8 @@ public class KRBAdminImpl implements KRBAdmin, InitializingBean{
         if (exists(principal))
             throw new KRBPrincipalAlreadyExistsException("Principal exists");
 
-        //Passer cmd sous forme de tableau de String permet de gérer les mots de passe avec espace.
-        //Si cmd est un String, kerberos refusera un mot de passe contenant un espace car il fait une concaténation de paramètres sans escaping
+        //Passer cmd sous forme de tableau de String permet de gerer les mots de passe avec espace.
+        //Si cmd est un String, kerberos refusera un mot de passe contenant un espace car il fait une concatenation de parametres sans escaping
         var cmd = kadminCmd("add", "--password="+passwd);
         cmd = (String[]) ArrayUtils.add(ArrayUtils.addAll(cmd, addOptions.split(" ")), principal);
         logger.debug((StringUtils.join(cmd, " ")).replaceFirst("--password=.* ", "--password=****** "));

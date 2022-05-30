@@ -8,7 +8,7 @@ import org.esupportail.activbo.services.ldap.LdapUser;
 /**
  * @author aanli
  * 
- * Ce canal peut être utilisé par les utilisateurs disposant déjà d'un code d'activation
+ * Ce canal peut etre utilise par les utilisateurs disposant deja d'un code d'activation
  */
 public class CodeChannel implements Channel {
 

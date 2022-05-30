@@ -51,7 +51,7 @@ public abstract class AbstractChannel implements Channel {
         try {
             return new InternetAddress(mailPerso);
         } catch (AddressException e) {
-            throw new ChannelException("Probleme de création de InternetAddress "+mailPerso);
+            throw new ChannelException("Probleme de creation de InternetAddress "+mailPerso);
         }
     }
 

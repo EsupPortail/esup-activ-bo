@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class LdapImpl extends DomainServiceImpl {
 
-    /**Cette classe permet d'utiliser que l'impl�mentation LDAP
+    /**Cette classe permet d'utiliser que l'implementation LDAP
      * 
      */
     private static final long serialVersionUID = -920391586782473692L;

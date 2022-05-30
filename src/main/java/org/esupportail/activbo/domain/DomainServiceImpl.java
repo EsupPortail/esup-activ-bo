@@ -88,8 +88,8 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 
     private LdapUser searchUser(Map<String, String> hashInfToValidate, String[] wanted_attrs) throws LoginException, AuthentificationException {
         /**
-         * Construction d'un filtre ldap à partir des données à valider.
-         * Si l'application du filtre retourne une entrée, c'est que les données sont valides
+         * Construction d'un filtre ldap a partir des donnees a valider.
+         * Si l'application du filtre retourne une entree, c'est que les donnees sont valides
          */
         
         String filter = hasInf_to_ldap_filter(hashInfToValidate);
@@ -111,7 +111,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         return filter;
     }
     private String escape_ldap_filter_value(String value) {
-        //Suppression des caractères spéciaux susceptibles de permettre une injection ldap
+        //Suppression des caracteres speciaux susceptibles de permettre une injection ldap
         value=value.replace("&","");
         value=value.replace(")","");
         value=value.replace("(","");
@@ -127,7 +127,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         wanted_attrs.addAll(attrPersoInfo);                
         var ldapUser = searchUser(hashInfToValidate, toArray(wanted_attrs));
         
-        //envoi d'un code si le compte n'est pas activ�
+        //envoi d'un code si le compte n'est pas active
         boolean with_code = ldapUser.getAttribute(ldapSchema.shadowLastChange)==null;
 
         var infos = ldapInfos_and_maybe_code(ldapUser, attrPersoInfo, with_code);
@@ -155,7 +155,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         if (with_code) {
             String code = validationCode.generateCode(ldapUser.getAttribute(ldapSchema.login));
             infos.put(accountDescrCodeKey, Collections.singletonList(code));
-            logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.login)+" dans la table effectu�e");
+            logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.login)+" dans la table effectuee");
         }
         return infos;
     }
@@ -197,7 +197,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     }
 
     public void verifyCode(String id, String code) throws UserPermissionException {
-        if (!validationCode.verify(id,code)) throw new UserPermissionException("Code invalide L'utilisateur id="+id+" n'a pas le droit de continuer la procédure");
+        if (!validationCode.verify(id,code)) throw new UserPermissionException("Code invalide L'utilisateur id="+id+" n'a pas le droit de continuer la procedure");
     }
 
     public LdapUserOut getLdapUserOut(String id) throws LdapProblemException, LoginException {
@@ -211,7 +211,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
             verifyCode(id, code);
             var ldapUser = getLdapUserOut(id);
                                             
-            logger.debug("Parcours des informations personnelles mises � jour au niveau du FO pour insertion LDAP");
+            logger.debug("Parcours des informations personnelles mises a jour au niveau du FO pour insertion LDAP");
             
             for (var e : hashBeanPersoInfo.entrySet()) {
                 logger.debug("Key="+e.getKey()+" Value="+e.getValue());
@@ -252,7 +252,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
                 ldapUserService.bindLdap(ldapUser, password);
             }
     
-            //envoi d'un code si le compte est activé
+            //envoi d'un code si le compte est active
             boolean with_code = ldapUser.getAttribute(ldapSchema.shadowLastChange)!=null;
 
             //Construction du hasMap de retour
@@ -294,7 +294,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     protected void finalizeLdapWriting(LdapUserOut ldapUser) throws LdapAttributesModificationException {
         logger.debug("L'ecriture dans le LDAP commence");
         ldapUserService.updateLdapUser(ldapUser);
-        logger.debug("Ecriture dans le LDAP r�ussie");
+        logger.debug("Ecriture dans le LDAP reussie");
     }
     
     private int nowEpochDays() {
@@ -303,7 +303,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     }
     
     protected void setShadowLastChange(LdapUserOut ldapUser) {
-        // Préparer l'attribut shadowLastChange à écrire dans LDAP
+        // Preparer l'attribut shadowLastChange a ecrire dans LDAP
         var shadowLastChange = Integer.toString(nowEpochDays());
         ldapUser.attributes().put(ldapSchema.shadowLastChange, Collections.singletonList(shadowLastChange));
         if (logger.isDebugEnabled()) {logger.debug("Setting shadowLastChange in LDAP : "+ shadowLastChange );}              

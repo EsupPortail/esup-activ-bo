@@ -39,11 +39,11 @@ public class Mail2GestChannel extends AbstractChannel{
             .replace("{3}", displayName);
         
         smtpService.sendEmail(mail, newSubject, mailBody, true);
-        logger.info(id + "@" + code + ": Envoi du code à l'adresse mail gestionnaire "+mailGest);
+        logger.info(id + "@" + code + ": Envoi du code a l'adresse mail gestionnaire "+mailGest);
     }
 
     public boolean isPossible(LdapUser ldapUser) {
-        if (access==null && deny==null) return true; //si pas de définition de droit d'accès, le canal est disponible pour tout profil
+        if (access==null && deny==null) return true; //si pas de definition de droit d'acces, le canal est disponible pour tout profil
         
         if (deny!=null && profileMatches(deny,ldapUser))                
             return false;                                                                                   

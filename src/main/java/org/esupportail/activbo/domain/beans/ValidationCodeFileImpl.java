@@ -65,7 +65,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl implements Initia
         try {
             var fos = new FileOutputStream(fileName);
             var oos = new ObjectOutputStream(fos);
-            // on force le format de sérialisation HashMap<String, UserData>
+            // on force le format de serialisation HashMap<String, UserData>
             oos.writeObject(new HashMap<String, UserData>(map));
             oos.close();
         } catch (FileNotFoundException e) {logger.error(e.getMessage(), e);} 
@@ -73,7 +73,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl implements Initia
      
     }
     /**
-     * Retourner une HashMap déserialisé depuis un fichier
+     * Retourner une HashMap deserialise depuis un fichier
      * @param filename chemin du fichier
      */
     public HashMap<String,UserData> readMap(String fileName) throws IOException, ClassNotFoundException {  
@@ -84,7 +84,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl implements Initia
                 map = (HashMap<String,UserData> ) ois.readObject();
                 ois.close();
         } 
-        catch (FileNotFoundException e) {logger.debug("Si le fichier n'exsite pas, il va être créé automatiquement");}
+        catch (FileNotFoundException e) {logger.debug("Si le fichier n'exsite pas, il va etre cree automatiquement");}
         catch (IOException e) {logger.error(e.getMessage(), e);}
         catch (ClassNotFoundException e) {logger.error(e.getMessage(), e);}
 

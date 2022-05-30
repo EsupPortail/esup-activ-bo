@@ -13,14 +13,14 @@
     <!-- Rotation tous les jours -->
     <appender name="fileAppenderEsup-activ-bo" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="File" value="esup-activ-bo.log" />
-            <!-- a paramétrer -->
+            <!-- a parametrer -->
         <param name="DatePattern" value="'.'yyyy-MM" />
         <layout class="org.apache.log4j.PatternLayout">
         <param name="ConversionPattern" value="%X{Client-IP} %d %p [%c] - %m%n" />
         </layout>
     </appender>
     
-    <!-- Appender file: les messages de type info de la classe  org.esupportail.activbo.domain.LdapImpl seront envoyés dans le fichier esup-activ-bo-modifiedDataFile.log -->
+    <!-- Appender file: les messages de type info de la classe  org.esupportail.activbo.domain.LdapImpl seront envoyes dans le fichier esup-activ-bo-modifiedDataFile.log -->
     <!-- Rotation tous les jours -->
     <appender name="fileAppenderModifiedData" class="org.apache.log4j.DailyRollingFileAppender" >
         <param name="file" value="esup-activ-bo-modifiedDataFile.log"/>
@@ -33,7 +33,7 @@
         </filter>
         <filter class="org.apache.log4j.varia.DenyAllFilter"/>
     </appender>
-    <!-- Les messages de niveau "debug" et + des classes org.esupportail.activbo.domain.LdapImpl&org.esupportail.activbo.domain.KerbLdapImpl seront également afficher à la console  -->
+    <!-- Les messages de niveau "debug" et + des classes org.esupportail.activbo.domain.LdapImpl&org.esupportail.activbo.domain.KerbLdapImpl seront egalement afficher a la console  -->
     <logger name="org.esupportail.activbo.domain.LdapImpl">
         <level value="DEBUG" />     
         <appender-ref ref="fileAppenderModifiedData" />

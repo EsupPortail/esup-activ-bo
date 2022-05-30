@@ -20,7 +20,7 @@
         </description>      
     </bean>
 -->
-    <!-- le client kerberos doit être installé sur la machine exécutant cette application-->
+    <!-- le client kerberos doit etre installe sur la machine executant cette application-->
  
     <bean id="KRBAdminService"
         class="org.esupportail.activbo.services.kerberos.KRBAdminImpl">

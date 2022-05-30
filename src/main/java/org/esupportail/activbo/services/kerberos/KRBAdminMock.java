@@ -48,7 +48,7 @@ public class KRBAdminMock implements KRBAdmin {
     }
 
     public String validatePassword(String principal, String password) throws KRBException {
-        return "Fonction non traitée";
+        return "Fonction non traitee";
     }   
 
 }

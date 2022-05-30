@@ -30,7 +30,7 @@ public class Mail2SMSChannel extends AbstractChannel {
     @Override
     public void send(String id) throws ChannelException {
         String pager = getUserAttr(id, attributePager);         
-        if (pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
+        if (pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numero de portable");
                                 
         var mail = to_InternetAddress(mailSMS);
         
@@ -42,7 +42,7 @@ public class Mail2SMSChannel extends AbstractChannel {
         
         smtpService.sendEmail(mail, mailCodeSubject, mailBody, false);
         
-        logger.info(id + "@" + code + ": Envoi du code par sms via mail2sms au numéro portable "+pager);
+        logger.info(id + "@" + code + ": Envoi du code par sms via mail2sms au numero portable "+pager);
     }
     
 }

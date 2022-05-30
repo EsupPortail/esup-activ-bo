@@ -17,7 +17,7 @@ public class ValidationCodeCleanning implements Runnable {
     public void run() {
         try {
             while(true) {
-                logger.debug("Boucle de nettoyage lancée");
+                logger.debug("Boucle de nettoyage lancee");
                 if (!vc.validationCodes.isEmpty()) {
                     logger.debug("La table de hashage n'est pas vide");
 

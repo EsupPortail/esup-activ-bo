@@ -36,13 +36,13 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
             if (proxyTicketValidator.isAuthenticationSuccesful() &&
                 proxyTicketValidator.getUser().equals(id) &&
                 isProxyAllowed(proxyTicketValidator.getProxyList())) {
-                    logger.debug("Authentification réussie");                  
+                    logger.debug("Authentification reussie");                   
                     return true;
                 }                                   
         } catch (Exception e) {
             e.printStackTrace();
         }
-        logger.debug("Authentification ratée");
+        logger.debug("Authentification ratee");
         logger.debug("isAuthenticationSuccesful: "+proxyTicketValidator.isAuthenticationSuccesful());
         return false;       
     }
@@ -52,9 +52,9 @@ public class ValidationProxyTicketImpl implements ValidationProxyTicket{
         for (var p : proxies) 
             if (allowedProxyList.contains(p))
                 return true;        
-        logger.warn("Les proxies ci-après ne sont pas authorisés à accéder au BO : "+proxies.toString());
+        logger.warn("Les proxies ci-apres ne sont pas authorises a acceder au BO : "+proxies.toString());
         logger.warn("Vous pouvez les ajouter sur properties/config.properties, cas.allowedProxies");
-        logger.warn("Les proxies actuellement autorisés : "+allowedProxyList.toString());
+        logger.warn("Les proxies actuellement autorises : "+allowedProxyList.toString());
         return false;
     }
 

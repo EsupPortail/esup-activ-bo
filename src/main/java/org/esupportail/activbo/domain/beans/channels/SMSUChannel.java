@@ -45,7 +45,7 @@ public class SMSUChannel extends AbstractChannel{
     @Override
     public void send(String id) throws ChannelException {
         String pager = getUserAttr(id, attributePager);
-        if (pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numéro de portable");
+        if (pager==null) throw new ChannelException("Utilisateur "+id+" n'a pas numero de portable");
 
         var code = validationCode.generateChannelCode(id, codeDelay, getName());
         
@@ -65,7 +65,7 @@ public class SMSUChannel extends AbstractChannel{
             requestGET(client, cooked_url);
         } catch (IOException e) { logger.error(e.getMessage(), e); }
         
-        logger.info(id + "@" + code + ": Envoi du code par sms au numéro portable "+pager);
+        logger.info(id + "@" + code + ": Envoi du code par sms au numero portable "+pager);
     }
     
 

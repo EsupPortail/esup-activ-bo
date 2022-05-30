@@ -44,7 +44,7 @@ public class MailPersoChannel extends AbstractChannel{
             .replace("{2}", code.date);
         smtpService.sendEmail(mail, subject, mailBody, true);
         
-        logger.info(id + "@" + code + ": Envoi du code à l'adresse mail perso "+mailPerso);
+        logger.info(id + "@" + code + ": Envoi du code a l'adresse mail perso "+mailPerso);
     }
 
 }
