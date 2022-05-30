@@ -8,8 +8,6 @@
 
     <bean id="abstractDomainService" abstract="true">   
         <property name="ldapUserService" ref="ldapUserService" />
-        <property name="accountDescrCodeKey" value="${account.key.code}"/>
-        <property name="accountDescrPossibleChannelsKey" value="${account.key.possibleChannels}"/>
         <property name="validationCode" ref="validationCode"/>
         <property name="validationProxyTicket" ref="validationProxyTicket"/>
         <property name="bruteForceBlock" ref="bruteForceBlock"/>

@@ -54,8 +54,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     
     private List<Channel> channels;
     protected LdapSchema ldapSchema;
-    private String accountDescrCodeKey; 
-    private String accountDescrPossibleChannelsKey;
     private ValidationCodeImpl validationCode;
     private ValidationProxyTicket validationProxyTicket;
     private BruteForceBlock bruteForceBlock;
@@ -64,8 +62,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     
     public void setChannels(List<Channel> channels) { this.channels = channels; }
     public void setLdapSchema(LdapSchema ldapSchema) { this.ldapSchema = ldapSchema; }
-    public void setAccountDescrCodeKey(String accountDescrCodeKey) { this.accountDescrCodeKey = accountDescrCodeKey; }
-    public void setAccountDescrPossibleChannelsKey( String accountDescrPossibleChannelsKey) { this.accountDescrPossibleChannelsKey = accountDescrPossibleChannelsKey; }
     public void setValidationCode(ValidationCodeImpl validationCode) { this.validationCode = validationCode; }
     public void setValidationProxyTicket(ValidationProxyTicket validationProxyTicket) { this.validationProxyTicket = validationProxyTicket; }
     public void setBruteForceBlock(BruteForceBlock bruteForceBlock) { this.bruteForceBlock = bruteForceBlock; }
@@ -126,14 +122,14 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 
         var infos = ldapInfos_and_maybe_code(ldapUser, attrPersoInfo, with_code);
 
-        infos.put(accountDescrPossibleChannelsKey, possibleChannels(ldapUser));
+        infos.put("possibleChannels", possibleChannels(ldapUser));
 
         return infos;
     }
     
     private HashMap<String, List<String>> ldapInfos_and_maybe_code(LdapUser ldapUser, Set<String> wanted_attrs, boolean with_code) {
         var infos=new HashMap<String,List<String>>();
-        infos.put(ldapSchema.login, ldapUser.getAttributeValues(ldapSchema.login));
+        infos.put("id", ldapUser.getAttributeValues(ldapSchema.login));
         
         var rawAttrs = ((LdapUserImpl) ldapUser).attributes();
         for (String attr: wanted_attrs) {
@@ -141,14 +137,14 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
             if (vals == null) vals = Collections.emptyList();
             var base64s = mayEncodeBase64s(vals);
             if (base64s != null) {
-                infos.put(attr + ";base64", base64s);
+                infos.put("attr." + attr + ";base64", base64s);
             } else {
-                infos.put(attr, (List<String>) vals); }
+                infos.put("attr." + attr, (List<String>) vals); }
         }
         
         if (with_code) {
             String code = validationCode.generateCode(ldapUser.getAttribute(ldapSchema.login));
-            infos.put(accountDescrCodeKey, Collections.singletonList(code));
+            infos.put("code", Collections.singletonList(code));
             logger.debug("Insertion code pour l'utilisateur "+ldapUser.getAttribute(ldapSchema.login)+" dans la table effectuee");
         }
         return infos;
