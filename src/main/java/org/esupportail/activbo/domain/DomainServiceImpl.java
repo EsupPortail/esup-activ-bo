@@ -127,7 +127,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         wanted_attrs.addAll(attrPersoInfo);                
         var ldapUser = searchUser(hashInfToValidate, toArray(wanted_attrs));
         
-        //envoi d'un code si le compte n'est pas active
+        // envoi d'un code si le compte n'est pas active
         boolean with_code = ldapUser.getAttribute(ldapSchema.shadowLastChange)==null;
 
         var infos = ldapInfos_and_maybe_code(ldapUser, attrPersoInfo, with_code);
@@ -252,7 +252,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
                 ldapUserService.bindLdap(ldapUser, password);
             }
     
-            //envoi d'un code si le compte est active
+            // envoi d'un code si le compte est active
             boolean with_code = ldapUser.getAttribute(ldapSchema.shadowLastChange)!=null;
 
             //Construction du hasMap de retour
