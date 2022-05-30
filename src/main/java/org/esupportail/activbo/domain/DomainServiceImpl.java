@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.esupportail.activbo.Utils;
 import org.esupportail.activbo.domain.beans.ValidationCodeImpl;
 import org.esupportail.activbo.domain.beans.ValidationProxyTicket;
@@ -61,7 +60,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     private ValidationProxyTicket validationProxyTicket;
     private BruteForceBlock bruteForceBlock;
     private WriteableLdapUserServiceImpl ldapUserService;
-    private String displayNameLdapAttribute;
     private String casID;
     
     public void setChannels(List<Channel> channels) { this.channels = channels; }
@@ -72,7 +70,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     public void setValidationProxyTicket(ValidationProxyTicket validationProxyTicket) { this.validationProxyTicket = validationProxyTicket; }
     public void setBruteForceBlock(BruteForceBlock bruteForceBlock) { this.bruteForceBlock = bruteForceBlock; }
     public void setLdapUserService(final WriteableLdapUserServiceImpl ldapUserService) { this.ldapUserService = ldapUserService; }
-    public void setDisplayNameLdapAttribute(final String displayNameLdapAttribute) { this.displayNameLdapAttribute = displayNameLdapAttribute; }
     public void setCasID(String casID) { this.casID = casID; }
     
     public void afterPropertiesSet() throws Exception {
@@ -80,9 +77,6 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
                 throw new Exception("property ldapUserService of class " + getClass().getName() + " can not be null");
         if (channels == null) 
                 throw new Exception("property channels of class " + getClass().getName() + " can not be null");
-        if (StringUtils.isBlank(displayNameLdapAttribute)) 
-                throw new Exception("property displayNameLdapAttribute of class " + getClass().getName() 
-                + " can not be null");
     }
     
 

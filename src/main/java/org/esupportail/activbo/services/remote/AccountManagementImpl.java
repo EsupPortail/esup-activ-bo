@@ -153,7 +153,7 @@ public class AccountManagementImpl implements org.springframework.web.HttpReques
     }
     static Map<String, String> getMap(HttpServletRequest req, String prefixName) {
         var r = new HashMap<String, String>();
-        for (var paramName: Collections.list(req.getParameterNames())) {
+        for (String paramName: Collections.list(req.getParameterNames())) {
             var relName = removePrefixOrNull(paramName, prefixName + ".");
             if (relName != null)
                 r.put(relName, req.getParameter(paramName));

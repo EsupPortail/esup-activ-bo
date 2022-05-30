@@ -8,7 +8,6 @@
 
     <bean id="abstractDomainService" abstract="true">   
         <property name="ldapUserService" ref="ldapUserService" />
-        <property name="displayNameLdapAttribute" value="displayName" />        
         <property name="accountDescrCodeKey" value="${account.key.code}"/>
         <property name="accountDescrPossibleChannelsKey" value="${account.key.possibleChannels}"/>
         <property name="validationCode" ref="validationCode"/>
