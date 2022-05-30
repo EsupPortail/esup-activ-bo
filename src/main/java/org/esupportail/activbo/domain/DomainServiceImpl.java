@@ -292,9 +292,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     }
 
     protected void finalizeLdapWriting(LdapUserOut ldapUser) throws LdapAttributesModificationException {
-        logger.debug("L'ecriture dans le LDAP commence");
         ldapUserService.updateLdapUser(ldapUser);
-        logger.debug("Ecriture dans le LDAP reussie");
     }
     
     private int nowEpochDays() {
