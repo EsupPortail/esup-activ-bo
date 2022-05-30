@@ -2,6 +2,7 @@ package org.esupportail.activbo;
 
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,11 @@ public class Utils {
     }
     public static String[] toArray(Set<String> l) {
         return l.toArray(new String[0]);
+    }
+    public static Set<String> toSet(String[] l) {
+        var r = new HashSet<String>();
+        for (var e: l) r.add(e);
+        return r;
     }
 
     public static <V> MapBuilder<V> asMap(String key, V value) {

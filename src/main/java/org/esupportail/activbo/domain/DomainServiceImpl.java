@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -120,8 +121,11 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         return value;
     }
 
-    public Map<String,List<String>> validateAccount(Map<String,String> hashInfToValidate,List<String>attrPersoInfo) throws AuthentificationException, LdapProblemException, LoginException{        
-        var ldapUser = searchUser(hashInfToValidate, toArray(attrPersoInfo));
+    public Map<String,List<String>> validateAccount(Map<String,String> hashInfToValidate,Set<String>attrPersoInfo) throws AuthentificationException, LdapProblemException, LoginException{         
+        var wanted_attrs = channelsNeededAttrs();
+        logger.debug("attrPersoInfo: asked=" + attrPersoInfo + " needed=" + wanted_attrs);
+        wanted_attrs.addAll(attrPersoInfo);                
+        var ldapUser = searchUser(hashInfToValidate, toArray(wanted_attrs));
         
         //envoi d'un code si le compte n'est pas activ�
         boolean with_code = ldapUser.getAttribute(ldapSchema.shadowLastChange)==null;
@@ -133,7 +137,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         return infos;
     }
     
-    private HashMap<String, List<String>> ldapInfos_and_maybe_code(LdapUser ldapUser, List<String> wanted_attrs, boolean with_code) {
+    private HashMap<String, List<String>> ldapInfos_and_maybe_code(LdapUser ldapUser, Set<String> wanted_attrs, boolean with_code) {
         var infos=new HashMap<String,List<String>>();
         infos.put(ldapSchema.login, ldapUser.getAttributeValues(ldapSchema.login));
         
@@ -161,6 +165,11 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
             if (!(val instanceof String)) return Utils.encodeBase64s(vals);
         }
         return null;
+    }
+    private HashSet<String> channelsNeededAttrs() {
+        var r = new HashSet<String>();
+        for (var c : channels) r.addAll(c.neededAttrs());
+        return r;        
     }
     private List<String> possibleChannels(LdapUser ldapUser) {
         var possibleChannels= new ArrayList<String>();
@@ -231,7 +240,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         }
     }
     
-    private HashMap<String,List<String>> getLdapInfos(String id,String password,List<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+    private HashMap<String,List<String>> getLdapInfos(String id,String password,Set<String>attrPersoInfo) throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
         try {
             if (bruteForceBlock.isBlocked(id)) {
                 throw new UserPermissionException("Nombre de tentative d'authentification atteint pour l'utilisateur "+id);
@@ -255,12 +264,12 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         }
     }
     
-    public Map<String,List<String>> authentificateUser(String id,String password,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
+    public Map<String,List<String>> authentificateUser(String id,String password,Set<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException{
         if (password==null) throw new AuthentificationException("Password must not be null !");
         return getLdapInfos(id,password,attrPersoInfo);
     }
     
-    public Map<String,List<String>> authentificateUserWithCas(String id,String proxyticket,String targetUrl,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+    public Map<String,List<String>> authentificateUserWithCas(String id,String proxyticket,String targetUrl,Set<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
         logger.debug("Id, proxyticket et targetUrl : "+id +","+proxyticket+ ", "+targetUrl);
         
         if (!validationProxyTicket.validation(id, proxyticket,targetUrl))
@@ -272,7 +281,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         return getLdapInfos(login,null,attrPersoInfo);
     }
     
-    public Map<String,List<String>> authentificateUserWithCodeKey(String id,String accountCodeKey,List<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
+    public Map<String,List<String>> authentificateUserWithCodeKey(String id,String accountCodeKey,Set<String>attrPersoInfo)throws AuthentificationException,LdapProblemException,UserPermissionException, LoginException {
         
         logger.debug("Id et accountCodeKey : "+id +","+accountCodeKey);
         

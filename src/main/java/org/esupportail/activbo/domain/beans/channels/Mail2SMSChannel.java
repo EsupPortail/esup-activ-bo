@@ -1,5 +1,8 @@
 package org.esupportail.activbo.domain.beans.channels;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.esupportail.activbo.services.SmtpService;
 import org.esupportail.activbo.services.ldap.LdapUser;
 
@@ -15,6 +18,10 @@ public class Mail2SMSChannel extends AbstractChannel {
     public void setMailCodeSubject(String mailCodeSubject) { this.mailCodeSubject = mailCodeSubject; }
     public void setMailCodeBody(String mailCodeBody) { this.mailCodeBody = mailCodeBody; }
     public void setSmtpService(SmtpService smtpService) { this.smtpService = smtpService; }
+
+    public Set<String> neededAttrs() {
+        return Collections.singleton(attributePager);
+    }
 
     public boolean isPossible(LdapUser ldapUser) {
         return ldapUser.getAttribute(attributePager) != null;

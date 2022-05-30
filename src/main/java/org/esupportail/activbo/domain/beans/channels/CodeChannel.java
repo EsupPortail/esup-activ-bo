@@ -1,5 +1,8 @@
 package org.esupportail.activbo.domain.beans.channels;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.esupportail.activbo.services.ldap.LdapUser;
 
 /**
@@ -15,6 +18,10 @@ public class CodeChannel implements Channel {
 
     public String getName() {       
         return name;
+    }
+
+    public Set<String> neededAttrs() {
+        return Collections.emptySet();
     }
 
     public boolean isPossible(LdapUser ldapUser) {  

@@ -3,8 +3,10 @@ package org.esupportail.activbo.domain.beans.channels;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -32,6 +34,9 @@ public class SMSUChannel extends AbstractChannel{
     public void setPasswordCredentials(String passwordCredentials) { this.passwordCredentials = passwordCredentials; }
     public void setMessageBody(String messageBody) { this.messageBody = messageBody; }
 
+    public Set<String> neededAttrs() {
+        return Collections.singleton(attributePager);
+    }
 
     public boolean isPossible(LdapUser ldapUser) {
         return ldapUser.getAttribute(attributePager) != null;

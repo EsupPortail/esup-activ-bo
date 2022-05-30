@@ -1,5 +1,7 @@
 package org.esupportail.activbo.domain.beans.channels;
 
+import java.util.Set;
+
 import org.esupportail.activbo.services.ldap.LdapUser;
 
 
@@ -21,6 +23,7 @@ public interface Channel {
     
     public String getName();
     
+    public Set<String> neededAttrs();
     public boolean isPossible(LdapUser ldapUser);
 
 }

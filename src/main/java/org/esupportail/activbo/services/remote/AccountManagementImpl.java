@@ -4,6 +4,7 @@ import static org.esupportail.activbo.Utils.removePrefixOrNull;
 import static org.esupportail.activbo.Utils.removeSuffixOrNull;
 import static org.esupportail.activbo.Utils.removeSuffix;
 import static org.esupportail.activbo.Utils.mapSet;
+import static org.esupportail.activbo.Utils.toSet;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -145,8 +147,9 @@ public class AccountManagementImpl implements org.springframework.web.HttpReques
         if (val == null) throw new InvalidParameterException("\"" + name + "\" parameter is mandatory");
         return val;
     }
-    static List<String> getCommaStrings(HttpServletRequest req, String name) {
-        return Arrays.asList(getString(req, name).split(","));
+    static Set<String> getCommaStrings(HttpServletRequest req, String name) {
+        String s = getString(req, name);
+        return s.equals("") ? Collections.emptySet() : toSet(s.split(","));
     }
     static Map<String, String> getMap(HttpServletRequest req, String prefixName) {
         var r = new HashMap<String, String>();

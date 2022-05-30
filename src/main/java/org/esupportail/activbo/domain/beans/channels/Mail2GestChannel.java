@@ -1,7 +1,9 @@
 package org.esupportail.activbo.domain.beans.channels;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.esupportail.activbo.services.ldap.LdapUser;
 import org.esupportail.activbo.services.SmtpService;
@@ -61,6 +63,13 @@ public class Mail2GestChannel extends AbstractChannel{
                     return true;                                                                                    
         }
         return false;
+    }
+    @Override
+    public Set<String> neededAttrs() {
+        var r = new HashSet<String>();
+        if (access != null) r.addAll(access.keySet());
+        if (deny != null) r.addAll(deny.keySet());
+        return r;
     }
 
 }
