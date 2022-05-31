@@ -11,10 +11,7 @@
             parent="abstractDomainService">         
         
         <property name="krbLdapMethod" value="${kerberos.ldap.method}" />
-        <property name="krbRealm" value="${kerberos.realm}" />
-        
-        <property name="kerberosAdmin" ref="KRBAdminService" />
-    
+        <property name="krbRealm" value="${kerberos.realm}" />    
     </bean>
     
 </beans>

@@ -5,17 +5,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.esupportail.activbo.services.ldap.LdapUser;
 import org.esupportail.activbo.services.SmtpService;
 
 public class Mail2GestChannel extends AbstractChannel{
+    @Inject private SmtpService smtpService;
     private String mailGest;
     private String mailCodeSubject;
     private String mailCodeBody;
     private String attributeDisplayName;
     private Map<String,List<String>> access;
     private Map<String,List<String>> deny;
-    private SmtpService smtpService;
 
     public void setMailCodeSubject(String mailCodeSubject) { this.mailCodeSubject = mailCodeSubject; }
     public void setMailCodeBody(String mailCodeBody) { this.mailCodeBody = mailCodeBody; }
@@ -23,7 +25,6 @@ public class Mail2GestChannel extends AbstractChannel{
     public void setAttributeDisplayName(String attributeDisplayName) { this.attributeDisplayName = attributeDisplayName; }
     public void setAccess(Map<String, List<String>> access) { this.access = access; }
     public void setDeny(Map<String, List<String>> deny) { this.deny = deny; }
-    public void setSmtpService(SmtpService smtpService) { this.smtpService = smtpService; }
 
     @Override
     public void send(String id) throws ChannelException {

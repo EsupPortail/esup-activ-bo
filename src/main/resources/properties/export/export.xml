@@ -8,7 +8,6 @@
 
     <bean id="rest"
           class="org.esupportail.activbo.services.remote.AccountManagementImpl">
-            <property name="domainService" ref="domainService" />
     </bean>
     
 </beans>

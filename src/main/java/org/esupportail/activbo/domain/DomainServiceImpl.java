@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.esupportail.activbo.Utils;
 import org.esupportail.activbo.domain.beans.ValidationCodeImpl;
@@ -52,20 +54,15 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
+    @Inject protected LdapSchema ldapSchema;
+    @Inject private ValidationCodeImpl validationCode;
+    @Inject private ValidationProxyTicket validationProxyTicket;
+    @Inject private BruteForceBlock bruteForceBlock;
+    @Inject private WriteableLdapUserServiceImpl ldapUserService;
     private List<Channel> channels;
-    protected LdapSchema ldapSchema;
-    private ValidationCodeImpl validationCode;
-    private ValidationProxyTicket validationProxyTicket;
-    private BruteForceBlock bruteForceBlock;
-    private WriteableLdapUserServiceImpl ldapUserService;
     private String casID;
     
     public void setChannels(List<Channel> channels) { this.channels = channels; }
-    public void setLdapSchema(LdapSchema ldapSchema) { this.ldapSchema = ldapSchema; }
-    public void setValidationCode(ValidationCodeImpl validationCode) { this.validationCode = validationCode; }
-    public void setValidationProxyTicket(ValidationProxyTicket validationProxyTicket) { this.validationProxyTicket = validationProxyTicket; }
-    public void setBruteForceBlock(BruteForceBlock bruteForceBlock) { this.bruteForceBlock = bruteForceBlock; }
-    public void setLdapUserService(final WriteableLdapUserServiceImpl ldapUserService) { this.ldapUserService = ldapUserService; }
     public void setCasID(String casID) { this.casID = casID; }
     
     public void afterPropertiesSet() throws Exception {

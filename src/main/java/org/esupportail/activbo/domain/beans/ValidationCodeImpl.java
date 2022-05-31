@@ -9,6 +9,8 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
+
 import org.esupportail.activbo.domain.tools.BruteForceBlock;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.slf4j.Logger;
@@ -34,13 +36,12 @@ public class ValidationCodeImpl {
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
     public long cleaningTimeIntervalMillis = 15 /* minutes */ * 60 * 1000;  
     
+    @Inject private BruteForceBlock bruteForceBlock;
     private int codeDelay;
     private int codeLenght;
-    private BruteForceBlock bruteForceBlock;
 
     public void setCodeLenght(int codeLenght) { this.codeLenght = codeLenght; }
     public void setCodeDelay(int codeDelay) { this.codeDelay = codeDelay; }
-    public void setBruteForceBlock(BruteForceBlock bruteForceBlock) { this.bruteForceBlock = bruteForceBlock; }
     
     
     public boolean verify(String id,String code) throws UserPermissionException{        

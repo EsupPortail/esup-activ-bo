@@ -2,6 +2,8 @@ package org.esupportail.activbo.domain;
 
 import java.util.Collections;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.activbo.exceptions.KerberosException;
 import org.esupportail.activbo.exceptions.LdapLoginAlreadyExistsException;
@@ -30,11 +32,10 @@ public class KerbLdapImpl extends DomainServiceImpl {
     
     private String krbLdapMethod;
     private String krbRealm;    
-    private KRBAdmin kerberosAdmin;
+    @Inject private KRBAdmin kerberosAdmin;
 
     public final void setKrbLdapMethod(String krbLdapMethod) { this.krbLdapMethod = krbLdapMethod; }
     public final void setKrbRealm(String krbRealm) { this.krbRealm = krbRealm; }
-    public void setKerberosAdmin(KRBAdmin kerberosAdmin) { this.kerberosAdmin = kerberosAdmin; }
 
 
     public void setPassword(String id,String code,final String password) throws LdapProblemException,UserPermissionException,KerberosException, LoginException{

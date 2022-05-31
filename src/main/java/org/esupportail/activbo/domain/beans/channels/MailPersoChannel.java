@@ -3,21 +3,22 @@ package org.esupportail.activbo.domain.beans.channels;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.esupportail.activbo.services.SmtpService;
 import org.esupportail.activbo.services.ldap.LdapUser;
 
 public class MailPersoChannel extends AbstractChannel{
+    @Inject private SmtpService smtpService;
     private String attributeMailPerso;
     private String attributeDisplayName;
     private String mailCodeSubject;
     private String mailCodeBody;
-    private SmtpService smtpService;
 
     public void setAttributeMailPerso(String attributeMailPerso) { this.attributeMailPerso = attributeMailPerso; }
     public void setAttributeDisplayName(String attributeDisplayName) { this.attributeDisplayName = attributeDisplayName; }
     public void setMailCodeSubject(String mailCodeSubject) { this.mailCodeSubject = mailCodeSubject; }
     public void setMailCodeBody(String mailCodeBody) { this.mailCodeBody = mailCodeBody; }
-    public void setSmtpService(SmtpService smtpService) { this.smtpService = smtpService; }
 
     public Set<String> neededAttrs() {
         return Collections.singleton(attributeMailPerso);

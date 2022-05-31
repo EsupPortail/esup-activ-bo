@@ -3,6 +3,8 @@ package org.esupportail.activbo.domain.beans;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,12 +13,11 @@ import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 public class ValidationProxyTicketImpl implements ValidationProxyTicket{
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
+    @Inject private ProxyTicketValidator proxyTicketValidator;
     private String casValidateUrl;
     private String allowedProxies;
-    private ProxyTicketValidator proxyTicketValidator;
 
     public void setCasValidateUrl(String casValidateUrl) { this.casValidateUrl = casValidateUrl; }
-    public void setProxyTicketValidator(ProxyTicketValidator proxyTicketValidator) { this.proxyTicketValidator = proxyTicketValidator; }
     public void setAllowedProxies(String allowedProxies) { this.allowedProxies = allowedProxies; }
 
 

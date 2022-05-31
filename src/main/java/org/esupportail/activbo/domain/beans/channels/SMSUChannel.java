@@ -5,6 +5,8 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.esupportail.activbo.services.ldap.LdapUser;
 import org.esupportail.smsuapi.exceptions.InsufficientQuotaException;
 import org.esupportail.smsuapi.services.client.HttpRequestSmsuapiWS;
@@ -15,14 +17,12 @@ import org.esupportail.smsuapi.utils.HttpException;
  *
  */
 public class SMSUChannel extends AbstractChannel{
-
+    @Inject private HttpRequestSmsuapiWS httpRequestSmsuapiWS;
     private String attributePager;
     private String messageBody;
-    private HttpRequestSmsuapiWS httpRequestSmsuapiWS;
 
     public void setAttributePager(String attributePager) { this.attributePager = attributePager; }
     public void setMessageBody(String messageBody) { this.messageBody = messageBody; }
-    public void setHttpRequestSmsuapiWS(HttpRequestSmsuapiWS httpRequestSmsuapiWS) { this.httpRequestSmsuapiWS = httpRequestSmsuapiWS; }
 
     public Set<String> neededAttrs() {
         return Collections.singleton(attributePager);

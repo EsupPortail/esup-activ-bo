@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,9 +31,7 @@ import org.slf4j.LoggerFactory;
 public class AccountManagementImpl implements org.springframework.web.HttpRequestHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private DomainService domainService;
-    
-    public void setDomainService(DomainService domainService) { this.domainService = domainService; }
+    @Inject private DomainService domainService;
     
     public void afterPropertiesSet() throws Exception {
     }

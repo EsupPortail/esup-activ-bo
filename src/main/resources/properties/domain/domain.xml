@@ -7,11 +7,6 @@
     >
 
     <bean id="abstractDomainService" abstract="true">   
-        <property name="ldapUserService" ref="ldapUserService" />
-        <property name="validationCode" ref="validationCode"/>
-        <property name="validationProxyTicket" ref="validationProxyTicket"/>
-        <property name="bruteForceBlock" ref="bruteForceBlock"/>
-        <property name="ldapSchema" ref="ldapSchema"/>
         <property name="casID" value="${cas.attributeID}" /> 
                                                     
         <property name="channels">
@@ -32,9 +27,6 @@
         abstract="true"
         >
         <property name="codeDelay" value="${validation.code.delay}"/>
-        <property name="ldapSchema" ref="ldapSchema"/>
-        <property name="ldapUserService" ref="ldapUserService"/>
-        <property name="validationCode" ref="validationCode"/>
     </bean> 
     
     <bean
@@ -45,7 +37,6 @@
 
         <property name="name" value="${channel.persomail.name}"/>   
 
-        <property name="smtpService" ref="smtpService"/>
         <property name="attributeMailPerso" value="${ldap.attribute.mailPerso}"/>
         <property name="attributeDisplayName" value="${ldap.attribute.displayName}"/>
         <property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
@@ -58,7 +49,6 @@
         >
         <property name="name" value="${channel.gestmail.name}"/>    
         <property name="codeDelay" value="${validation.code.delay.third}"/>
-        <property name="smtpService" ref="smtpService"/>
         <property name="mailGest" value="${channel.gestmail.mail}"/>
         <property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
         <property name="mailCodeBody" value="${channel.gestmail.body.fr}"/>
@@ -80,7 +70,6 @@
         >
         <property name="name" value="${channel.gestmailetu.name}"/> 
         <property name="codeDelay" value="${validation.code.delay.third}"/>
-        <property name="smtpService" ref="smtpService"/>
         <property name="mailGest" value="${channel.gestmailetu.mail}"/>
         <property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
         <property name="mailCodeBody" value="${channel.gestmailetu.body.fr}"/>
@@ -103,7 +92,6 @@
         >
         <property name="name" value="${channel.sms.name}"/>
         <property name="attributePager" value="${ldap.attribute.pager}"/>               
-        <property name="smtpService" ref="smtpService"/>
         <property name="mailSMS" value="${channel.sms.mailSMS}"/>
         <property name="mailCodeSubject" value="${channel.persomail.subject.fr}"/>
         <property name="mailCodeBody" value="${channel.sms.body.fr}"/>
@@ -116,7 +104,6 @@
         <property name="name" value="${channel.sms.name}"/>
         <property name="attributePager" value="${ldap.attribute.pager}"/>
         <property name="messageBody" value="${channel.sms.messageBody.fr}"/>    
-        <property name="httpRequestSmsuapiWS" ref="httpRequestSmsuapiWS"/>
     </bean> 
 
     <bean id="httpRequestSmsuapiWS"
@@ -138,7 +125,6 @@
         <property name="codeLenght" value="${validation.code.lenght}"/>
         <property name="codeDelay" value="${validation.code.delay}"/>
         <property name="codeFileName" value="${validation.code.file.name}"/>
-        <property name="bruteForceBlock" ref="bruteForceBlock"/>
     </bean>
 
     <bean
@@ -146,7 +132,6 @@
         class="org.esupportail.activbo.domain.beans.ValidationProxyTicketImpl"
         >
         <property name="casValidateUrl" value="${cas.validateUrl}"/>
-        <property name="proxyTicketValidator" ref="proxyTicketValidator"/>
         <property name="allowedProxies" value="${cas.allowedProxies}"/>
     </bean>
 

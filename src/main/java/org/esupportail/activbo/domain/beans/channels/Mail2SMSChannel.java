@@ -3,21 +3,22 @@ package org.esupportail.activbo.domain.beans.channels;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.esupportail.activbo.services.SmtpService;
 import org.esupportail.activbo.services.ldap.LdapUser;
 
 public class Mail2SMSChannel extends AbstractChannel {
+    @Inject private SmtpService smtpService;
     private String attributePager;
     private String mailSMS;
     private String mailCodeSubject;
     private String mailCodeBody;
-    private SmtpService smtpService;
 
     public void setAttributePager(String attributePager) { this.attributePager = attributePager; }
     public void setMailSMS(String mailSMS) { this.mailSMS = mailSMS; }  
     public void setMailCodeSubject(String mailCodeSubject) { this.mailCodeSubject = mailCodeSubject; }
     public void setMailCodeBody(String mailCodeBody) { this.mailCodeBody = mailCodeBody; }
-    public void setSmtpService(SmtpService smtpService) { this.smtpService = smtpService; }
 
     public Set<String> neededAttrs() {
         return Collections.singleton(attributePager);

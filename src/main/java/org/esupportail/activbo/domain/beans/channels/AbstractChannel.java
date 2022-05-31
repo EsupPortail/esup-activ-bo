@@ -2,6 +2,7 @@ package org.esupportail.activbo.domain.beans.channels;
 
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
+import javax.inject.Inject;
 
 import org.esupportail.activbo.domain.beans.ValidationCodeImpl;
 import org.esupportail.activbo.services.ldap.LdapSchema;
@@ -13,20 +14,17 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractChannel implements Channel {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     
+    @Inject protected ValidationCodeImpl validationCode;
+    @Inject protected LdapSchema ldapSchema;
+    @Inject protected WriteableLdapUserServiceImpl ldapUserService;
     /**
      * Nom du canal
      */
     private String name;
     protected int codeDelay;
-    protected ValidationCodeImpl validationCode;
-    protected LdapSchema ldapSchema;
-    protected WriteableLdapUserServiceImpl ldapUserService;
 
     public void setName(String name) { this.name=name; }
     public void setCodeDelay(int codeDelay) { this.codeDelay = codeDelay; }
-    public void setValidationCode(ValidationCodeImpl validationCode) { this.validationCode = validationCode; }
-    public void setLdapSchema(LdapSchema ldapSchema) { this.ldapSchema = ldapSchema; }
-    public void setLdapUserService(WriteableLdapUserServiceImpl ldapUserService) { this.ldapUserService = ldapUserService; }
 
     
     public abstract boolean isPossible(LdapUser ldapUser);
