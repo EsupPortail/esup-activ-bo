@@ -61,6 +61,7 @@ public class BruteForceBlockImpl implements BruteForceBlock, Runnable {
 
         info.date = nowPlusSeconds(wait);
         info.nbFail++;
+        logger.debug("Nombre d'échecs pour " + id + " : " + info.nbFail);
         loginsInfo.put(id, info);
         
         mayStartPurgeExpiredThread();
