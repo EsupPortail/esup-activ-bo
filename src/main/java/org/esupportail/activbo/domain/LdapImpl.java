@@ -1,14 +1,20 @@
 package org.esupportail.activbo.domain;
 
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Random;
 
 import org.acegisecurity.providers.ldap.authenticator.LdapShaPasswordEncoder;
+import org.apache.commons.lang.StringUtils;
 import org.esupportail.activbo.exceptions.LdapLoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginException;
 import org.esupportail.activbo.exceptions.UserPermissionException;
 import org.esupportail.activbo.services.ldap.LdapAttributesModificationException;
+import org.esupportail.activbo.services.ldap.LdapUserOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +35,10 @@ public class LdapImpl extends DomainServiceImpl {
             // changement de mot de passe
             ldapUser.attributes().put(ldapSchema.password, Collections.singletonList(encryptPassword(password)));
             setShadowLastChange(ldapUser);
+            if (!StringUtils.isEmpty(ldapSchema.sambaNTPassword)) addSmbPasswordAttr(ldapUser, password); 
+            if (!StringUtils.isEmpty(ldapSchema.sambaPwdLastSet)) addSmbPwdLastSet(ldapUser); 
             finalizeLdapWriting(ldapUser);
-        } catch (LdapAttributesModificationException e) {
+        } catch (LdapAttributesModificationException | NoSuchAlgorithmException e) {
             logger.error("", e);
             throw new LdapProblemException("Probleme au niveau du LDAP");
         }
@@ -75,4 +83,37 @@ public class LdapImpl extends DomainServiceImpl {
         return new LdapShaPasswordEncoder().encodePassword(password, salt);
     }
 
+    private String bytes_to_string(byte[] bytes) {
+        var hashedPwd = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            int v = b & 0xff;
+            if (v < 16) {
+                hashedPwd.append('0');
+            }
+            hashedPwd.append(Integer.toHexString(v));
+        }
+        return hashedPwd.toString().toUpperCase();
+    }
+
+    private String encryptPasswordSmb(String clearPassword) {
+        var salt = new byte[4];
+        new SecureRandom().nextBytes(salt);
+        var md4 = new jcifs.util.MD4();
+        md4.reset();
+        md4.update(clearPassword.getBytes(Charset.forName("UTF-16LE")));
+        return bytes_to_string(md4.digest());
+    }
+
+    private void addSmbPasswordAttr(LdapUserOut ldapUser, final String clearPassword) throws NoSuchAlgorithmException {
+        // Ecrire l'attribut sambaNTPassword dans LDAP
+        var passwd = encryptPasswordSmb(clearPassword);
+        ldapUser.attributes().put("sambaNTPassword", Collections.singletonList(passwd));
+    }
+
+    private void addSmbPwdLastSet(LdapUserOut ldapUser) throws NoSuchAlgorithmException {
+        // Ecrire l'attribut sambaPwdLastSet dans LDAP
+        var cal = Calendar.getInstance();
+        var sambaPwdLastSet = Integer.toString((int) Math.floor(cal.getTimeInMillis() / 1000 ));
+        ldapUser.attributes().put("sambaPwdLastSet", Collections.singletonList(sambaPwdLastSet));
+    }
 }
