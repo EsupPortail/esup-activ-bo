@@ -5,7 +5,7 @@
   <artifactId>esup-activ-bo</artifactId>
   <packaging>war</packaging>
   <name>esup-activ-bo</name>
-  <version>2.4.1</version>
+  <version>3.0.0</version>
 
   <build>
     <!--finalName>${project.name}</finalName-->
