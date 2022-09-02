@@ -209,7 +209,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
             finalizeLdapWriting(ldapUser);          
         
         } catch (LdapAttributesModificationException e) {
-            logger.debug("Exception thrown by updatePersonalInfo() : "+ e.getMessage());
+            logger.error("updatePersonalInfo failed: " + e.getMessage());
             throw new LdapProblemException("Probleme au niveau du LDAP");
         }
     }
