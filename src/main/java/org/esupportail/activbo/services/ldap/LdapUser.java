@@ -5,6 +5,8 @@ import java.util.List;
 public interface LdapUser {
     public String getDN();    
 
+    public List<? extends Object> getRawAttributeValues(String name);
+
     /**
      * @param name 
      * @return the values for an attribute.

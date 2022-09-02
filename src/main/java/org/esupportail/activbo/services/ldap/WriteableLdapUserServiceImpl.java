@@ -70,7 +70,7 @@ public class WriteableLdapUserServiceImpl {
         for (var attrVals : wanted.attributes().entrySet()) {
             String attr = attrVals.getKey();
             var wantedVals = attrVals.getValue();
-            var currentVals = current.getAttributeValues(attr);
+            var currentVals = current.getRawAttributeValues(attr);
 
             if (hasNonString(wantedVals) || hasNonString(currentVals)) {
                 logger.debug("will replace binary attribute "  + attr + " values " + wantedVals);

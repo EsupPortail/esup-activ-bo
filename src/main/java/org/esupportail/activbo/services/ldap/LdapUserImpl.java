@@ -1,5 +1,6 @@
 package org.esupportail.activbo.services.ldap;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,14 +16,27 @@ public class LdapUserImpl implements LdapUser, LdapUserOut {
     public String getDN() {
         return dn;
     }
-     
+    
+    public List<? extends Object> getRawAttributeValues(String name) {
+        var result = attributes.get(name);
+        return result != null ? result : new ArrayList<String>();
+    }
+    
     /**
      * @param name 
      * @return the values for an attribute.
+     * 
+     * this method excepts the values to be valid UTF-8 strings
      */
     public List<String> getAttributeValues(String name) {
-        var result = attributes.get(name);
-        return result != null ? (List<String>) result : new ArrayList<String>();
+        var r = new ArrayList<String>();
+        var values = attributes.get(name);
+        if (values != null) {
+            for (var value : values) {
+                r.add(ldapValueToString(value));
+            }
+        }
+        return r;
     }
 
     // alias of getAttributeValue
@@ -30,9 +44,25 @@ public class LdapUserImpl implements LdapUser, LdapUserOut {
         return getAttributeValue(name);
     }
 
+    // this method excepts the value to be a valid UTF-8 string
     public String getAttributeValue(final String name) {
-        var values = getAttributeValues(name);
-        return values.size() > 0 ? (String) values.get(0) : null;
+        var values = attributes.get(name);
+        return values != null && !values.isEmpty() ? ldapValueToString(values.get(0)) : null;
+    }
+
+    // LDAP values can be byte[] if attribute syntax is "OctetString",
+    private String ldapValueToString(Object val) {
+        if (val instanceof String) {
+            return (String) val;
+        } else if (val instanceof byte[]) {
+            try {
+                 return new String((byte[]) val, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return null;
+        }
     }
      
     /**
