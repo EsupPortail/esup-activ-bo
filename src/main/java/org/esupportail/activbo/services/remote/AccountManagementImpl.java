@@ -49,7 +49,7 @@ public class AccountManagementImpl implements org.springframework.web.HttpReques
     
     private void answerError(HttpServletResponse resp, Throwable e) {
         String exnName = e.getClass().getSimpleName();
-        if (exnName.equals("InvalidParameterException") || exnName.equals("UserPermissionException")) {
+        if (exnName.equals("InvalidParameterException") || exnName.equals("UserPermissionException") || exnName.equals("AuthentificationException") || exnName.equals("LdapProblemException")) {
                 // known exceptions, no need to pollute logs with backtrace
                 logger.error(""+e);
         } else {
