@@ -78,6 +78,7 @@ public class AccountManagementImpl implements org.springframework.web.HttpReques
                 return ok(domainService.authentificateUserWithCodeKey(id(req), getString(req, "accountCodeKey"), returnAttrs(req)));
             case "setPassword":
                 domainService.setPassword(id(req), code(req), getString(req, "password"));
+                domainService.removeCode(id(req), code(req));
                 return ok();
             case "updatePersonalInformations":
                 domainService.updatePersonalInformations(id(req), code(req), getMultiMap(req, "attr"));
