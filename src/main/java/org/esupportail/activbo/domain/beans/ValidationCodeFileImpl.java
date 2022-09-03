@@ -1,12 +1,11 @@
 package org.esupportail.activbo.domain.beans;
 
 
-import java.io.FileInputStream;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,9 +48,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl implements Initia
     }
     
     private void writeMap() {
-        try {
-            writeMap(codeFileName, validationCodes);
-        } catch (IOException e) {logger.error(e.getMessage(), e);}
+        writeMap(codeFileName, validationCodes);
     }
     
     
@@ -61,35 +58,51 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl implements Initia
        @param HashMap  map a serialiser
    
      */
-    private synchronized void writeMap(String fileName,Map<String,UserData> map) throws IOException {
+    private synchronized void writeMap(String fileName,Map<String,UserData> map) {
         try {
-            var fos = new FileOutputStream(fileName);
-            var oos = new ObjectOutputStream(fos);
-            // on force le format de serialisation HashMap<String, UserData>
-            oos.writeObject(new HashMap<String, UserData>(map));
-            oos.close();
+            var pw = new PrintWriter(fileName);
+            for (var entry : map.entrySet()) {
+                var userData = entry.getValue();
+                pw.println(entry.getKey() + "|" + userData.code + "|" + userData.date + "|" + userData.channel);
+            }
+            pw.close();
         } catch (FileNotFoundException e) {logger.error(e.getMessage(), e);} 
-          catch (IOException e) {logger.error(e.getMessage(), e); }
-     
     }
     /**
      * Retourner une HashMap deserialise depuis un fichier
      * @param filename chemin du fichier
      */
-    public HashMap<String,UserData> readMap(String fileName) throws IOException, ClassNotFoundException {  
+    public HashMap<String,UserData> readMap(String fileName) {  
         var map=new HashMap<String,UserData>();
+        BufferedReader br;
         try {
-                FileInputStream fis = new FileInputStream(fileName);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                map = (HashMap<String,UserData> ) ois.readObject();
-                ois.close();
-        } 
-        catch (FileNotFoundException e) {logger.debug("Si le fichier n'exsite pas, il va etre cree automatiquement");}
-        catch (IOException e) {logger.error(e.getMessage(), e);}
-        catch (ClassNotFoundException e) {logger.error(e.getMessage(), e);}
-
+            br = new BufferedReader(new FileReader(fileName));
+        }
+        catch (FileNotFoundException e) {
+            logger.debug("Le fichier n'existe pas, il va etre cree automatiquement");
+            return map;
+        }
+        try {
+            while (true) {
+                var line = br.readLine();
+                if (line == null) break;
+                var vals = line.split("\\|");
+                if (vals.length == 4) {
+                    var userData = new UserData();
+                    userData.code = vals[1];
+                    userData.date = vals[2];
+                    userData.channel = vals[3].equals("null") ? null : vals[3];
+                    map.put(vals[0], userData);
+                } else {
+                    logger.error("skipping weird line " + line + " " + vals.length);
+                }
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            try { br.close(); } catch (IOException e) { logger.error("", e); }
+        }
         return map;
     }
-
     
 }

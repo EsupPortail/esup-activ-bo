@@ -1,6 +1,5 @@
 package org.esupportail.activbo.domain.beans;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -19,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 public class ValidationCodeImpl {
 
-    public static class UserData implements Serializable {
+    public static class UserData {
         public String code;
         public String date;
         public String channel; // optional
