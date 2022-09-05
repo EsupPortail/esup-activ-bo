@@ -69,14 +69,18 @@ public class WriteableLdapUserServiceImpl {
         var r = new LinkedList<ModificationItem>();
         for (var attrVals : wanted.attributes().entrySet()) {
             String attr = attrVals.getKey();
-            var wantedVals = attrVals.getValue();
-            var currentVals = current.getRawAttributeValues(attr);
+            var wantedVals_ = attrVals.getValue();
+            var currentVals_ = current.getRawAttributeValues(attr);
 
-            if (hasNonString(wantedVals) || hasNonString(currentVals)) {
-                logger.debug("will replace binary attribute "  + attr + " values " + wantedVals);
-                r.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, toJndiAttribute(attr, wantedVals)));
+            if (hasNonString(wantedVals_) || hasNonString(currentVals_)) {
+                logger.debug("will replace binary attribute "  + attr + " values " + wantedVals_);
+                r.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, toJndiAttribute(attr, wantedVals_)));
                 continue;
             }
+
+            // we know wantedVals & currentVals have only Strings
+            @SuppressWarnings("unchecked") var wantedVals = (List<String>) wantedVals_;
+            @SuppressWarnings("unchecked") var currentVals = (List<String>) currentVals_;
 
             var toAdd = difference(wantedVals, currentVals);
             var toRemove = difference(currentVals, wantedVals);
@@ -93,8 +97,8 @@ public class WriteableLdapUserServiceImpl {
         return r;
     }
 
-    private List<? extends Object> difference(List<? extends Object> wanted, List<? extends Object> non_wanted) {
-        var r = new LinkedList<Object>(wanted);
+    private List<String> difference(List<String> wanted, List<String> non_wanted) {
+        var r = new LinkedList<String>(wanted);
         r.removeAll(non_wanted);
         return r;
     }
