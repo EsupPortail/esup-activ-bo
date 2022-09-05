@@ -124,6 +124,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         return infos;
     }
     
+    @SuppressWarnings("unchecked")
     private HashMap<String, List<String>> ldapInfos_and_maybe_code(LdapUser ldapUser, Set<String> wanted_attrs, boolean with_code) {
         var infos=new HashMap<String,List<String>>();
         infos.put("id", ldapUser.getAttributeValues(ldapSchema.login));

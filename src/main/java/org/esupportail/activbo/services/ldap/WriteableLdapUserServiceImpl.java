@@ -166,6 +166,7 @@ public class WriteableLdapUserServiceImpl {
         addAttrValues(ldapUser, entry.getAttributes());        
         return ldapUser;
     }
+    @SuppressWarnings("unchecked")
     private void addAttrValues(LdapUserOut ldapUser, Attributes attrs) throws NamingException {
         var attrsIt = attrs.getAll();
         while (attrsIt.hasMore()) {
