@@ -40,7 +40,7 @@ public class Mail2GestChannel extends AbstractChannel{
             .replace("{3}", displayName);
         
         smtpService.sendEmail(mail, newSubject, mailBody, true);
-        logger.info(id + "@" + code + ": Envoi du code a l'adresse mail gestionnaire "+mailGest);
+        logger.info(id + "@" + code.code + ": Envoi du code a l'adresse mail gestionnaire "+mailGest);
     }
 
     public boolean isPossible(LdapUser ldapUser) {

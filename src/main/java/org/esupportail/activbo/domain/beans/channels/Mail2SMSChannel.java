@@ -43,7 +43,7 @@ public class Mail2SMSChannel extends AbstractChannel {
         
         smtpService.sendEmail(mail, mailCodeSubject, mailBody, false);
         
-        logger.info(id + "@" + code + ": Envoi du code par sms via mail2sms au numero portable "+pager);
+        logger.info(id + "@" + code.code + ": Envoi du code par sms via mail2sms au numero portable "+pager);
     }
     
 }
