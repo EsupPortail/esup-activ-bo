@@ -1,12 +1,27 @@
 package org.esupportail.activbo;
 
+import java.util.Arrays;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import static org.esupportail.activbo.Utils.*;
 
 
 public class UtilsTest {
+
+    @Test
+    public void testEncodeBase64s() {
+        var hash = encodeBase64s(Arrays.asList(new Object[] { "foo".getBytes() }));
+        assertArrayEquals(hash.toArray(), new String[] { "Zm9v" });
+    }
+    
+    @Test
+    public void testDecodeBase64s() {
+        var hash = decodeBase64s(Arrays.asList(new String[] { "Zm9v" }));
+        assertArrayEquals(hash.toArray(), new Object[] { "foo".getBytes() });
+    } 
 
     @Test
     public void testEncryptSmbNTPassword() {
