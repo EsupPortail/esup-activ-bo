@@ -1,8 +1,8 @@
 package org.esupportail.activbo.domain;
 
-import java.nio.charset.Charset;
+import static org.esupportail.activbo.Utils.encryptSmbNTPassword;
+
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Random;
@@ -35,7 +35,7 @@ public class LdapImpl extends DomainServiceImpl {
             // changement de mot de passe
             ldapUser.attributes().put(ldapSchema.password, Collections.singletonList(encryptPassword(password)));
             setShadowLastChange(ldapUser);
-            if (!StringUtils.isEmpty(ldapSchema.sambaNTPassword)) addSmbPasswordAttr(ldapUser, password); 
+            if (!StringUtils.isEmpty(ldapSchema.sambaNTPassword)) addSmbNTPasswordAttr(ldapUser, password); 
             if (!StringUtils.isEmpty(ldapSchema.sambaPwdLastSet)) addSmbPwdLastSet(ldapUser); 
             finalizeLdapWriting(ldapUser);
         } catch (LdapAttributesModificationException | NoSuchAlgorithmException e) {
@@ -83,30 +83,9 @@ public class LdapImpl extends DomainServiceImpl {
         return new LdapShaPasswordEncoder().encodePassword(password, salt);
     }
 
-    private String bytes_to_string(byte[] bytes) {
-        var hashedPwd = new StringBuilder(bytes.length * 2);
-        for (byte b : bytes) {
-            int v = b & 0xff;
-            if (v < 16) {
-                hashedPwd.append('0');
-            }
-            hashedPwd.append(Integer.toHexString(v));
-        }
-        return hashedPwd.toString().toUpperCase();
-    }
-
-    private String encryptPasswordSmb(String clearPassword) {
-        var salt = new byte[4];
-        new SecureRandom().nextBytes(salt);
-        var md4 = new jcifs.util.MD4();
-        md4.reset();
-        md4.update(clearPassword.getBytes(Charset.forName("UTF-16LE")));
-        return bytes_to_string(md4.digest());
-    }
-
-    private void addSmbPasswordAttr(LdapUserOut ldapUser, final String clearPassword) throws NoSuchAlgorithmException {
+    private void addSmbNTPasswordAttr(LdapUserOut ldapUser, final String clearPassword) throws NoSuchAlgorithmException {
         // Ecrire l'attribut sambaNTPassword dans LDAP
-        var passwd = encryptPasswordSmb(clearPassword);
+        var passwd = encryptSmbNTPassword(clearPassword);
         ldapUser.attributes().put("sambaNTPassword", Collections.singletonList(passwd));
     }
 

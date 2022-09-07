@@ -1,5 +1,7 @@
 package org.esupportail.activbo;
 
+import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,5 +65,26 @@ public class Utils {
         }
         return r;
     }
-    
+
+    public static String encryptSmbNTPassword(String clearPassword) {
+        var salt = new byte[4];
+        new SecureRandom().nextBytes(salt);
+        var md4 = new jcifs.util.MD4();
+        md4.reset();
+        md4.update(clearPassword.getBytes(Charset.forName("UTF-16LE")));
+        return bytes_to_string(md4.digest()).toUpperCase();
+    }
+
+    public static String bytes_to_string(byte[] bytes) {
+        var hashedPwd = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            int v = b & 0xff;
+            if (v < 16) {
+                hashedPwd.append('0');
+            }
+            hashedPwd.append(Integer.toHexString(v));
+        }
+        return hashedPwd.toString();
+    }
+
 }
