@@ -42,6 +42,8 @@
             <property name="mail" value="${ldap.attribute.mail}"/>
             <property name="login" value="${ldap.attribute.login}"/>
             <property name="krbPrincipal" value="${ldap.attribute.krbPrincipal}"/>
+            <property name="sambaNTPassword" value="${ldap.attribute.sambaNTPassword}"/>
+            <property name="sambaPwdLastSet" value="${ldap.attribute.sambaPwdLastSet}"/>
 
     </bean>
 </beans>
