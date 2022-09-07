@@ -14,4 +14,10 @@ public class UtilsTest {
         assertEquals(hash, "AC8E657F83DF82BEEA5D43BDAF7800CC");
     }
 
+    @Test
+    public void testLdapShaPasswordEncoder() {
+        var hash = ldapShaPasswordEncoder("foo", "0000".getBytes());
+        assertEquals(hash, "{SSHA}i90z2uOIA+5F7C0amoArooW546swMDAw");
+    }
+
 }

@@ -1,13 +1,12 @@
 package org.esupportail.activbo.domain;
 
 import static org.esupportail.activbo.Utils.encryptSmbNTPassword;
+import static org.esupportail.activbo.Utils.ldapShaPasswordEncoder;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Random;
 
-import org.acegisecurity.providers.ldap.authenticator.LdapShaPasswordEncoder;
 import org.apache.commons.lang.StringUtils;
 import org.esupportail.activbo.exceptions.LdapLoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
@@ -33,7 +32,7 @@ public class LdapImpl extends DomainServiceImpl {
             verifyCode(id, code);
             var ldapUser = getLdapUserOut(id);
             // changement de mot de passe
-            ldapUser.attributes().put(ldapSchema.password, Collections.singletonList(encryptPassword(password)));
+            ldapUser.attributes().put(ldapSchema.password, Collections.singletonList(ldapShaPasswordEncoder(password)));
             setShadowLastChange(ldapUser);
             if (!StringUtils.isEmpty(ldapSchema.sambaNTPassword)) addSmbNTPasswordAttr(ldapUser, password); 
             if (!StringUtils.isEmpty(ldapSchema.sambaPwdLastSet)) addSmbPwdLastSet(ldapUser); 
@@ -66,21 +65,6 @@ public class LdapImpl extends DomainServiceImpl {
     
     public String validatePassword(String supannAliasLogin, String password) {
         return null; // no (extra) validation, relying on application not calling esup-activ-bo to validate it!
-    }
-
-    private String encryptPassword(String password) {
-        /*
-         * If we look at phpldapadmin SSHA encryption algorithm in :
-         * /usr/share/phpldapadmin/lib/functions.php function password_hash(
-         * $password_clear, $enc_type ) salt length for SSHA is 4
-         */
-        final int SALT_LENGTH = 4;
-        
-        /* Salt generation */
-        var salt = new byte[SALT_LENGTH];
-        new Random().nextBytes(salt);
-        /* SSHA encoding */
-        return new LdapShaPasswordEncoder().encodePassword(password, salt);
     }
 
     private void addSmbNTPasswordAttr(LdapUserOut ldapUser, final String clearPassword) throws NoSuchAlgorithmException {

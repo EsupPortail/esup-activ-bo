@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.acegisecurity.providers.ldap.authenticator.LdapShaPasswordEncoder;
 
 public class Utils {
     
@@ -64,6 +67,27 @@ public class Utils {
             r.add(Base64.getDecoder().decode(val));
         }
         return r;
+    }
+
+    public static String ldapShaPasswordEncoder(String password) {
+        return ldapShaPasswordEncoder(password, null);
+    }
+
+    public static String ldapShaPasswordEncoder(String password, byte[] salt) {
+        /*
+         * If we look at phpldapadmin SSHA encryption algorithm in :
+         * /usr/share/phpldapadmin/lib/functions.php function password_hash(
+         * $password_clear, $enc_type ) salt length for SSHA is 4
+         */
+        final int SALT_LENGTH = 4;
+        
+        /* Salt generation */
+        if (salt == null) {
+            salt = new byte[SALT_LENGTH];
+            new Random().nextBytes(salt);
+        }
+        /* SSHA encoding */
+        return new LdapShaPasswordEncoder().encodePassword(password, salt);
     }
 
     public static String encryptSmbNTPassword(String clearPassword) {
