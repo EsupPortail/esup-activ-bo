@@ -36,7 +36,7 @@ public class Mail2GestChannel extends AbstractChannel{
         String mailBody=mailCodeBody
             .replace("{0}", id)
             .replace("{1}", code.code)
-            .replace("{2}", code.date)
+            .replace("{2}", validationCode.dateToString(code.date))
             .replace("{3}", displayName);
         
         smtpService.sendEmail(mail, newSubject, mailBody, true);

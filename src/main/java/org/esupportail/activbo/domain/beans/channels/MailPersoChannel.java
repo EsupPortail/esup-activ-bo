@@ -42,7 +42,7 @@ public class MailPersoChannel extends AbstractChannel{
         String subject = this.mailCodeSubject.replace("{0}", displayName);
         String mailBody=this.mailCodeBody.replace("{0}", displayName)
             .replace("{1}", code.code)
-            .replace("{2}", code.date);
+            .replace("{2}", validationCode.dateToString(code.date));
         smtpService.sendEmail(mail, subject, mailBody, true);
         
         logger.info(id + "@" + code.code + ": Envoi du code a l'adresse mail perso "+mailPerso);

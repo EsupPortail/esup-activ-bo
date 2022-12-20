@@ -1,6 +1,5 @@
 package org.esupportail.activbo.domain.beans;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,7 +19,7 @@ public class ValidationCodeImpl {
 
     public static class UserData {
         public String code;
-        public String date;
+        public Date date;
         public String channel; // optional
 
         // to help inspecting validation.code.file.name
@@ -75,7 +74,7 @@ public class ValidationCodeImpl {
 
         var userData = new UserData();  
         userData.code = code;
-        userData.date = this.dateToString(date);
+        userData.date = date;
         if (channel != null) userData.channel = channel; // only useful to differentiate channel codes (sent to user) and service codes (when CASified)
                 
         validationCodes.put(id, userData);
@@ -117,16 +116,11 @@ public class ValidationCodeImpl {
         return code;
     }
     
-    private String dateToString(Date sDate) {
+    public String dateToString(Date sDate) {
         var sdf = new SimpleDateFormat(dateFormat);
         return sdf.format(sDate);
     }
     
-    protected Date stringToDate(String sDate) throws ParseException{
-        var sdf = new SimpleDateFormat(dateFormat);
-        return sdf.parse(sDate);
-    }
-
     public void removeCode(String userId) {
         validationCodes.remove(userId);
     }

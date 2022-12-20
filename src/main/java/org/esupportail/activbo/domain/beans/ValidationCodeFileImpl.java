@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 public class ValidationCodeFileImpl extends ValidationCodeImpl implements InitializingBean {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private String codeFileName;
 
     public void setCodeFileName(String codeFileName) { this.codeFileName = codeFileName; }
@@ -63,7 +66,7 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl implements Initia
             var pw = new PrintWriter(fileName);
             for (var entry : map.entrySet()) {
                 var userData = entry.getValue();
-                pw.println(entry.getKey() + "|" + userData.code + "|" + userData.date + "|" + userData.channel);
+                pw.println(entry.getKey() + "|" + userData.code + "|" + dateFormat.format(userData.date) + "|" + userData.channel);
             }
             pw.close();
         } catch (FileNotFoundException e) {logger.error(e.getMessage(), e);} 
@@ -90,14 +93,14 @@ public class ValidationCodeFileImpl extends ValidationCodeImpl implements Initia
                 if (vals.length == 4) {
                     var userData = new UserData();
                     userData.code = vals[1];
-                    userData.date = vals[2];
+                    userData.date = dateFormat.parse(vals[2]);
                     userData.channel = vals[3].equals("null") ? null : vals[3];
                     map.put(vals[0], userData);
                 } else {
                     logger.error("skipping weird line " + line + " " + vals.length);
                 }
             }
-        } catch (IOException e) {
+        } catch (ParseException | IOException e) {
             logger.error(e.getMessage(), e);
         } finally {
             try { br.close(); } catch (IOException e) { logger.error("", e); }

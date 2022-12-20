@@ -39,7 +39,7 @@ public class Mail2SMSChannel extends AbstractChannel {
         String mailBody=mailCodeBody
             .replace("{0}", pager)
             .replace("{1}", code.code)
-            .replace("{2}", code.date);
+            .replace("{2}", validationCode.dateToString(code.date));
         
         smtpService.sendEmail(mail, mailCodeSubject, mailBody, false);
         

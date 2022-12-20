@@ -30,7 +30,7 @@ public class ValidationCodeCleanning implements Runnable {
                         var userData = e.getValue();
                         logger.debug("Utilisateur "+e.getKey()+"(Code --> "+userData.code+"  ||  Date d'expiration --> "+userData.date+")");
                                             
-                        if (now > vc.stringToDate(userData.date).getTime()) {
+                        if (now > userData.date.getTime()) {
                             String logMsg = e.getKey() + "@" + userData.code + ": expiration";
                             if (userData.channel != null) logger.info(logMsg); else logger.debug(logMsg);
 
