@@ -7,6 +7,7 @@ package org.esupportail.activbo.domain;
 import static org.esupportail.activbo.Utils.toArray;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,9 +62,13 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     @Inject private WriteableLdapUserServiceImpl ldapUserService;
     private List<Channel> channels;
     private String casID;
+    private List<String> attrsNotRequiringACodeForModification;
     
     public void setChannels(List<Channel> channels) { this.channels = channels; }
     public void setCasID(String casID) { this.casID = casID; }
+    public void setAttrsNotRequiringACodeForModification(String attrs) {
+        attrsNotRequiringACodeForModification = Arrays.asList(attrs.split(","));
+    }
     
     public void afterPropertiesSet() throws Exception {
         if (ldapUserService == null) 
@@ -193,10 +198,21 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
         if (ldapUser==null) throw new LdapProblemException("Probleme au niveau de LDAP");
         return new LdapUserImpl(ldapUser.getDN());
     }
-    
+
+    private void verifyAttrsNotRequiringACode(Set<String> attrs) throws UserPermissionException {
+        for (var attr : attrs) {
+            if (!attrsNotRequiringACodeForModification.contains(attr))
+                throw new UserPermissionException("no code and " + attr + " not listed in attrsNotRequiringACodeForModification");
+        }
+
+    }
     public void updatePersonalInformations(String id,String code,Map<String,List<? extends Object>> hashBeanPersoInfo)throws LdapProblemException,UserPermissionException, LoginException{
         try {
-            verifyCode(id, code);
+            if ("".equals(code)) {
+                verifyAttrsNotRequiringACode(hashBeanPersoInfo.keySet());
+            } else {
+                verifyCode(id, code);
+            }
             var ldapUser = getLdapUserOut(id);
                                             
             logger.debug("Parcours des informations personnelles mises a jour au niveau du FO pour insertion LDAP");
