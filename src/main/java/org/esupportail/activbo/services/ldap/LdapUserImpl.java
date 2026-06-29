@@ -52,11 +52,11 @@ public class LdapUserImpl implements LdapUser, LdapUserOut {
 
     // LDAP values can be byte[] if attribute syntax is "OctetString",
     private String ldapValueToString(Object val) {
-        if (val instanceof String) {
-            return (String) val;
-        } else if (val instanceof byte[]) {
+        if (val instanceof String val_) {
+            return val_;
+        } else if (val instanceof byte[] val_) {
             try {
-                 return new String((byte[]) val, "UTF-8");
+                 return new String(val_, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
