@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Collections;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.activbo.exceptions.LdapLoginAlreadyExistsException;
 import org.esupportail.activbo.exceptions.LdapProblemException;
 import org.esupportail.activbo.exceptions.LoginException;
