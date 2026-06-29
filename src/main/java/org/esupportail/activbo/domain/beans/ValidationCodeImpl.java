@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.esupportail.activbo.domain.tools.BruteForceBlock;
 import org.esupportail.activbo.exceptions.UserPermissionException;

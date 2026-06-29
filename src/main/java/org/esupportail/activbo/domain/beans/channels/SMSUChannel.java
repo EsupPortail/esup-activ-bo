@@ -5,7 +5,7 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.esupportail.activbo.services.ldap.LdapUser;
 import org.esupportail.smsuapi.exceptions.InsufficientQuotaException;

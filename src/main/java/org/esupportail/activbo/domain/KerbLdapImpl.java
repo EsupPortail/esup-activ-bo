@@ -3,7 +3,7 @@ package org.esupportail.activbo.domain;
 import java.io.Serial;
 import java.util.Collections;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.activbo.exceptions.KerberosException;

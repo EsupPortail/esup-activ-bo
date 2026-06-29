@@ -2,7 +2,7 @@ package org.esupportail.activbo.domain.beans.channels;
 
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.esupportail.activbo.domain.beans.ValidationCodeImpl;
 import org.esupportail.activbo.services.ldap.LdapSchema;
