@@ -1,12 +1,14 @@
 package org.esupportail.activbo.services.kerberos;
 
+import java.io.Serial;
+
 public class KRBPrincipalAlreadyExistsException extends KRBException {
 
 
         /**
      * 
      */
-    private static final long serialVersionUID = 6990794529333306003L;
+    @Serial private static final long serialVersionUID = 6990794529333306003L;
 
         public KRBPrincipalAlreadyExistsException(String msg)
         {

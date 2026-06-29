@@ -3,6 +3,7 @@ package org.esupportail.activbo.domain;
 import static org.esupportail.activbo.Utils.encryptSmbNTPassword;
 import static org.esupportail.activbo.Utils.ldapShaPasswordEncoder;
 
+import java.io.Serial;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Collections;
@@ -23,7 +24,7 @@ public class LdapImpl extends DomainServiceImpl {
     /**Cette classe permet d'utiliser que l'implementation LDAP
      * 
      */
-    private static final long serialVersionUID = -920391586782473692L;
+    @Serial private static final long serialVersionUID = -920391586782473692L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
 

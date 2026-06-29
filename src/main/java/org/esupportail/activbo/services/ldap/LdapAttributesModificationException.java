@@ -4,6 +4,8 @@
  */
 package org.esupportail.activbo.services.ldap;
 
+import java.io.Serial;
+
 /**
  * An exception thrown when failing to retrieve a user from a datasource.
  */
@@ -12,7 +14,7 @@ public class LdapAttributesModificationException extends Exception {
     /**
      * the id for serialization.
      */
-    private static final long serialVersionUID = 802347220128301517L;
+    @Serial private static final long serialVersionUID = 802347220128301517L;
     /**
      * Bean constructor.
      * @param message

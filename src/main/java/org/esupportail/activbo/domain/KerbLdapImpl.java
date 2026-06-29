@@ -1,5 +1,6 @@
 package org.esupportail.activbo.domain;
 
+import java.io.Serial;
 import java.util.Collections;
 
 import javax.inject.Inject;
@@ -27,7 +28,7 @@ public class KerbLdapImpl extends DomainServiceImpl {
     /**Cette classe permet d'utiliser l'implementation LDAP et Kerberos
      * 
      */
-    private static final long serialVersionUID = 8874960057301525796L;
+    @Serial private static final long serialVersionUID = 8874960057301525796L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
     private String krbLdapMethod;

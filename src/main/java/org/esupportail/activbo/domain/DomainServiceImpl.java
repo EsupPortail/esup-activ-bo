@@ -6,6 +6,7 @@ package org.esupportail.activbo.domain;
 
 import static org.esupportail.activbo.Utils.toArray;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -51,7 +52,7 @@ public abstract class DomainServiceImpl implements DomainService, InitializingBe
     /**
      * The serialization id.
      */
-    private static final long serialVersionUID = -8200845058340254019L;
+    @Serial private static final long serialVersionUID = -8200845058340254019L;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
